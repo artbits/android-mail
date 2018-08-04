@@ -56,7 +56,7 @@ emailSendClient
                 }
         });
 ```
-步骤四、完成上面三个步骤还不行，还需要检查一下，例如QQ邮箱是否开启POP3/SMTP等服务。登录网页版QQ邮箱，进入【设置】-【帐户】，把POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务选择开启，然后获取授权码，用于第三方邮箱登录。如下图：
+步骤四、若使用QQ邮箱发送邮件，登录QQ邮箱，进入【设置】-【帐户】，把下列服务开启，然后获取授权码。如下图：
 
 <img src="https://github.com/mailhu/email/blob/master/image/image_1.PNG"  height="200" width="600">
 
