@@ -5,42 +5,60 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.smailnet.eamil.EmailSendClient;
-import com.smailnet.eamil.EmailSendConfig;
-import com.smailnet.eamil.getResultCallback;
+import com.smailnet.eamil.GetSendCallback;
+import com.smailnet.islands.Islands;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private EditText address;
+    private EditText title;
+    private EditText text;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.maim_activity);
-        Button button = findViewById(R.id.bt_1);
+        setContentView(R.layout.main_activity);
+        initView();
+    }
+
+    /**
+     * 初始化布局
+     */
+    private void initView(){
+        address = findViewById(R.id.address);
+        title = findViewById(R.id.title);
+        text = findViewById(R.id.text);
+        button = findViewById(R.id.send);
+
         button.setOnClickListener(this);
     }
 
-    private void sendMail(){
-        //配置发件服务器
-        EmailSendConfig emailSendConfig = new EmailSendConfig()
-                .setHost("smtp.qq.com")             //设置服务器地址，网易邮箱为smtp.163.com
-                .setPost(465)                       //设置端口，网易邮箱为25
-                .setAuth(true)                      //设置是否验证
-                .setAccount("xxx@foxmail.com")      //你的邮箱地址
-                .setPassword("abcdefg")             //你的邮箱密码，QQ邮箱该处填授权码
-                .sava();                            //保存配置
-
-        //邮件发送
-        EmailSendClient emailSendClient = new EmailSendClient(emailSendConfig);
+    /**
+     * 发送邮件
+     */
+    private void sendMessage(){
+        EmailSendClient emailSendClient = new EmailSendClient(EmailApplication.getEmailConfig().getConfigData());
         emailSendClient
-                .setReceiver("yyy@foxmail.com")         //收件人的邮箱地址
-                .setFrom("xxx@foxmail.com")             //发件人的邮箱地址
-                .setTitle("邮件测试")                    //邮件标题
-                .setText("Hello World !")               //邮件正文
-                .sendAsync(new getResultCallback() {    //异步发送邮件，然后回调发送结果
+                .setReceiver(address.getText().toString())          //收件人的邮箱地址
+                .setTitle(title.getText().toString())               //邮件标题
+                .setText(text.getText().toString())                 //邮件正文
+                .sendAsync(this, new GetSendCallback() {
                     @Override
-                    public void getResult(boolean result) {
-                        Log.i("oversee", (result) ? "发送成功" : "发送失败");
+                    public void sendSuccess() {
+                        Toast.makeText(MainActivity.this, "已发送", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void sendFailure(String errorMsg) {
+                        new Islands.OrdinaryDialog(MainActivity.this)
+                                .setText(null, "发送失败 ：" + errorMsg)
+                                .setButton("关闭", null, null)
+                                .click().show();
                     }
                 });
     }
@@ -48,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.bt_1:
-                sendMail();
+            case R.id.send:
+                sendMessage();
                 break;
         }
     }

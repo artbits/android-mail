@@ -18,6 +18,7 @@ package com.smailnet.eamil;
 /**
  * 发送邮件结果回调
  */
-public interface getResultCallback {
-    void getResult(boolean result);
+public interface GetSendCallback {
+    void sendSuccess();
+    void sendFailure(String errorMsg);
 }

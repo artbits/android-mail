@@ -16,6 +16,9 @@
 
 package com.smailnet.eamil;
 
+import android.app.Activity;
+
+import java.io.StringReader;
 import java.util.Date;
 
 import javax.mail.Address;
@@ -25,6 +28,7 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 /**
  * Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写
@@ -37,25 +41,14 @@ import javax.mail.internet.InternetAddress;
  */
 public class EmailSendClient {
 
-    private EmailSendConfig emailConfigure;
-    private boolean state = false;
-    private String tag = null;
+    private String title = null;
+    private String text = null;
+    private Object content = null;
+    private Address[] address;
+    private ConfigData configData;
 
-    public EmailSendClient(EmailSendConfig emailConfigure){
-        this.emailConfigure = emailConfigure;
-    }
-
-    /**
-     * 设置是否打印异常日志
-     *
-     * @param state 开关状态
-     * @param tag
-     * @return
-     */
-    public EmailSendClient setExceptionLog(boolean state, String tag){
-        this.state = state;
-        this.tag = tag;
-        return this;
+    public EmailSendClient(ConfigData configData){
+        this.configData = configData;
     }
 
     /**
@@ -69,12 +62,8 @@ public class EmailSendClient {
         Address[] address = new InternetAddress[length];
         try {
             address[0] = new InternetAddress(receiver);
+            this.address = address;
         } catch (AddressException e) {
-            e.printStackTrace();
-        }
-        try {
-            emailConfigure.message.setRecipients(Message.RecipientType.TO, address);
-        } catch (MessagingException e) {
             e.printStackTrace();
         }
         return this;
@@ -86,14 +75,12 @@ public class EmailSendClient {
      * @param from
      * @return
      */
+    /*
     public EmailSendClient setFrom(String from){
-        try {
-            emailConfigure.message.setFrom(new InternetAddress(from));
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        this.from = from;
         return this;
     }
+    */
 
     /**
      * 设置邮件标题
@@ -102,11 +89,7 @@ public class EmailSendClient {
      * @return
      */
     public EmailSendClient setTitle(String title){
-        try {
-            emailConfigure.message.setSubject(title);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        this.title = title;
         return this;
     }
 
@@ -117,11 +100,7 @@ public class EmailSendClient {
      * @return
      */
     public EmailSendClient setText(String text){
-        try {
-            emailConfigure.message.setText(text);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        this.text = text;
         return this;
     }
 
@@ -132,68 +111,64 @@ public class EmailSendClient {
      * @return
      */
     public EmailSendClient setContent(Object content){
+        this.content = content;
+        return this;
+    }
+
+    /**
+     * 邮件组装
+     *
+     * @return
+     */
+    private Message getMessage(){
+        Message message = new MimeMessage(configData.getSession());
         try {
-            emailConfigure.message.setContent(content, "text/html");
+            message.setRecipients(Message.RecipientType.TO, address);
+            message.setFrom(new InternetAddress(configData.getAccount()));
+            message.setSubject(title);
+            if (text != null){
+                message.setText(text);
+            }else if (content !=null){
+                message.setContent(content, "text/html");
+            }
+            message.setSentDate(new Date());
+            message.saveChanges();
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        return this;
+
+        return message;
     }
 
     /**
      * 异步发送邮件
      *
-     * @param onSendingListener
+     * @param getSendCallback
      * @return
      */
-    public EmailSendClient sendAsync(final getResultCallback onSendingListener){
+    public EmailSendClient sendAsync(final Activity activity, final GetSendCallback getSendCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                sendingPreparation(new getResultCallback() {
-                    @Override
-                    public void getResult(boolean result) {
-                        if (result){
-                            onSendingListener.getResult(true);
-                        }else {
-                            onSendingListener.getResult(false);
+                try {
+                    configData.getTransport().sendMessage(getMessage(), getMessage().getAllRecipients());
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSendCallback.sendSuccess();
                         }
-                    }
-                });
+                    });
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSendCallback.sendFailure(e.toString());
+                        }
+                    });
+                }
             }
         }).start();
         return this;
-    }
-
-    private void sendingPreparation(getResultCallback onSendingListener){
-        try {
-            emailConfigure.message.setSentDate(new Date());
-            emailConfigure.message.saveChanges();
-        } catch (MessagingException e) {
-            onSendingListener.getResult(false);
-            LogPrint.print(state, tag, e);
-            e.printStackTrace();
-        }
-
-        Transport transport = null;
-        try {
-            transport = emailConfigure.session.getTransport("smtp");
-        } catch (NoSuchProviderException e) {
-            onSendingListener.getResult(false);
-            LogPrint.print(state, tag, e);
-            e.printStackTrace();
-        }
-
-        try {
-            assert transport != null;
-            transport.connect(emailConfigure.host, emailConfigure.account, emailConfigure.password);
-            transport.sendMessage(emailConfigure.message, emailConfigure.message.getAllRecipients());
-            transport.close();
-            onSendingListener.getResult(true);
-        } catch (MessagingException e) {
-            onSendingListener.getResult(false);
-            LogPrint.print(state, tag, e);
-            e.printStackTrace();
-        }
     }
 }
