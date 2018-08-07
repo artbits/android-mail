@@ -137,6 +137,11 @@ public class EmailConfig {
         return this;
     }
 
+    /**
+     * 获取配置邮箱的数据
+     *
+     * @return
+     */
     public ConfigData getConfigData(){
         ConfigData configData = new ConfigData();
         configData.setTransport(transport);
