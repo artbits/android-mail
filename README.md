@@ -6,19 +6,6 @@
 &emsp;&emsp;Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写发送和接收电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务器，即可使用，所见即所得哦！
 </br></br>
 
-# Update log
-### &ensp;Email for Android 2.0
-1. 增加获取邮件和检查邮件服务器信息的接口
-2. 重新EmailConfig类
-3. 重构发送邮件类
-4. 2.0版本是全新版本
-
-### &ensp;Email for Android 1.1
-1. 优化内部代码
-2. 增删和修改个别API接口
-
-</br></br>
-
 # Install
 步骤一、将 JitPack 存储库添加到构建文件中：
 ```gradle
@@ -32,7 +19,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:2.0'
+    implementation 'com.github.mailhu:email:2.1'
 }
 ```
 </br></br>
@@ -118,6 +105,22 @@ emailExamine
 <img src="https://github.com/mailhu/email/blob/master/image/image_1.PNG"  height="200" width="600">
 
 <img src="https://github.com/mailhu/email/blob/master/image/image_2.PNG"  height="250" width="600">
+</br></br>
+
+# Update log
+### &ensp;Email for Android 2.0.1
+1. 修改个别类和方法的命名
+
+### &ensp;Email for Android 2.0
+1. 增加获取邮件和检查邮件服务器信息的接口
+2. 重新EmailConfig类
+3. 重构发送邮件类
+4. 2.0版本是全新版本
+
+### &ensp;Email for Android 1.1
+1. 优化内部代码
+2. 增删和修改个别API接口
+
 </br></br>
 
 # License
