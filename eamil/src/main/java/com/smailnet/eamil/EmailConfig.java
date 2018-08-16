@@ -18,12 +18,12 @@ package com.smailnet.eamil;
 
 /**
  * Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写
- * 发送电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务器，即
- * 可使用，所见即所得哦！
+ * 发送和接收电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务
+ * 器，即可使用，所见即所得哦！
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 1.0
+ * @version 2.0
  */
 public class EmailConfig {
 

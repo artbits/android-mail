@@ -3,7 +3,7 @@
 # Email for Android
 [![](https://jitpack.io/v/mailhu/email.svg)](https://jitpack.io/#mailhu/email)
 
-&emsp;&emsp;Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写发送电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务器，即可使用，所见即所得哦！
+&emsp;&emsp;Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写发送和接收电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务器，即可使用，所见即所得哦！
 </br></br>
 
 # Update log

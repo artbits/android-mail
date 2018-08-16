@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Lake Zhang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 package com.smailnet.eamil.Callback;
 
 /**
- * 登录邮箱的回调
+ * 检查邮箱和配置服务器回调
  */
 public interface GetConnectCallback {
     void loginSuccess();
