@@ -82,7 +82,7 @@ emailSendClient
 //获取邮件，确保配置emailConfig的信息正确
 EmailReceiveClient emailReceiveClient = new EmailReceiveClient(emailConfig);
 emailReceiveClient
-        .receive(this, new GetMailMessageCallback() {   //this是调用该代码的Activity
+        .receiveAsyn(this, new GetReceiveCallback() {   //this是调用该代码的Activity
             @Override
             public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
                 //获取邮件成功（这里可更新UI）

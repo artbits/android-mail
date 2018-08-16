@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * 获取邮件结果回调
  */
-public interface GetMailMessageCallback {
+public interface GetReceiveCallback {
     void gainSuccess(List<EmailMessage>  emailMessageList, int count);
     void gainFailure(String errorMsg);
 }

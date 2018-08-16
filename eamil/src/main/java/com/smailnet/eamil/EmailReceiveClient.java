@@ -18,7 +18,7 @@ package com.smailnet.eamil;
 
 import android.app.Activity;
 
-import com.smailnet.eamil.Callback.GetMailMessageCallback;
+import com.smailnet.eamil.Callback.GetReceiveCallback;
 import com.smailnet.eamil.Entity.EmailMessage;
 
 import java.io.IOException;
@@ -44,11 +44,11 @@ public class EmailReceiveClient {
     }
 
     /**
-     * 接收邮件
+     * 异步接收邮件
      *
-     * @param getMailMessageCallback
+     * @param getReceiveCallback
      */
-    public EmailReceiveClient receive(final Activity activity, final GetMailMessageCallback getMailMessageCallback){
+    public EmailReceiveClient receiveAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -58,7 +58,7 @@ public class EmailReceiveClient {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getMailMessageCallback.gainSuccess(emailMessageList, emailMessageList.size());
+                            getReceiveCallback.gainSuccess(emailMessageList, emailMessageList.size());
                         }
                     });
                 } catch (final MessagingException e) {
@@ -66,7 +66,7 @@ public class EmailReceiveClient {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getMailMessageCallback.gainFailure(e.toString());
+                            getReceiveCallback.gainFailure(e.toString());
                         }
                     });
                 } catch (final IOException e) {
@@ -74,7 +74,7 @@ public class EmailReceiveClient {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getMailMessageCallback.gainFailure(e.toString());
+                            getReceiveCallback.gainFailure(e.toString());
                         }
                     });
                 }

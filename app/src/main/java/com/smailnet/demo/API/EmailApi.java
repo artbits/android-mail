@@ -3,7 +3,7 @@ package com.smailnet.demo.API;
 import android.annotation.SuppressLint;
 import android.support.v7.app.AppCompatActivity;
 
-import com.smailnet.eamil.Callback.GetMailMessageCallback;
+import com.smailnet.eamil.Callback.GetReceiveCallback;
 import com.smailnet.eamil.EmailConfig;
 import com.smailnet.eamil.EmailExamine;
 import com.smailnet.eamil.EmailReceiveClient;
@@ -45,7 +45,7 @@ public class EmailApi extends AppCompatActivity {
 
     //获取邮件
     EmailReceiveClient emailReceiveClient = new EmailReceiveClient(emailConfig)
-            .receive(this, new GetMailMessageCallback() {   //this是调用该代码的Activity
+            .receiveAsyn(this, new GetReceiveCallback() {   //this是调用该代码的Activity
                 @Override
                 public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
                     //获取邮件成功（这里可更新UI）

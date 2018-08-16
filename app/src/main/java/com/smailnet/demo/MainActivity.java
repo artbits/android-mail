@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.smailnet.eamil.Callback.GetMailMessageCallback;
+import com.smailnet.eamil.Callback.GetReceiveCallback;
 import com.smailnet.eamil.EmailReceiveClient;
 import com.smailnet.eamil.EmailSendClient;
 import com.smailnet.eamil.Callback.GetSendCallback;
@@ -89,7 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void onRunning(final ProgressDialog progressDialog) {
                                 EmailReceiveClient emailReceiveClient = new EmailReceiveClient(EmailApp.emailConfig());
-                                emailReceiveClient.receive(MainActivity.this, new GetMailMessageCallback() {
+                                emailReceiveClient
+                                        .receiveAsyn(MainActivity.this, new GetReceiveCallback() {
                                     @Override
                                     public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
                                         progressDialog.dismiss();
