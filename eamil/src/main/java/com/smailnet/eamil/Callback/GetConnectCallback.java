@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.smailnet.eamil;
+package com.smailnet.eamil.Callback;
 
 /**
  * 登录邮箱的回调
  */
-public interface GetLoginCallback {
+public interface GetConnectCallback {
     void loginSuccess();
     void loginFailure(String errorMsg);
 }

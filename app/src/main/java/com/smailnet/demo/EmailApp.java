@@ -3,11 +3,10 @@ package com.smailnet.demo;
 import android.app.Application;
 
 import com.smailnet.eamil.EmailConfig;
-import com.smailnet.eamil.GetLoginCallback;
 
-public class EmailApplication extends Application{
+public class EmailApp extends Application{
 
-    private static EmailConfig emailConfig;
+    private static EmailConfig emailConfig;     //设置全局emailConfig
 
     @Override
     public void onCreate() {
@@ -15,7 +14,12 @@ public class EmailApplication extends Application{
         emailConfig = new EmailConfig();
     }
 
-    public static EmailConfig getEmailConfig(){
+    /**
+     * 获取emailConfig
+     *
+     * @return
+     */
+    public static EmailConfig emailConfig(){
         return emailConfig;
     }
 }

@@ -4,14 +4,20 @@
 [![](https://jitpack.io/v/mailhu/email.svg)](https://jitpack.io/#mailhu/email)
 
 &emsp;&emsp;Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写发送电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务器，即可使用，所见即所得哦！
-</br></br></br>
+</br></br>
 
 # Update log
+### &ensp;Email for Android 2.0
+1. 增加获取邮件和检查邮件服务器信息的接口
+2. 重新EmailConfig类
+3. 重构发送邮件类
+4. 2.0版本是全新版本
+
 ### &ensp;Email for Android 1.1
 1. 优化内部代码
 2. 增删和修改个别API接口
 
-</br></br></br>
+</br></br>
 
 # Install
 步骤一、将 JitPack 存储库添加到构建文件中：
@@ -26,45 +32,39 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:1.1'
+    implementation 'com.github.mailhu:email:2.0'
 }
 ```
-</br></br></br>
+</br></br>
 
 # Instructions
-步骤一、在Android项目中的AndroidManifest.xml文件中添加联网权限。
+**步骤一、在Android项目中的AndroidManifest.xml文件中添加联网权限。**
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 ```
-步骤二、发送邮件前，先配置发件服务器和登录邮箱，在Java代码中。
-```java
-//配置服务器和登录邮箱
-EmailConfig emailConfig = new EmailConfig()
-        .setSendHost("smtp.qq.com")             //设置发件服务器地址，网易邮箱为smtp.163.com
-        .setSendPort(465)                       //设置发件服务器端口，网易邮箱为25
-        .setAuth(true)                          //设置是否验证
-        .setAccount("1234567@qq,com")           //你的邮箱地址
-        .setPassword("abcdefg")                 //你的邮箱密码，QQ邮箱该处填授权码
-        .login(this, new GetLoginCallback() {   //this是调用该代码的Activity
-            @Override
-            public void loginSuccess() {
-                //登录成功（这里可更新UI）
-            }
+**步骤二、在Java代码中使用教程。**
 
-            @Override
-            public void loginFailure(String errorMsg) {
-                //登录失败，errorMsg是错误信息（这里可更新UI）
-            }
-        });
-```
-步骤三、在Java代码中配置完发件服务器，然后编写发送邮件的代码。
+1.配置邮件服务器的信息
 ```java
-//配置服务器和登录邮箱成功后，获取到emailConfig.getConfigData()，才能成功运行下面的代码
-EmailSendClient emailSendClient = new EmailSendClient(emailConfig.getConfigData())
+//配置邮件服务器
+EmailConfig emailConfig = new EmailConfig()
+        .setSmtpHost("smtp.qq.com")             //设置发件服务器地址，网易邮箱为smtp.163.com
+        .setSmtpPort(465)                       //设置发件服务器端口，网易邮箱为25
+        .setPopHost("pop.qq.com")               //设置收件服务器地址，网易邮箱为pop.163.com
+        .setPopPort(995)                        //设置收件服务器端口，网易邮箱为110
+        .setAccount("1234567@qq,com")           //你的邮箱地址
+        .setPassword("abcdefg");                //你的邮箱密码，若QQ邮箱该处填授权码
+```
+
+2.发送邮件的代码
+```java
+//邮件发送，确保配置emailConfig的信息正确
+EmailSendClient emailSendClient = new EmailSendClient(emailConfig);
+emailSendClient        
         .setReceiver("9876543@qq.com")              //收件人的邮箱地址
-        .setTitle("邮件测试")                        //邮件标题
-        .setText("Hello World !")                   //邮件正文
-        .sendAsync(this, new GetSendCallback() {    //this是调用该代码的Activity
+        .setSubject("邮件测试")                      //邮件标题
+        .setContent("Hello World !")                //邮件正文
+        .sendAsyn(this, new GetSendCallback() {     //this是调用该代码的Activity
             @Override
             public void sendSuccess() {
                 //发送成功（这里可更新UI）
@@ -76,12 +76,49 @@ EmailSendClient emailSendClient = new EmailSendClient(emailConfig.getConfigData(
             }
         });
 ```
-步骤四、若使用QQ邮箱发送邮件，登录QQ邮箱，进入【设置】-【帐户】，把下列服务开启，然后获取授权码。如下图：
+
+3.接收邮件的代码
+```java
+//获取邮件，确保配置emailConfig的信息正确
+EmailReceiveClient emailReceiveClient = new EmailReceiveClient(emailConfig);
+emailReceiveClient
+        .receive(this, new GetMailMessageCallback() {   //this是调用该代码的Activity
+            @Override
+            public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
+                //获取邮件成功（这里可更新UI）
+            }
+
+            @Override
+            public void gainFailure(String errorMsg) {
+                //获取邮件失败，errorMsg是错误信息（这里可更新UI）
+            }
+        });
+```
+
+4.检查邮箱和配置的服务器的信息是否正确的代码
+```java
+//验证邮箱和检查邮件服务器
+EmailExamine emailExamine = new EmailExamine(emailConfig);
+emailExamine
+        .connectServer(this, new GetConnectCallback() {     //this是调用该代码的Activity
+            @Override
+            public void loginSuccess() {
+                //邮箱登录成功（这里可更新UI）
+            }
+
+            @Override
+            public void loginFailure(String errorMsg) {
+                //邮箱登录失败，errorMsg是错误信息（这里可更新UI）
+            }
+        });
+```
+
+**步骤三、若使用QQ邮箱发送邮件，登录QQ邮箱，进入【设置】-【帐户】，把下列服务开启，然后获取授权码。如下图：**
 
 <img src="https://github.com/mailhu/email/blob/master/image/image_1.PNG"  height="200" width="600">
 
 <img src="https://github.com/mailhu/email/blob/master/image/image_2.PNG"  height="250" width="600">
-</br></br></br>
+</br></br>
 
 # License
 ```

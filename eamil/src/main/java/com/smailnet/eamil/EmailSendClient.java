@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Lake Zhang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,17 +18,13 @@ package com.smailnet.eamil;
 
 import android.app.Activity;
 
-import java.io.StringReader;
-import java.util.Date;
+import com.smailnet.eamil.Callback.GetSendCallback;
 
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 /**
  * Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写
@@ -41,14 +37,13 @@ import javax.mail.internet.MimeMessage;
  */
 public class EmailSendClient {
 
-    private String title = null;
-    private String text = null;
-    private Object content = null;
+    private String subject = "";
+    private Object content = "";
     private Address[] address;
-    private ConfigData configData;
+    private EmailConfig emailConfig;
 
-    public EmailSendClient(ConfigData configData){
-        this.configData = configData;
+    public EmailSendClient(EmailConfig emailConfig){
+        this.emailConfig = emailConfig;
     }
 
     /**
@@ -70,37 +65,13 @@ public class EmailSendClient {
     }
 
     /**
-     * 设置发件人的邮箱地址
-     *
-     * @param from
-     * @return
-     */
-    /*
-    public EmailSendClient setFrom(String from){
-        this.from = from;
-        return this;
-    }
-    */
-
-    /**
      * 设置邮件标题
      *
-     * @param title
+     * @param subject
      * @return
      */
-    public EmailSendClient setTitle(String title){
-        this.title = title;
-        return this;
-    }
-
-    /**
-     * 设置邮件正文（纯文本）
-     *
-     * @param text
-     * @return
-     */
-    public EmailSendClient setText(String text){
-        this.text = text;
+    public EmailSendClient setSubject(String subject){
+        this.subject = subject;
         return this;
     }
 
@@ -116,42 +87,20 @@ public class EmailSendClient {
     }
 
     /**
-     * 邮件组装
-     *
-     * @return
-     */
-    private Message getMessage(){
-        Message message = new MimeMessage(configData.getSession());
-        try {
-            message.setRecipients(Message.RecipientType.TO, address);
-            message.setFrom(new InternetAddress(configData.getAccount()));
-            message.setSubject(title);
-            if (text != null){
-                message.setText(text);
-            }else if (content !=null){
-                message.setContent(content, "text/html");
-            }
-            message.setSentDate(new Date());
-            message.saveChanges();
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-
-        return message;
-    }
-
-    /**
      * 异步发送邮件
      *
+     * @param activity
      * @param getSendCallback
      * @return
      */
-    public EmailSendClient sendAsync(final Activity activity, final GetSendCallback getSendCallback){
+    public EmailSendClient sendAsyn(final Activity activity, final GetSendCallback getSendCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    configData.getTransport().sendMessage(getMessage(), getMessage().getAllRecipients());
+                    EmailCore emailCore = new EmailCore(emailConfig);
+                    Message message = emailCore.setMessage(address, subject, content);
+                    emailCore.sendMail(message);
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
