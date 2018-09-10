@@ -19,7 +19,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:2.0.1'
+    implementation 'com.github.mailhu:email:2.1'
 }
 ```
 </br></br>
