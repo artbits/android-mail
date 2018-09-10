@@ -142,7 +142,7 @@ emailExamine
 2. 增加检查邮件服务器是否可连接的接口
 3. 重构EmailConfig类
 4. 重构使用SMTP协议发送邮件的类
-5. 2.0版本是全新版本
+5. 2.0版本是全新版本（不向下兼容）
 
 ### &ensp;Email for Android 1.1
 1. 优化和重构代码
