@@ -17,8 +17,11 @@ package com.smailnet.eamil;
 
 import com.smailnet.eamil.Entity.EmailMessage;
 import com.smailnet.eamil.Utils.CodeUtil;
+import com.smailnet.eamil.Utils.ConfigCheckUtil;
 import com.smailnet.eamil.Utils.ContentUtil;
 import com.smailnet.eamil.Utils.TimeUtil;
+import com.sun.mail.imap.IMAPFolder;
+import com.sun.mail.imap.IMAPStore;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ import javax.mail.Address;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
@@ -44,7 +48,7 @@ import javax.mail.internet.MimeMessage;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 2.0
+ * @version 2.1
  */
 class EmailCore {
 
@@ -59,18 +63,34 @@ class EmailCore {
     EmailCore(EmailConfig emailConfig){
         this.emailConfig = emailConfig;
         Properties properties = new Properties();
-        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        properties.put("mail.smtp.socketFactory.fallback", "false");
-        properties.put("mail.smtp.socketFactory.port", String.valueOf(emailConfig.getSmtpPort()));
-        properties.put("mail.smtp.post", String.valueOf(emailConfig.getSmtpPort()));
-        properties.put("mail.smtp.host", emailConfig.getSmtpHost());
-        properties.put("mail.smtp.auth", true);
-        properties.put("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        properties.put("mail.pop3.socketFactory.fallback", "false");
-        properties.put("mail.pop3.socketFactory.port", String.valueOf(emailConfig.getPopPort()));
-        properties.put("mail.pop3.post", String.valueOf(emailConfig.getPopPort()));
-        properties.put("mail.pop3.host", emailConfig.getPopHost());
-        properties.put("mail.pop3.auth", true);
+
+        if (ConfigCheckUtil.getResult(emailConfig.getSmtpHost(), emailConfig.getSmtpPort())) {
+            properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            properties.put("mail.smtp.socketFactory.fallback", "false");
+            properties.put("mail.smtp.socketFactory.port", String.valueOf(emailConfig.getSmtpPort()));
+            properties.put("mail.smtp.post", String.valueOf(emailConfig.getSmtpPort()));
+            properties.put("mail.smtp.host", emailConfig.getSmtpHost());
+            properties.put("mail.smtp.auth", true);
+        }
+
+        if (ConfigCheckUtil.getResult(emailConfig.getPopHost(), emailConfig.getPopPort())) {
+            properties.put("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            properties.put("mail.pop3.socketFactory.fallback", "false");
+            properties.put("mail.pop3.socketFactory.port", String.valueOf(emailConfig.getPopPort()));
+            properties.put("mail.pop3.post", String.valueOf(emailConfig.getPopPort()));
+            properties.put("mail.pop3.host", emailConfig.getPopHost());
+            properties.put("mail.pop3.auth", true);
+        }
+
+        if (ConfigCheckUtil.getResult(emailConfig.getImapHost(), emailConfig.getImapPort())) {
+            properties.put("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            properties.put("mail.imap.socketFactory.fallback", "false");
+            properties.put("mail.imap.socketFactory.port", String.valueOf(emailConfig.getImapPort()));
+            properties.put("mail.imap.post", String.valueOf(emailConfig.getImapPort()));
+            properties.put("mail.imap.host", emailConfig.getImapHost());
+            properties.put("mail.imap.auth", true);
+        }
+
         session = Session.getInstance(properties);
     }
 
@@ -82,8 +102,19 @@ class EmailCore {
     public void authentication() throws MessagingException {
         Transport transport = session.getTransport("smtp");
         Store store = session.getStore("pop3");
-        transport.connect(emailConfig.getSmtpHost(), emailConfig.getAccount(), emailConfig.getPassword());
-        store.connect(emailConfig.getPopHost(), emailConfig.getAccount(), emailConfig.getPassword());
+        IMAPStore imapStore = (IMAPStore) session.getStore("imap");
+
+        if (ConfigCheckUtil.getResult(emailConfig.getSmtpHost(), emailConfig.getSmtpPort())) {
+            transport.connect(emailConfig.getSmtpHost(), emailConfig.getAccount(), emailConfig.getPassword());
+        }
+
+        if (ConfigCheckUtil.getResult(emailConfig.getPopHost(), emailConfig.getPopPort())) {
+            store.connect(emailConfig.getPopHost(), emailConfig.getAccount(), emailConfig.getPassword());
+        }
+
+        if (ConfigCheckUtil.getResult(emailConfig.getImapHost(), emailConfig.getImapPort())) {
+            imapStore.connect(emailConfig.getImapHost(), emailConfig.getAccount(), emailConfig.getPassword());
+        }
     }
 
     /**
@@ -126,7 +157,7 @@ class EmailCore {
      * @throws MessagingException
      * @throws IOException
      */
-    public List<EmailMessage> receiveMail() throws MessagingException, IOException {
+    public List<EmailMessage> popReceiveMail() throws MessagingException, IOException {
         Store store = session.getStore("pop3");
         store.connect(emailConfig.getPopHost(), emailConfig.getAccount(), emailConfig.getPassword());
         Folder folder = store.getFolder("INBOX");
@@ -145,6 +176,28 @@ class EmailCore {
         }
         folder.close(false);
         store.close();
+        return emailMessageList;
+    }
+
+    public List<EmailMessage> imapReceiveMail() throws MessagingException, IOException {
+        IMAPStore imapStore = (IMAPStore) session.getStore("imap");
+        imapStore.connect(emailConfig.getImapHost(), emailConfig.getAccount(), emailConfig.getPassword());
+        IMAPFolder folder = (IMAPFolder) imapStore.getFolder("INBOX");
+        folder.open(Folder.READ_ONLY);
+        Message[] messages = folder.getMessages();
+        List<EmailMessage> emailMessageList = new ArrayList<>();
+        String subject, from, to, date, content;
+        for (Message message : messages){
+            subject = message.getSubject();
+            from = CodeUtil.conver(String.valueOf(message.getFrom()[0]));
+            to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
+            date = TimeUtil.getDate(message.getSentDate());
+            content = ContentUtil.getContent(message);
+            EmailMessage emailMessage = new EmailMessage(subject, from, to, date, content);
+            emailMessageList.add(emailMessage);
+        }
+        folder.close(false);
+        imapStore.close();
         return emailMessageList;
     }
 }

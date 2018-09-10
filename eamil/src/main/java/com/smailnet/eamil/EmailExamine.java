@@ -28,7 +28,7 @@ import javax.mail.MessagingException;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 2.0
+ * @version 2.1
  */
 public class EmailExamine {
 

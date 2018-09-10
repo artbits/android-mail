@@ -72,6 +72,28 @@
         android:singleLine="true"
         tools:ignore="HardcodedText,TextFields" />
 
+    <EditText
+        android:id="@+id/imap_host_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:singleLine="true"
+        android:hint="imap服务器地址"
+        tools:ignore="HardcodedText,TextFields" />
+
+    <EditText
+        android:id="@+id/imap_port_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:hint="收件服务器端口"
+        android:singleLine="true"
+        tools:ignore="HardcodedText,TextFields" />
+
     <Button
         android:id="@+id/login"
         android:layout_width="match_parent"

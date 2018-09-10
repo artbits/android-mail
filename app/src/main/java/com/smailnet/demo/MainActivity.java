@@ -14,8 +14,8 @@ import com.smailnet.eamil.EmailReceiveClient;
 import com.smailnet.eamil.EmailSendClient;
 import com.smailnet.eamil.Callback.GetSendCallback;
 import com.smailnet.eamil.Entity.EmailMessage;
+import com.smailnet.islands.Interface.OnRunningListener;
 import com.smailnet.islands.Islands;
-import com.smailnet.islands.OnRunningListener;
 
 import java.util.List;
 
@@ -41,9 +41,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         text_editText = findViewById(R.id.text_editText);
         Button button = findViewById(R.id.send);
         Button button1 = findViewById(R.id.receive);
+        Button button2 = findViewById(R.id.receive2);
 
         button.setOnClickListener(this);
         button1.setOnClickListener(this);
+        button2.setOnClickListener(this);
     }
 
     /**
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void sendFailure(String errorMsg) {
-                        new Islands.OrdinaryDialog(MainActivity.this)
+                        Islands.ordinaryDialog(MainActivity.this)
                                 .setText(null, "发送失败 ：" + errorMsg)
                                 .setButton("关闭", null, null)
                                 .click().show();
@@ -81,28 +83,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 /**
                  * 获取邮件
                  */
-                new Islands.CircularProgress(this)
+                Islands.circularProgress(this)
                         .setCancelable(false)
-                        .setMessage("同步在...")
+                        .setMessage("同步中...")
                         .show()
                         .run(new OnRunningListener() {
                             @Override
                             public void onRunning(final ProgressDialog progressDialog) {
                                 EmailReceiveClient emailReceiveClient = new EmailReceiveClient(EmailApp.emailConfig());
                                 emailReceiveClient
-                                        .receiveAsyn(MainActivity.this, new GetReceiveCallback() {
-                                    @Override
-                                    public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
-                                        progressDialog.dismiss();
-                                        Log.i("oversee", "邮件总数：" + count);
-                                    }
+                                        .popReceiveAsyn(MainActivity.this, new GetReceiveCallback() {
+                                            @Override
+                                            public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
+                                                progressDialog.dismiss();
+                                                Log.i("oversee", "邮件总数：" + count);
+                                            }
 
-                                    @Override
-                                    public void gainFailure(String errorMsg) {
-                                        progressDialog.dismiss();
-                                        Log.e("oversee", "错误日志：" + errorMsg);
-                                    }
-                                });
+                                            @Override
+                                            public void gainFailure(String errorMsg) {
+                                                progressDialog.dismiss();
+                                                Log.e("oversee", "错误日志：" + errorMsg);
+                                            }
+                                        });
+                            }
+                        });
+                break;
+            case R.id.receive2:
+                Islands.circularProgress(this)
+                        .setCancelable(false)
+                        .setMessage("同步中...")
+                        .show()
+                        .run(new OnRunningListener() {
+                            @Override
+                            public void onRunning(final ProgressDialog progressDialog) {
+                                EmailReceiveClient emailReceiveClient = new EmailReceiveClient(EmailApp.emailConfig());
+                                emailReceiveClient
+                                        .imapReceiveAsyn(MainActivity.this, new GetReceiveCallback() {
+                                            @Override
+                                            public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
+                                                progressDialog.dismiss();
+                                                Log.i("oversee", "邮件总数：" + count);
+                                            }
+
+                                            @Override
+                                            public void gainFailure(String errorMsg) {
+                                                progressDialog.dismiss();
+                                                Log.e("oversee", "错误日志：" + errorMsg);
+                                            }
+                                        });
                             }
                         });
                 break;

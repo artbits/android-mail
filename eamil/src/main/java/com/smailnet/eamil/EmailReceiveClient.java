@@ -33,7 +33,7 @@ import javax.mail.MessagingException;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 2.0
+ * @version 2.1
  */
 public class EmailReceiveClient {
 
@@ -44,17 +44,17 @@ public class EmailReceiveClient {
     }
 
     /**
-     * 异步接收邮件
+     * 使用POP3协议异步接收邮件
      *
      * @param getReceiveCallback
      */
-    public EmailReceiveClient receiveAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback){
+    public void popReceiveAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     EmailCore emailCore = new EmailCore(emailConfig);
-                    final List<EmailMessage> emailMessageList = emailCore.receiveMail();
+                    final List<EmailMessage> emailMessageList = emailCore.popReceiveMail();
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -80,6 +80,44 @@ public class EmailReceiveClient {
                 }
             }
         }).start();
-        return this;
+    }
+
+    /**
+     * 使用imap协议接收邮件
+     *
+     * @param getReceiveCallback
+     */
+    public void imapReceiveAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EmailCore emailCore = new EmailCore(emailConfig);
+                    final List<EmailMessage> emailMessageList = emailCore.imapReceiveMail();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainSuccess(emailMessageList, emailMessageList.size());
+                        }
+                    });
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
     }
 }

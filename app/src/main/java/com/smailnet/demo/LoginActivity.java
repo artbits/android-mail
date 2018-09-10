@@ -10,8 +10,8 @@ import android.widget.EditText;
 
 import com.smailnet.eamil.Callback.GetConnectCallback;
 import com.smailnet.eamil.EmailExamine;
+import com.smailnet.islands.Interface.OnRunningListener;
 import com.smailnet.islands.Islands;
-import com.smailnet.islands.OnRunningListener;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -21,6 +21,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     EditText send_port_editText;
     EditText receive_host_editText;
     EditText receive_port_editText;
+    EditText imap_host_editText;
+    EditText imap_port_editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         send_port_editText = findViewById(R.id.send_port_editText);
         receive_host_editText = findViewById(R.id.receive_host_editText);
         receive_port_editText = findViewById(R.id.receive_port_editText);
+        imap_host_editText = findViewById(R.id.imap_host_editText);
+        imap_port_editText = findViewById(R.id.imap_port_editText);
 
         Button loginButton = findViewById(R.id.login);
         loginButton.setOnClickListener(this);
@@ -56,6 +60,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .setSmtpPort(Integer.parseInt(send_port_editText.getText().toString()))
                 .setPopHost(receive_host_editText.getText().toString())
                 .setPopPort(Integer.parseInt(receive_port_editText.getText().toString()))
+                .setImapHost(imap_host_editText.getText().toString())
+                .setImapPort(Integer.parseInt(imap_port_editText.getText().toString()))
                 .setAccount(account_editText.getText().toString())
                 .setPassword(password_editText.getText().toString());
 
@@ -71,7 +77,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void loginFailure(String errorMsg) {
                 progressDialog.dismiss();
-                new Islands.OrdinaryDialog(LoginActivity.this)
+                Islands.ordinaryDialog(LoginActivity.this)
                         .setText(null, "登录失败 ：" + errorMsg)
                         .setButton("关闭", null, null)
                         .click().show();
@@ -84,7 +90,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.login:
-                new Islands.CircularProgress(this)
+                Islands
+                        .circularProgress(this)
                         .setMessage("登录中...")
                         .setCancelable(false)
                         .show()

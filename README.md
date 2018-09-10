@@ -25,13 +25,13 @@ dependencies {
 </br></br>
 
 # Instructions
-**步骤一、在Android项目中的AndroidManifest.xml文件中添加联网权限。**
+#### 步骤一、在Android项目中的AndroidManifest.xml文件中添加联网权限。
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 ```
-**步骤二、在Java代码中使用教程。**
+#### 步骤二、在Java代码中使用教程。
 
-1.配置邮件服务器的信息
+##### 1.配置邮件服务器的信息
 ```java
 //配置邮件服务器
 EmailConfig emailConfig = new EmailConfig()
@@ -39,11 +39,13 @@ EmailConfig emailConfig = new EmailConfig()
         .setSmtpPort(465)                       //设置发件服务器端口，网易邮箱为25
         .setPopHost("pop.qq.com")               //设置收件服务器地址，网易邮箱为pop.163.com
         .setPopPort(995)                        //设置收件服务器端口，网易邮箱为110
+        .setImapHost(imap.qq.com)               //设置收件服务器地址，网易邮箱为imap.163.com
+        .setImapPort(993)                       //设置收件服务器端口，网易邮箱为993
         .setAccount("1234567@qq,com")           //你的邮箱地址
         .setPassword("abcdefg");                //你的邮箱密码，若QQ邮箱该处填授权码
 ```
 
-2.发送邮件的代码
+##### 2.发送邮件的代码
 ```java
 //邮件发送，确保配置emailConfig的信息正确
 EmailSendClient emailSendClient = new EmailSendClient(emailConfig);
@@ -64,12 +66,30 @@ emailSendClient
         });
 ```
 
-3.接收邮件的代码
+##### 3.接收邮件的代码
+使用POP3协议接收邮件
 ```java
 //获取邮件，确保配置emailConfig的信息正确
 EmailReceiveClient emailReceiveClient = new EmailReceiveClient(emailConfig);
 emailReceiveClient
-        .receiveAsyn(this, new GetReceiveCallback() {   //this是调用该代码的Activity
+        .popReceiveAsyn(this, new GetReceiveCallback() {   //this是调用该代码的Activity
+            @Override
+            public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
+                //获取邮件成功（这里可更新UI）
+            }
+
+            @Override
+            public void gainFailure(String errorMsg) {
+                //获取邮件失败，errorMsg是错误信息（这里可更新UI）
+            }
+        });
+```
+使用IMAP协议接收邮件
+```java
+//获取邮件，确保配置emailConfig的信息正确
+EmailReceiveClient emailReceiveClient = new EmailReceiveClient(emailConfig);
+emailReceiveClient
+        .imapReceiveAsyn(this, new GetReceiveCallback() {   //this是调用该代码的Activity
             @Override
             public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
                 //获取邮件成功（这里可更新UI）
@@ -82,7 +102,7 @@ emailReceiveClient
         });
 ```
 
-4.检查邮箱和配置的服务器的信息是否正确的代码
+##### 4.检查邮箱和配置的服务器的信息是否正确的代码
 ```java
 //验证邮箱和检查邮件服务器
 EmailExamine emailExamine = new EmailExamine(emailConfig);
@@ -100,7 +120,7 @@ emailExamine
         });
 ```
 
-**步骤三、若使用QQ邮箱发送邮件，登录QQ邮箱，进入【设置】-【帐户】，把下列服务开启，然后获取授权码。如下图：**
+#### 步骤三、若使用QQ邮箱发送邮件，登录QQ邮箱，进入【设置】-【帐户】，把下列服务开启，然后获取授权码。如下图：
 
 <img src="https://github.com/mailhu/email/blob/master/image/image_1.PNG"  height="200" width="600">
 
@@ -108,14 +128,19 @@ emailExamine
 </br></br>
 
 # Update log
+### &ensp;Email for Android 2.1
+1. 增加使用IMAP协议接收邮件的接口
+2. 增加Host和Port检查工具
+
 ### &ensp;Email for Android 2.0.1
 1. 修改个别类和方法的命名
 
 ### &ensp;Email for Android 2.0
-1. 增加获取邮件和检查邮件服务器信息的接口
-2. 重新EmailConfig类
-3. 重构发送邮件类
-4. 2.0版本是全新版本
+1. 增加使用POP3协议接收邮件接口
+2. 增加检查邮件服务器是否可连接的接口
+3. 重新EmailConfig类
+4. 重构发送邮件类
+5. 2.0版本是全新版本
 
 ### &ensp;Email for Android 1.1
 1. 优化内部代码

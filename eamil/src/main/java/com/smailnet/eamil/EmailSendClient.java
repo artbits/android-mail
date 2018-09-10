@@ -33,12 +33,12 @@ import javax.mail.internet.InternetAddress;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 1.0
+ * @version 2.1
  */
 public class EmailSendClient {
 
-    private String subject = "";
-    private Object content = "";
+    private String subject;
+    private Object content;
     private Address[] address;
     private EmailConfig emailConfig;
 

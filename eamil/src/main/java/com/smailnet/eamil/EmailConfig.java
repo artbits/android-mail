@@ -23,14 +23,16 @@ package com.smailnet.eamil;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 2.0
+ * @version 2.1
  */
 public class EmailConfig {
 
     private int smtpPort;
     private int popPort;
+    private int imapPort;
     private String smtpHost;
     private String popHost;
+    private String imapHost;
     private String account;
     private String password;
 
@@ -44,6 +46,11 @@ public class EmailConfig {
         return this;
     }
 
+    public EmailConfig setImapHost(String imapHost){
+        this.imapHost = imapHost;
+        return this;
+    }
+
     public EmailConfig setSmtpPort(int smtpPort){
        this.smtpPort = smtpPort;
        return this;
@@ -51,6 +58,11 @@ public class EmailConfig {
 
     public EmailConfig setPopPort(int popPort){
         this.popPort = popPort;
+        return this;
+    }
+
+    public EmailConfig setImapPort(int imapPort){
+        this.imapPort = imapPort;
         return this;
     }
 
@@ -78,6 +90,14 @@ public class EmailConfig {
 
     public int getPopPort() {
         return popPort;
+    }
+
+    public String getImapHost(){
+        return  imapHost;
+    }
+
+    public int getImapPort(){
+        return imapPort;
     }
 
     public String getAccount() {

@@ -44,8 +44,9 @@ public class EmailApi extends AppCompatActivity {
             });
 
     //获取邮件
+    /*
     EmailReceiveClient emailReceiveClient = new EmailReceiveClient(emailConfig)
-            .receiveAsyn(this, new GetReceiveCallback() {   //this是调用该代码的Activity
+            .popReceiveAsyn(this, new GetReceiveCallback() {   //this是调用该代码的Activity
                 @Override
                 public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
                     //获取邮件成功（这里可更新UI）
@@ -56,6 +57,7 @@ public class EmailApi extends AppCompatActivity {
                     //获取邮件失败，errorMsg是错误信息（这里可更新UI）
                 }
             });
+            */
 
     //验证邮箱和检查邮件服务器
     EmailExamine emailExamine = new EmailExamine(emailConfig)

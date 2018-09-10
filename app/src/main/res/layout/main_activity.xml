@@ -51,7 +51,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="收信"
+        android:text="POP收信"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/receive2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="imap收信"
         tools:ignore="HardcodedText" />
 
 </LinearLayout>
