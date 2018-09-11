@@ -138,7 +138,7 @@ class EmailCore {
     }
 
     /**
-     * 发送邮件
+     * 使用SMTP协议发送邮件
      *
      * @param message
      * @throws MessagingException
@@ -151,7 +151,7 @@ class EmailCore {
     }
 
     /**
-     * 获取收件服务器上的邮件
+     * 使用POP3协议接收服务器上的邮件
      *
      * @return
      * @throws MessagingException
@@ -179,6 +179,13 @@ class EmailCore {
         return emailMessageList;
     }
 
+    /**
+     * 使用IMAP协议接收服务器上的邮件
+     *
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
     public List<EmailMessage> imapReceiveMail() throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore("imap");
         imapStore.connect(emailConfig.getImapHost(), emailConfig.getAccount(), emailConfig.getPassword());

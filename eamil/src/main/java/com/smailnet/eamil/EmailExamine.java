@@ -38,6 +38,13 @@ public class EmailExamine {
         this.emailConfig = emailConfig;
     }
 
+    /**
+     * 检查邮件服务器是否可连接的接口
+     *
+     * @param activity
+     * @param getConnectCallback
+     * @return
+     */
     public EmailExamine connectServer(final Activity activity, final GetConnectCallback getConnectCallback){
         new Thread(new Runnable() {
             @Override
