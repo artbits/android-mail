@@ -40,7 +40,7 @@ EmailConfig emailConfig = new EmailConfig()
         .setSmtpPort(465)                       //设置发件服务器端口，网易邮箱为25
         .setPopHost("pop.qq.com")               //设置收件服务器地址，网易邮箱为pop.163.com
         .setPopPort(995)                        //设置收件服务器端口，网易邮箱为110
-        .setImapHost(imap.qq.com)               //设置收件服务器地址，网易邮箱为imap.163.com
+        .setImapHost("imap.qq.com")             //设置收件服务器地址，网易邮箱为imap.163.com
         .setImapPort(993)                       //设置收件服务器端口，网易邮箱为993
         .setAccount("1234567@qq,com")           //你的邮箱地址
         .setPassword("abcdefg");                //你的邮箱密码，若QQ邮箱该处填授权码
