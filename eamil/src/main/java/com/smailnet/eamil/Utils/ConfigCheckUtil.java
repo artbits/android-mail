@@ -20,7 +20,8 @@ package com.smailnet.eamil.Utils;
  */
 public class ConfigCheckUtil {
 
-    public static boolean getResult(String host, int port){
-        return (host != null) && port != 0;
+    public static boolean getResult(String host, String port){
+        return (host != null) && (port != null);
     }
+
 }
