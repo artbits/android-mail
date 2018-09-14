@@ -39,7 +39,7 @@ public class EmailExamine {
     }
 
     /**
-     * 检查邮件服务器是否可连接的接口
+     * 检查邮件服务器是否可连接的接口，检查完毕切回主线程
      *
      * @param activity
      * @param getConnectCallback
@@ -66,6 +66,29 @@ public class EmailExamine {
                             getConnectCallback.loginFailure(e.toString());
                         }
                     });
+                }
+            }
+        }).start();
+        return this;
+    }
+
+    /**
+     * 检查邮件服务器是否可连接的接口，检查完毕但不切回主线程
+     *
+     * @param getConnectCallback
+     * @return
+     */
+    public EmailExamine connectServer(final GetConnectCallback getConnectCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EmailCore emailCore = new EmailCore(emailConfig);
+                    emailCore.authentication();
+                    getConnectCallback.loginSuccess();
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    getConnectCallback.loginFailure(e.toString());
                 }
             }
         }).start();

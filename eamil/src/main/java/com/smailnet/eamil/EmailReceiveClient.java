@@ -44,7 +44,7 @@ public class EmailReceiveClient {
     }
 
     /**
-     * 使用POP3协议异步接收邮件
+     * 使用POP3协议异步接收邮件，接收完毕并切回主线程
      *
      * @param getReceiveCallback
      */
@@ -83,7 +83,31 @@ public class EmailReceiveClient {
     }
 
     /**
-     * 使用imap协议接收邮件
+     * 使用POP3协议异步接收邮件，接收完毕但不切回主线程
+     *
+     * @param getReceiveCallback
+     */
+    public void popReceiveAsyn(final GetReceiveCallback getReceiveCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EmailCore emailCore = new EmailCore(emailConfig);
+                    final List<EmailMessage> emailMessageList = emailCore.popReceiveMail();
+                    getReceiveCallback.gainSuccess(emailMessageList, emailMessageList.size());
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    getReceiveCallback.gainFailure(e.toString());
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    getReceiveCallback.gainFailure(e.toString());
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * 使用imap协议接收邮件，接收完毕并切回主线程
      *
      * @param getReceiveCallback
      */
@@ -116,6 +140,30 @@ public class EmailReceiveClient {
                             getReceiveCallback.gainFailure(e.toString());
                         }
                     });
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * 使用imap协议接收邮件，接收完毕但不切回主线程
+     *
+     * @param getReceiveCallback
+     */
+    public void imapReceiveAsyn(final GetReceiveCallback getReceiveCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EmailCore emailCore = new EmailCore(emailConfig);
+                    final List<EmailMessage> emailMessageList = emailCore.imapReceiveMail();
+                    getReceiveCallback.gainSuccess(emailMessageList, emailMessageList.size());
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    getReceiveCallback.gainFailure(e.toString());
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    getReceiveCallback.gainFailure(e.toString());
                 }
             }
         }).start();

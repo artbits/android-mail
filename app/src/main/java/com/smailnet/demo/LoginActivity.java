@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,7 +81,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Islands.ordinaryDialog(LoginActivity.this)
                         .setText(null, "登录失败 ：" + errorMsg)
                         .setButton("关闭", null, null)
-                        .click().show();
+                        .click()
+                        .show();
             }
         });
     }

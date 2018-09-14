@@ -87,7 +87,7 @@ public class EmailSendClient {
     }
 
     /**
-     * 异步发送邮件
+     * 异步发送邮件，发送完毕回调并切回到主线程
      *
      * @param activity
      * @param getSendCallback
@@ -115,6 +115,30 @@ public class EmailSendClient {
                             getSendCallback.sendFailure(e.toString());
                         }
                     });
+                }
+            }
+        }).start();
+        return this;
+    }
+
+    /**
+     * 异步发送邮件，发送完毕回调不切回到主线程
+     *
+     * @param getSendCallback
+     * @return
+     */
+    public EmailSendClient sendAsyn(final GetSendCallback getSendCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EmailCore emailCore = new EmailCore(emailConfig);
+                    Message message = emailCore.setMessage(address, subject, content);
+                    emailCore.sendMail(message);
+                    getSendCallback.sendSuccess();
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    getSendCallback.sendFailure(e.toString());
                 }
             }
         }).start();

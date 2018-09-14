@@ -21,6 +21,7 @@ import java.io.IOException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.internet.MimeMessage;
 
 /**
  * 邮件内容编码转换工具
@@ -41,5 +42,4 @@ public class ContentUtil {
         }
         return bodytext.toString();
     }
-
 }
