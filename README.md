@@ -20,7 +20,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:2.1'
+    implementation 'com.github.mailhu:email:2.2'
 }
 ```
 
@@ -121,6 +121,8 @@ emailExamine
         });
 ```
 
+注：sendAsyn()、popReceiveAsyn()、imapReceiveAsyn()，connectServer()等方法传入参数Activity时，代表执行完子线程后会切回主线程，若不传入参数Activity时，子线程执行完毕不会切回主线程
+
 #### 步骤三、若使用QQ邮箱发送邮件，登录QQ邮箱，进入【设置】-【帐户】，把下列服务开启，然后获取授权码。如下图：
 
 <img src="https://github.com/mailhu/email/blob/master/image/image_1.PNG"  height="200" width="600">
@@ -130,6 +132,10 @@ emailExamine
 
 
 # Update log
+### &ensp;Email for Android 2.2
+1. 对发送邮件和接收邮件等接口增加一些新特性
+2. 优化部分代码
+
 ### &ensp;Email for Android 2.1
 1. 增加使用IMAP协议接收邮件的接口
 2. 增加检查Host和Port的工具类
