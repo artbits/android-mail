@@ -131,6 +131,19 @@ emailExamine
 
 
 
+# ProGuard
+```
+-dontwarn org.apache.**
+-dontwarn com.sun.**
+-dontwarn javax.activation.**
+-keep class org.apache.** { *;}
+-keep class com.sun.** { *;}
+-keep class javax.activation.** { *;}
+-keep class com.smailnet.email.** { *;}
+```
+
+
+
 # Update log
 ### &ensp;Email for Android 2.2
 1. 对发送邮件和接收邮件等接口增加一些新特性
