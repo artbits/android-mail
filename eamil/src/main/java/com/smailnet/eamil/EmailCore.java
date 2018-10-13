@@ -15,8 +15,9 @@
  */
 package com.smailnet.eamil;
 
-import com.smailnet.eamil.Entity.EmailMessage;
-import com.smailnet.eamil.Utils.CodeUtil;
+import android.text.TextUtils;
+
+import com.smailnet.eamil.Utils.AddressUtil;
 import com.smailnet.eamil.Utils.ConfigCheckUtil;
 import com.smailnet.eamil.Utils.ContentUtil;
 import com.smailnet.eamil.Utils.TimeUtil;
@@ -69,7 +70,7 @@ import static com.smailnet.eamil.Utils.ConstUtli.SMTP;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 2.1
+ * @version 2.3
  */
 class EmailCore {
 
@@ -83,9 +84,10 @@ class EmailCore {
     private String password;
     private Session session;
 
+    private Message message;
+
     /**
      * 在构造器中初始化Properties和Session
-     *
      * @param emailConfig
      */
     EmailCore(EmailConfig emailConfig){
@@ -131,7 +133,6 @@ class EmailCore {
 
     /**
      * 验证邮箱帐户和服务器配置信息
-     *
      * @throws MessagingException
      */
     public void authentication() throws MessagingException {
@@ -152,31 +153,41 @@ class EmailCore {
 
     /**
      * 组装邮件的信息
-     *
-     * @param address
+     * @param nickname
+     * @param to
+     * @param cc
+     * @param bcc
      * @param subject
      * @param content
-     * @return
      * @throws MessagingException
      */
-    public Message setMessage(Address[] address, String subject, Object content) throws MessagingException {
+    public EmailCore setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content) throws MessagingException {
         Message message = new MimeMessage(session);
-        message.setRecipients(Message.RecipientType.TO, address);
-        message.setFrom(new InternetAddress(account));
+        message.addRecipients(Message.RecipientType.TO, to);
+        if (cc != null) {
+            message.addRecipients(Message.RecipientType.CC, cc);
+        }
+        if (bcc != null) {
+            message.addRecipients(Message.RecipientType.BCC, bcc);
+        }
+        message.setFrom(new InternetAddress(nickname + "<" + account + ">"));
         message.setSubject(subject);
-        message.setContent(content, "text/html");
+        if (text != null){
+            message.setText(text);
+        }else if (content != null){
+            message.setContent(content, "text/html");
+        }
         message.setSentDate(new Date());
         message.saveChanges();
-        return message;
+        this.message = message;
+        return this;
     }
 
     /**
      * 使用SMTP协议发送邮件
-     *
-     * @param message
      * @throws MessagingException
      */
-    public void sendMail(Message message) throws MessagingException {
+    public void sendMail() throws MessagingException {
         Transport transport = session.getTransport(SMTP);
         transport.connect(smtpHost, account, password);
         transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
@@ -185,7 +196,6 @@ class EmailCore {
 
     /**
      * 使用POP3协议接收服务器上的邮件
-     *
      * @return
      * @throws MessagingException
      * @throws IOException
@@ -200,7 +210,7 @@ class EmailCore {
         String subject, from, to, date, content;
         for (Message message : messages){
             subject = message.getSubject();
-            from = CodeUtil.conver(String.valueOf(message.getFrom()[0]));
+            from = AddressUtil.codeConver(String.valueOf(message.getFrom()[0]));
             to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
             date = TimeUtil.getDate(message.getSentDate());
             content = ContentUtil.getContent(message);
@@ -214,7 +224,6 @@ class EmailCore {
 
     /**
      * 使用IMAP协议接收服务器上的邮件
-     *
      * @return
      * @throws MessagingException
      * @throws IOException
@@ -229,7 +238,7 @@ class EmailCore {
         String subject, from, to, date, content;
         for (Message message : messages){
             subject = message.getSubject();
-            from = CodeUtil.conver(String.valueOf(message.getFrom()[0]));
+            from = AddressUtil.codeConver(String.valueOf(message.getFrom()[0]));
             to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
             date = TimeUtil.getDate(message.getSentDate());
             content = ContentUtil.getContent(message);

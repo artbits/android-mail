@@ -28,6 +28,13 @@ import javax.mail.internet.MimeMessage;
  */
 public class ContentUtil {
 
+    /**
+     * Mime类型判断
+     * @param message
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
     public static String getContent(Message message) throws MessagingException, IOException {
         StringBuilder bodytext = new StringBuilder();
         if (message.isMimeType("text/plain")) {

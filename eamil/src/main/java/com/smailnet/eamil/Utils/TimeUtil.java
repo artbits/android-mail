@@ -25,6 +25,11 @@ import java.util.Date;
  */
 public class TimeUtil {
 
+    /**
+     * 时间格式转换方法，格式为 yyyy-MM-dd
+     * @param date
+     * @return
+     */
     @SuppressLint("SimpleDateFormat")
     public static String getDate(Date date){
         if (date != null){

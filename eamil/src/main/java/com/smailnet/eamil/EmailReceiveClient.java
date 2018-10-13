@@ -19,7 +19,6 @@ package com.smailnet.eamil;
 import android.app.Activity;
 
 import com.smailnet.eamil.Callback.GetReceiveCallback;
-import com.smailnet.eamil.Entity.EmailMessage;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +32,7 @@ import javax.mail.MessagingException;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 2.1
+ * @version 2.3
  */
 public class EmailReceiveClient {
 
@@ -45,7 +44,6 @@ public class EmailReceiveClient {
 
     /**
      * 使用POP3协议异步接收邮件，接收完毕并切回主线程
-     *
      * @param getReceiveCallback
      */
     public void popReceiveAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback){
@@ -53,12 +51,11 @@ public class EmailReceiveClient {
             @Override
             public void run() {
                 try {
-                    EmailCore emailCore = new EmailCore(emailConfig);
-                    final List<EmailMessage> emailMessageList = emailCore.popReceiveMail();
+                    final List<EmailMessage> messageList = Operator.Core(emailConfig).popReceiveMail();
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(emailMessageList, emailMessageList.size());
+                            getReceiveCallback.gainSuccess(messageList, messageList.size());
                         }
                     });
                 } catch (final MessagingException e) {
@@ -84,7 +81,6 @@ public class EmailReceiveClient {
 
     /**
      * 使用POP3协议异步接收邮件，接收完毕但不切回主线程
-     *
      * @param getReceiveCallback
      */
     public void popReceiveAsyn(final GetReceiveCallback getReceiveCallback){
@@ -92,9 +88,8 @@ public class EmailReceiveClient {
             @Override
             public void run() {
                 try {
-                    EmailCore emailCore = new EmailCore(emailConfig);
-                    final List<EmailMessage> emailMessageList = emailCore.popReceiveMail();
-                    getReceiveCallback.gainSuccess(emailMessageList, emailMessageList.size());
+                    List<EmailMessage> messageList = Operator.Core(emailConfig).popReceiveMail();
+                    getReceiveCallback.gainSuccess(messageList, messageList.size());
                 } catch (final MessagingException e) {
                     e.printStackTrace();
                     getReceiveCallback.gainFailure(e.toString());
@@ -108,7 +103,6 @@ public class EmailReceiveClient {
 
     /**
      * 使用imap协议接收邮件，接收完毕并切回主线程
-     *
      * @param getReceiveCallback
      */
     public void imapReceiveAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback){
@@ -116,12 +110,11 @@ public class EmailReceiveClient {
             @Override
             public void run() {
                 try {
-                    EmailCore emailCore = new EmailCore(emailConfig);
-                    final List<EmailMessage> emailMessageList = emailCore.imapReceiveMail();
+                    final List<EmailMessage> messageList = Operator.Core(emailConfig).imapReceiveMail();
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getReceiveCallback.gainSuccess(emailMessageList, emailMessageList.size());
+                            getReceiveCallback.gainSuccess(messageList, messageList.size());
                         }
                     });
                 } catch (final MessagingException e) {
@@ -147,7 +140,6 @@ public class EmailReceiveClient {
 
     /**
      * 使用imap协议接收邮件，接收完毕但不切回主线程
-     *
      * @param getReceiveCallback
      */
     public void imapReceiveAsyn(final GetReceiveCallback getReceiveCallback){
@@ -155,9 +147,8 @@ public class EmailReceiveClient {
             @Override
             public void run() {
                 try {
-                    EmailCore emailCore = new EmailCore(emailConfig);
-                    final List<EmailMessage> emailMessageList = emailCore.imapReceiveMail();
-                    getReceiveCallback.gainSuccess(emailMessageList, emailMessageList.size());
+                    List<EmailMessage> messageList = Operator.Core(emailConfig).imapReceiveMail();
+                    getReceiveCallback.gainSuccess(messageList, messageList.size());
                 } catch (final MessagingException e) {
                     e.printStackTrace();
                     getReceiveCallback.gainFailure(e.toString());

@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package com.smailnet.eamil.Utils;
-
-import javax.mail.internet.MimeUtility;
+package com.smailnet.eamil;
 
 /**
- * 邮箱地址编码转换工具
+ * Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写
+ * 发送电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务器，即
+ * 可使用，所见即所得哦！
+ *
+ * @author 张观湖
+ * @author E-mail: zguanhu@foxmail.com
+ * @version 2.3
  */
-public class CodeUtil {
+class Operator {
 
-    public static String conver(String str) {
-        try {
-            if (str.startsWith("=?GB") || str.startsWith("=?gb")
-                    || str.startsWith("=?UTF") || str.startsWith("=?utf")) {
-                str = MimeUtility.decodeText(str);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return str;
+    /**
+     * 获取EmailCore的对象实例
+     * @param config
+     * @return
+     */
+    protected static EmailCore Core(EmailConfig config){
+        return new EmailCore(config);
     }
+
 }

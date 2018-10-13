@@ -23,18 +23,18 @@ package com.smailnet.eamil;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 2.1
+ * @version 2.3
  */
 public class EmailConfig {
 
-    private int smtpPort;
-    private int popPort;
-    private int imapPort;
-    private String smtpHost;
-    private String popHost;
-    private String imapHost;
-    private String account;
-    private String password;
+    private int smtpPort;           //SMTP端口
+    private int popPort;            //POP端口
+    private int imapPort;           //IMAP端口
+    private String smtpHost;        //SMTP的Host
+    private String popHost;         //POP的Host
+    private String imapHost;        //IMAP的Host
+    private String account;         //邮箱帐号
+    private String password;        //邮箱密码
 
     public EmailConfig setSmtpHost(String smtpHost){
         this.smtpHost = smtpHost;

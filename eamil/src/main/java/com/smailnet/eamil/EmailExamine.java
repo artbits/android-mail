@@ -28,7 +28,7 @@ import javax.mail.MessagingException;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 2.1
+ * @version 2.3
  */
 public class EmailExamine {
 
@@ -40,7 +40,6 @@ public class EmailExamine {
 
     /**
      * 检查邮件服务器是否可连接的接口，检查完毕切回主线程
-     *
      * @param activity
      * @param getConnectCallback
      * @return
@@ -50,8 +49,7 @@ public class EmailExamine {
             @Override
             public void run() {
                 try {
-                    EmailCore emailCore = new EmailCore(emailConfig);
-                    emailCore.authentication();
+                    Operator.Core(emailConfig).authentication();
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -74,7 +72,6 @@ public class EmailExamine {
 
     /**
      * 检查邮件服务器是否可连接的接口，检查完毕但不切回主线程
-     *
      * @param getConnectCallback
      * @return
      */
@@ -83,8 +80,7 @@ public class EmailExamine {
             @Override
             public void run() {
                 try {
-                    EmailCore emailCore = new EmailCore(emailConfig);
-                    emailCore.authentication();
+                    Operator.Core(emailConfig).authentication();
                     getConnectCallback.loginSuccess();
                 } catch (final MessagingException e) {
                     e.printStackTrace();

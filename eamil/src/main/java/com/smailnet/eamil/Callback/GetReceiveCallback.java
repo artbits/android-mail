@@ -16,7 +16,7 @@
 
 package com.smailnet.eamil.Callback;
 
-import com.smailnet.eamil.Entity.EmailMessage;
+import com.smailnet.eamil.EmailMessage;
 
 import java.util.List;
 
@@ -24,6 +24,6 @@ import java.util.List;
  * 获取邮件结果回调
  */
 public interface GetReceiveCallback {
-    void gainSuccess(List<EmailMessage>  emailMessageList, int count);
+    void gainSuccess(List<EmailMessage>  messageList, int count);
     void gainFailure(String errorMsg);
 }

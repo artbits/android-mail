@@ -19,12 +19,16 @@ package com.smailnet.eamil;
 import android.app.Activity;
 
 import com.smailnet.eamil.Callback.GetSendCallback;
+import com.smailnet.eamil.Utils.AddressUtil;
+
+import java.io.UnsupportedEncodingException;
 
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeUtility;
 
 /**
  * Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写
@@ -33,13 +37,17 @@ import javax.mail.internet.InternetAddress;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 2.1
+ * @version 2.3
  */
 public class EmailSendClient {
 
+    private String nickname;
     private String subject;
+    private String text;
     private Object content;
-    private Address[] address;
+    private Address[] to;
+    private Address[] cc;
+    private Address[] bcc;
     private EmailConfig emailConfig;
 
     public EmailSendClient(EmailConfig emailConfig){
@@ -47,26 +55,62 @@ public class EmailSendClient {
     }
 
     /**
-     * 设置收件人的邮箱地址
-     *
-     * @param receiver
+     * 设置收件人的邮箱地址（该方法将在2.3版本上弃用）
+     * @param to
      * @return
      */
-    public EmailSendClient setReceiver(String receiver){
-        int length = (new String[]{receiver}).length;
-        Address[] address = new InternetAddress[length];
+    @Deprecated
+    public EmailSendClient setReceiver(String to){
+        this.to = AddressUtil.getInternetAddress(to);
+        return this;
+    }
+
+    /**
+     * 设置发件人的昵称
+     * @param nickname
+     * @return
+     */
+    public EmailSendClient setNickname(String nickname){
         try {
-            address[0] = new InternetAddress(receiver);
-            this.address = address;
-        } catch (AddressException e) {
+            this.nickname = MimeUtility.encodeText(nickname);
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return this;
     }
 
     /**
+     * 设置收件人的邮箱地址
+     * @param to
+     * @return
+     */
+    public EmailSendClient setTo(String to){
+        this.to = AddressUtil.getInternetAddress(to);
+        return this;
+    }
+
+    /**
+     * 设置抄送人的邮箱地址
+     * @param cc
+     * @return
+     */
+    public EmailSendClient setCc(String cc){
+        this.cc = AddressUtil.getInternetAddress(cc);
+        return this;
+    }
+
+    /**
+     * 设置密送人的邮箱地址
+     * @param bcc
+     * @return
+     */
+    public EmailSendClient setBcc(String bcc){
+        this.bcc = AddressUtil.getInternetAddress(bcc);
+        return this;
+    }
+
+    /**
      * 设置邮件标题
-     *
      * @param subject
      * @return
      */
@@ -76,8 +120,17 @@ public class EmailSendClient {
     }
 
     /**
-     * 设置邮件内容（包括HTML和纯文本）
-     *
+     * 设置邮件内容（纯文本）
+     * @param text
+     * @return
+     */
+    public EmailSendClient setText(String text){
+        this.text = text;
+        return this;
+    }
+
+    /**
+     * 设置邮件内容（HTML）
      * @param content
      * @return
      */
@@ -88,19 +141,18 @@ public class EmailSendClient {
 
     /**
      * 异步发送邮件，发送完毕回调并切回到主线程
-     *
      * @param activity
      * @param getSendCallback
      * @return
      */
-    public EmailSendClient sendAsyn(final Activity activity, final GetSendCallback getSendCallback){
+    public void sendAsyn(final Activity activity, final GetSendCallback getSendCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    EmailCore emailCore = new EmailCore(emailConfig);
-                    Message message = emailCore.setMessage(address, subject, content);
-                    emailCore.sendMail(message);
+                    Operator.Core(emailConfig)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content)
+                            .sendMail();
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -118,23 +170,21 @@ public class EmailSendClient {
                 }
             }
         }).start();
-        return this;
     }
 
     /**
      * 异步发送邮件，发送完毕回调不切回到主线程
-     *
      * @param getSendCallback
      * @return
      */
-    public EmailSendClient sendAsyn(final GetSendCallback getSendCallback){
+    public void sendAsyn(final GetSendCallback getSendCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    EmailCore emailCore = new EmailCore(emailConfig);
-                    Message message = emailCore.setMessage(address, subject, content);
-                    emailCore.sendMail(message);
+                    Operator.Core(emailConfig)
+                            .setMessage(nickname, to, cc, bcc, subject, text, content)
+                            .sendMail();
                     getSendCallback.sendSuccess();
                 } catch (final MessagingException e) {
                     e.printStackTrace();
@@ -142,6 +192,5 @@ public class EmailSendClient {
                 }
             }
         }).start();
-        return this;
     }
 }

@@ -13,7 +13,7 @@ import com.smailnet.eamil.Callback.GetReceiveCallback;
 import com.smailnet.eamil.EmailReceiveClient;
 import com.smailnet.eamil.EmailSendClient;
 import com.smailnet.eamil.Callback.GetSendCallback;
-import com.smailnet.eamil.Entity.EmailMessage;
+import com.smailnet.eamil.EmailMessage;
 import com.smailnet.islands.Interface.OnRunningListener;
 import com.smailnet.islands.Islands;
 
@@ -54,9 +54,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void sendMessage(){
         EmailSendClient emailSendClient = new EmailSendClient(EmailApp.emailConfig());
         emailSendClient
-                .setReceiver(address_editText.getText().toString())          //收件人的邮箱地址
-                .setSubject(title_editText.getText().toString())               //邮件标题
-                .setContent(text_editText.getText().toString())                 //邮件正文
+                .setTo(address_editText.getText().toString())                //收件人的邮箱地址
+                .setNickname("我的小可爱")                                    //发件人昵称
+                .setSubject(title_editText.getText().toString())             //邮件标题
+                .setContent(text_editText.getText().toString())              //邮件正文
                 .sendAsyn(this, new GetSendCallback() {
                     @Override
                     public void sendSuccess() {
@@ -94,9 +95,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 emailReceiveClient
                                         .popReceiveAsyn(MainActivity.this, new GetReceiveCallback() {
                                             @Override
-                                            public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
+                                            public void gainSuccess(List<EmailMessage> messageList, int count) {
                                                 progressDialog.dismiss();
-                                                Log.i("oversee", "邮件总数：" + count);
+                                                Log.i("oversee", "邮件总数：" + count + " 标题：" +  messageList.get(0).getSubject());
                                             }
 
                                             @Override
@@ -120,9 +121,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 emailReceiveClient
                                         .imapReceiveAsyn(MainActivity.this, new GetReceiveCallback() {
                                             @Override
-                                            public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
+                                            public void gainSuccess(List<EmailMessage> messageList, int count) {
                                                 progressDialog.dismiss();
-                                                Log.i("oversee", "邮件总数：" + count);
+                                                Log.i("oversee", "邮件总数：" + count + " 标题：" +  messageList.get(0).getSubject());
                                             }
 
                                             @Override

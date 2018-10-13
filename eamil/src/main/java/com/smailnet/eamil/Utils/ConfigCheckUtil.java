@@ -15,13 +15,22 @@
  */
 package com.smailnet.eamil.Utils;
 
+import android.text.TextUtils;
+
 /**
  * 检查host和port是否为空
  */
 public class ConfigCheckUtil {
 
+    /**
+     * 判断host和port是否都不为空
+     * @param host
+     * @param port
+     * @return
+     */
     public static boolean getResult(String host, String port){
-        return (host != null) && (port != null);
+        //return (host != null) && (port != null);
+        return !TextUtils.isEmpty(host) && !TextUtils.isEmpty(port);
     }
 
 }

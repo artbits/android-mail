@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.smailnet.eamil.Entity;
+package com.smailnet.eamil;
 
 /**
  * 邮件内容集合
