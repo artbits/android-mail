@@ -20,7 +20,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:2.2'
+    implementation 'com.github.mailhu:email:2.3'
 }
 ```
 
@@ -151,8 +151,8 @@ emailExamine
 ### &ensp;Email for Android 2.3
 1. 增加设置发信人昵称的接口
 2. 增加设置抄送人，密送人的接口
-3. 增加设置文本型邮件正文的setText()接口
-4. 设置收件人的接口使用setTo()代替setReceiver()，2.3版本后建议使用setTo()
+3. 增加设置文本型邮件正文的setText( )接口
+4. 设置收件人的接口使用setTo( )代替setReceiver( )，2.3版本后建议使用setTo( )
 
 ### &ensp;Email for Android 2.2
 1. 对发送邮件和接收邮件等接口增加一些新特性
