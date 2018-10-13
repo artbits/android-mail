@@ -42,8 +42,8 @@ EmailConfig emailConfig = new EmailConfig()
         .setPopPort(995)                        //设置收件服务器端口，网易邮箱为110
         .setImapHost("imap.qq.com")             //设置收件服务器地址，网易邮箱为imap.163.com
         .setImapPort(993)                       //设置收件服务器端口，网易邮箱为993
-        .setAccount("1234567@qq,com")           //你的邮箱地址
-        .setPassword("abcdefg");                //你的邮箱密码，若QQ邮箱该处填授权码
+        .setAccount("from@qq.com")              //你的邮箱地址
+        .setPassword("abcdefg");                //你的邮箱密码或授权码
 ```
 
 ##### 2.发送邮件的代码
@@ -51,9 +51,12 @@ EmailConfig emailConfig = new EmailConfig()
 //邮件发送，确保配置emailConfig的信息正确
 EmailSendClient emailSendClient = new EmailSendClient(emailConfig);
 emailSendClient        
-        .setReceiver("9876543@qq.com")              //收件人的邮箱地址
-        .setSubject("邮件测试")                      //邮件标题
-        .setContent("Hello World !")                //邮件正文
+        .setTo("to@qq.com")                         //收件人的邮箱地址
+        .setCc("cc@qq.com")                         //抄送人的邮箱地址
+        .setBcc("bcc@qq.com")                       //密送人的邮箱地址
+        .setNickname("百年小糊涂")                   //设置发信人的昵称
+        .setSubject("这是一封测试邮件")               //邮件主题
+        .setText("Hello World !")                   //邮件正文，若是发送HTML类型的正文用setContent()
         .sendAsyn(this, new GetSendCallback() {     //this是调用该代码的Activity
             @Override
             public void sendSuccess() {
@@ -75,7 +78,7 @@ EmailReceiveClient emailReceiveClient = new EmailReceiveClient(emailConfig);
 emailReceiveClient
         .popReceiveAsyn(this, new GetReceiveCallback() {   //this是调用该代码的Activity
             @Override
-            public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
+            public void gainSuccess(List<EmailMessage> messageList, int count) {
                 //获取邮件成功（这里可更新UI）
             }
 
@@ -92,7 +95,7 @@ EmailReceiveClient emailReceiveClient = new EmailReceiveClient(emailConfig);
 emailReceiveClient
         .imapReceiveAsyn(this, new GetReceiveCallback() {   //this是调用该代码的Activity
             @Override
-            public void gainSuccess(List<EmailMessage> emailMessageList, int count) {
+            public void gainSuccess(List<EmailMessage> messageList, int count) {
                 //获取邮件成功（这里可更新UI）
             }
 
@@ -145,6 +148,12 @@ emailExamine
 
 
 # Update log
+### &ensp;Email for Android 2.3
+1. 增加设置发信人昵称的接口
+2. 增加设置抄送人，密送人的接口
+3. 增加设置文本型邮件正文的setText()接口
+4. 设置收件人的接口使用setTo()代替setReceiver()，2.3版本后建议使用setTo()
+
 ### &ensp;Email for Android 2.2
 1. 对发送邮件和接收邮件等接口增加一些新特性
 2. 优化部分代码
