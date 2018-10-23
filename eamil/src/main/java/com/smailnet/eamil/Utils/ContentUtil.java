@@ -21,7 +21,6 @@ import java.io.IOException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.internet.MimeMessage;
 
 /**
  * 邮件内容编码转换工具
@@ -38,9 +37,9 @@ public class ContentUtil {
     public static String getContent(Message message) throws MessagingException, IOException {
         StringBuilder bodytext = new StringBuilder();
         if (message.isMimeType("text/plain")) {
-            bodytext.append((String) message.getContent());
+            bodytext.append(String.valueOf(message.getContent()));
         } else if (message.isMimeType("text/html")) {
-            bodytext.append((String) message.getContent());
+            bodytext.append(String.valueOf(message.getContent()));
         } else if (message.isMimeType("multipart/*")) {
             Multipart multipart = (Multipart) message.getContent();
             for (int i = 0, counts = multipart.getCount(); i < counts; i++) {
