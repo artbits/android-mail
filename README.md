@@ -149,10 +149,10 @@ emailExamine
 
 # Update log
 ### &ensp;Email for Android 2.3.2
-1.再次修复ContentUtil类异常
+1. 再次修复ContentUtil类异常
 
 ### &ensp;Email for Android 2.3.1
-1.修复ContentUtil类异常
+1. 修复ContentUtil类异常
 
 ### &ensp;Email for Android 2.3
 1. 增加设置发信人昵称的接口
