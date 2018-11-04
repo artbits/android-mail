@@ -20,7 +20,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:2.3'
+    implementation 'com.github.mailhu:email:2.3.2'
 }
 ```
 
@@ -148,6 +148,12 @@ emailExamine
 
 
 # Update log
+### &ensp;Email for Android 2.3.2
+1.再次修复ContentUtil类异常
+
+### &ensp;Email for Android 2.3.1
+1.修复ContentUtil类异常
+
 ### &ensp;Email for Android 2.3
 1. 增加设置发信人昵称的接口
 2. 增加设置抄送人，密送人的接口
