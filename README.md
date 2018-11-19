@@ -124,7 +124,20 @@ emailExamine
         });
 ```
 
-注：sendAsyn()、popReceiveAsyn()、imapReceiveAsyn()，connectServer()等方法传入参数Activity时，代表执行完子线程后会切回主线程，若不传入参数Activity时，子线程执行完毕不会切回主线程
+##### 5.检查对方是否为垃圾邮件发送者的代码
+```java
+//检查对方是否为垃圾邮件发送者的代码，使用Foxmail邮箱域名为示例
+EmailExamine examine = new EmailExamine();
+examine.spamCheck(this, "www.foxmail.com", new GetSpamCheckCallback() {     //this是调用该代码的Activity
+    @Override
+    public void gotResult(boolean isSpammer) {
+        String s = (isSpammer)? "是垃圾邮件发送者" : "不是垃圾邮件发送者";
+        Log.d("oversee", s);
+    }
+});
+```
+
+注：sendAsyn()、popReceiveAsyn()、imapReceiveAsyn()，connectServer()，spamCheck()等方法传入参数Activity时，代表执行完子线程后会切回主线程，若不传入参数Activity时，子线程执行完毕不会切回主线程
 
 #### 步骤三、若使用QQ邮箱发送邮件，登录QQ邮箱，进入【设置】-【帐户】，把下列服务开启，然后获取授权码。如下图：
 
