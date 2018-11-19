@@ -8,7 +8,7 @@
 
 
 # Install
-步骤一、将 JitPack 存储库添加到构建文件中：
+步骤一、将JitPack存储库添加到根目录的build.gradle中：
 ```gradle
 allprojects {
     repositories {
