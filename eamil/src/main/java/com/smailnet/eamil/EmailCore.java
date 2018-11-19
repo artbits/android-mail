@@ -25,6 +25,8 @@ import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -41,6 +43,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import static com.smailnet.eamil.Utils.ConstUtli.BLACK_HOLE;
 import static com.smailnet.eamil.Utils.ConstUtli.IMAP;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_AUTH;
 import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_HOST;
@@ -85,6 +88,13 @@ class EmailCore {
     private Session session;
 
     private Message message;
+
+    /**
+     * 默认构造器
+     */
+    EmailCore(){
+
+    }
 
     /**
      * 在构造器中初始化Properties和Session
@@ -248,5 +258,21 @@ class EmailCore {
         folder.close(false);
         imapStore.close();
         return emailMessageList;
+    }
+
+    /**
+     *
+     * @param host
+     * @throws UnknownHostException
+     */
+    public void spamCheck(String host) throws UnknownHostException {
+        InetAddress inetAddress = InetAddress.getByName(host);
+        byte[] bytes = inetAddress.getAddress();
+        StringBuilder query = new StringBuilder(BLACK_HOLE);
+        for (byte octet : bytes){
+            int unsignedByte = (octet < 0)? octet + 256 : octet;
+            query.insert(0, unsignedByte + ".");
+        }
+        InetAddress.getByName(query.toString());
     }
 }

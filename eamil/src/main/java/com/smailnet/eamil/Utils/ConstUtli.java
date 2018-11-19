@@ -42,4 +42,5 @@ public class ConstUtli {
     public static final String MAIL_SMTP_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port";
     public static final String MAIL_POP3_SOCKETFACTORY_PORT = "mail.pop3.socketFactory.port";
     public static final String MAIL_IMAP_SOCKETFACTORY_PORT = "mail.imap.socketFactory.port";
+    public static final String BLACK_HOLE = "sbl.spamhaus.org";
 }

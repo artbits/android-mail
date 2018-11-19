@@ -18,6 +18,9 @@ package com.smailnet.eamil;
 import android.app.Activity;
 
 import com.smailnet.eamil.Callback.GetConnectCallback;
+import com.smailnet.eamil.Callback.GetSpamCheckCallback;
+
+import java.net.UnknownHostException;
 
 import javax.mail.MessagingException;
 
@@ -34,6 +37,10 @@ public class EmailExamine {
 
     private EmailConfig emailConfig;
 
+    public EmailExamine(){
+
+    }
+
     public EmailExamine(EmailConfig emailConfig){
         this.emailConfig = emailConfig;
     }
@@ -44,7 +51,7 @@ public class EmailExamine {
      * @param getConnectCallback
      * @return
      */
-    public EmailExamine connectServer(final Activity activity, final GetConnectCallback getConnectCallback){
+    public void connectServer(final Activity activity, final GetConnectCallback getConnectCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -67,15 +74,14 @@ public class EmailExamine {
                 }
             }
         }).start();
-        return this;
     }
 
     /**
-     * 检查邮件服务器是否可连接的接口，检查完毕但不切回主线程
+     * 检查邮件服务器是否可连接的接口，检查完毕切回主线程
      * @param getConnectCallback
      * @return
      */
-    public EmailExamine connectServer(final GetConnectCallback getConnectCallback){
+    public void connectServer(final GetConnectCallback getConnectCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -88,6 +94,56 @@ public class EmailExamine {
                 }
             }
         }).start();
-        return this;
+    }
+
+    /**
+     * 检查该IP地址是否为垃圾邮件发送者，检查完毕但不切回主线程
+     * @param activity
+     * @param host
+     * @param getSpamCheckCallback
+     */
+    public void spamCheck(final Activity activity, final String host, final GetSpamCheckCallback getSpamCheckCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Operator.Core().spamCheck(host);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSpamCheckCallback.gotResult(true);
+                        }
+                    });
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSpamCheckCallback.gotResult(false);
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * 检查该IP地址是否为垃圾邮件发送者，检查完毕但不切回主线程
+     * @param host
+     * @param getSpamCheckCallback
+     */
+    public void spamCheck(final String host, final GetSpamCheckCallback getSpamCheckCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Operator.Core().spamCheck(host);
+                    getSpamCheckCallback.gotResult(true);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                    getSpamCheckCallback.gotResult(false);
+                }
+            }
+        }).start();
     }
 }

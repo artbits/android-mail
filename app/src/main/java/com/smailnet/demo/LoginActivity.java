@@ -8,8 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.smailnet.eamil.Callback.GetConnectCallback;
+import com.smailnet.eamil.Callback.GetSpamCheckCallback;
 import com.smailnet.eamil.EmailExamine;
 import com.smailnet.islands.Interface.OnRunningListener;
 import com.smailnet.islands.Islands;

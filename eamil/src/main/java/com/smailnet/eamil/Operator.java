@@ -36,4 +36,11 @@ class Operator {
         return new EmailCore(config);
     }
 
+    /**
+     * 获取EmailCore的对象实例
+     * @return
+     */
+    protected static EmailCore Core(){
+        return new EmailCore();
+    }
 }
