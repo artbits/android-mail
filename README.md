@@ -161,6 +161,9 @@ examine.spamCheck(this, "www.foxmail.com", new GetSpamCheckCallback() {     //th
 
 
 # Update log
+### &ensp;Email for Android 2.4.0
+1. 增加检测垃圾邮件发送者的接口
+
 ### &ensp;Email for Android 2.3.2
 1. 再次修复ContentUtil类异常
 
@@ -196,6 +199,10 @@ examine.spamCheck(this, "www.foxmail.com", new GetSpamCheckCallback() {     //th
 2. 增删和修改个别接口
 
 
+# About the author
+##### 作者：张观湖
+##### 邮箱：zguanhu@foxmail.com
+##### QQ：741762954
 
 # License
 ```
