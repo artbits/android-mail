@@ -202,7 +202,6 @@ examine.spamCheck(this, "www.foxmail.com", new GetSpamCheckCallback() {     //th
 # About the author
 ##### 作者：张观湖
 ##### 邮箱：zguanhu@foxmail.com
-##### QQ：741762954
 
 # License
 ```
