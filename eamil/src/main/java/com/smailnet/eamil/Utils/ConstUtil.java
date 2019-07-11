@@ -19,7 +19,7 @@ package com.smailnet.eamil.Utils;
 /**
  * 字符串常量工具类
  */
-public class ConstUtli {
+public class ConstUtil {
 
     public static final String SMTP = "smtp";
     public static final String POP3 = "pop3";

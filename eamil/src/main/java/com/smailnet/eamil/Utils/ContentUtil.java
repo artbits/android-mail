@@ -35,20 +35,17 @@ public class ContentUtil {
      * @throws IOException
      */
     public static String getContent(Message message) throws MessagingException, IOException {
-        StringBuilder bodytext = new StringBuilder();
+        StringBuilder bodyText = new StringBuilder();
         if (message.isMimeType("text/plain")) {
-            bodytext.append(String.valueOf(message.getContent()));
+            bodyText.append(String.valueOf(message.getContent()));
         } else if (message.isMimeType("text/html")) {
-            bodytext.append(String.valueOf(message.getContent()));
+            bodyText.append(String.valueOf(message.getContent()));
         } else if (message.isMimeType("multipart/*")) {
-            Object content = message.getContent();
-            if (content instanceof Multipart){
-                Multipart multipart = (Multipart) content;
-                for (int i = 0, counts = multipart.getCount(); i < counts; i++) {
-                    bodytext.append(multipart.getBodyPart(i).getContent());
-                }
+            Multipart multipart = (Multipart) message.getContent();
+            for (int i = 0, counts = multipart.getCount(); i < counts; i++) {
+                bodyText.append(multipart.getBodyPart(i).getContent());
             }
         }
-        return bodytext.toString();
+        return bodyText.toString();
     }
 }

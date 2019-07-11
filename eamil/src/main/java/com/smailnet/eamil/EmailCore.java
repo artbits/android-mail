@@ -15,8 +15,6 @@
  */
 package com.smailnet.eamil;
 
-import android.text.TextUtils;
-
 import com.smailnet.eamil.Utils.AddressUtil;
 import com.smailnet.eamil.Utils.ConfigCheckUtil;
 import com.smailnet.eamil.Utils.ContentUtil;
@@ -43,28 +41,28 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import static com.smailnet.eamil.Utils.ConstUtli.BLACK_HOLE;
-import static com.smailnet.eamil.Utils.ConstUtli.IMAP;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_AUTH;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_HOST;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_POST;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_SOCKETFACTORY_CLASS;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_SOCKETFACTORY_FALLBACK;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_IMAP_SOCKETFACTORY_PORT;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_POP3_AUTH;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_POP3_HOST;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_POP3_POST;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_POP3_SOCKETFACTORY_CLASS;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_POP3_SOCKETFACTORY_FALLBACK;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_POP3_SOCKETFACTORY_PORT;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_SMTP_AUTH;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_SMTP_HOST;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_SMTP_POST;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_SMTP_SOCKETFACTORY_CLASS;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_SMTP_SOCKETFACTORY_FALLBACK;
-import static com.smailnet.eamil.Utils.ConstUtli.MAIL_SMTP_SOCKETFACTORY_PORT;
-import static com.smailnet.eamil.Utils.ConstUtli.POP3;
-import static com.smailnet.eamil.Utils.ConstUtli.SMTP;
+import static com.smailnet.eamil.Utils.ConstUtil.BLACK_HOLE;
+import static com.smailnet.eamil.Utils.ConstUtil.IMAP;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_IMAP_AUTH;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_IMAP_HOST;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_IMAP_POST;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_IMAP_SOCKETFACTORY_CLASS;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_IMAP_SOCKETFACTORY_FALLBACK;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_IMAP_SOCKETFACTORY_PORT;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_POP3_AUTH;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_POP3_HOST;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_POP3_POST;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_POP3_SOCKETFACTORY_CLASS;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_POP3_SOCKETFACTORY_FALLBACK;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_POP3_SOCKETFACTORY_PORT;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_SMTP_AUTH;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_SMTP_HOST;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_SMTP_POST;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_SMTP_SOCKETFACTORY_CLASS;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_SMTP_SOCKETFACTORY_FALLBACK;
+import static com.smailnet.eamil.Utils.ConstUtil.MAIL_SMTP_SOCKETFACTORY_PORT;
+import static com.smailnet.eamil.Utils.ConstUtil.POP3;
+import static com.smailnet.eamil.Utils.ConstUtil.SMTP;
 
 /**
  * Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写
