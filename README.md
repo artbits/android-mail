@@ -20,7 +20,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:2.4.0'
+    implementation 'com.github.mailhu:email:2.4.1'
 }
 ```
 
@@ -161,6 +161,9 @@ examine.spamCheck(this, "www.foxmail.com", new GetSpamCheckCallback() {     //th
 
 
 # Update log
+### &ensp;Email for Android 2.4.1
+1. 修复解析邮件内容出现的bug
+
 ### &ensp;Email for Android 2.4.0
 1. 增加检测垃圾邮件发送者的接口
 
