@@ -236,6 +236,7 @@ Email.getExamineService(config)
 
 # 开启服务与获取授权码
 若使用QQ邮箱（其他邮箱参考QQ邮箱），开启服务的步骤：登录QQ邮箱，进入【设置】-【帐户】，把下列服务开启，然后获取授权码。如下图：
+
 <img src="https://github.com/mailhu/email/blob/master/image/image_1.PNG"  height="200" width="600">
 <img src="https://github.com/mailhu/email/blob/master/image/image_2.PNG"  height="250" width="600">
 
@@ -306,7 +307,12 @@ Email.getExamineService(config)
 
   
 # 联系我
-**邮箱：zguanhu@foxmail.com**
+**E-mail：**<a target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=Zx0AEgYJDxInAQgfCgYOC0kECAo" style="text-decoration:none;"><img src="http://rescdn.qqmail.com/zh_CN/htmledition/images/function/qm_open/ico_mailme_01.png"/></a>
+
+**微信扫一扫：**
+
+<img src="https://github.com/mailhu/email/blob/master/image/WeChat.png"  height="100" width="100">
+
 
 # License
 ```
