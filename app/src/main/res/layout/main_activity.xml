@@ -5,61 +5,67 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/address_editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="18dp"
-        android:singleLine="true"
-        android:hint="收件人邮箱地址"
-        tools:ignore="HardcodedText" />
-
-    <EditText
-        android:id="@+id/title_editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="18dp"
-        android:singleLine="true"
-        android:hint="邮件标题"
-        tools:ignore="HardcodedText" />
-
-    <EditText
-        android:id="@+id/text_editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="18dp"
-        android:singleLine="true"
-        android:hint="邮件内容"
-        tools:ignore="HardcodedText" />
-
     <Button
         android:id="@+id/send"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="发送"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="发送邮件"
         tools:ignore="HardcodedText" />
 
     <Button
-        android:id="@+id/receive"
+        android:id="@+id/pop3_rec"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="POP收信"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="使用POP3协议接收邮件"
         tools:ignore="HardcodedText" />
 
     <Button
-        android:id="@+id/receive2"
+        android:id="@+id/pop3_rec_count"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="imap收信"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="使用POP3协议获取全部邮件数量"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/imap_rec"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="使用IMAP协议接收邮件"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/imap_rec_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="使用IMAP协议获取全部邮件数量"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/imap_rec_unread_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="使用IMAP协议获取未读邮件数量"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/imap_rec_uid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="使用IMAP协议全部邮件的UID"
         tools:ignore="HardcodedText" />
 
 </LinearLayout>
