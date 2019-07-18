@@ -32,7 +32,7 @@ dependencies {
 ```
 Invoke-customs are only supported starting with Android O (--min-api 26)
 ```
-在你的项目app.gradle文件中添加如下代码：
+你可以在项目的app模块下的build.gradle里加添如下代码：
 ```gradle
 android {
     ...
