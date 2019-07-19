@@ -25,7 +25,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:3.0.0'
+    implementation 'com.github.mailhu:email:3.1.0'
 }
 ```
 注：因为该库内部使用了Java 8新特性，如果你的项目依赖该库在构建时失败，出现如下错误：
@@ -252,6 +252,11 @@ Email.getExamineService(config)
 ```
 
 # 更新日志
+* Email for Android 3.1.0
+  + 修改JavaMail的版本，用Android版本的JavaMail替换原来Java标准版的JavaMail
+  + 彻底修复读取邮件时Object对象类型转Multipartd类型时出现java.lang.ClassCastException的错误
+  + Email for Android支持的Android API级至少为19
+
 * Email for Android 3.0.0
   + 对该邮件框架内部的全部代码进行重构。
   + 重新设计该框架的API和回调接口，使其更简单易用
