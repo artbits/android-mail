@@ -30,6 +30,7 @@ import static com.smailnet.eamil.Constant.SMTP;
  * 该框架内部的核心类
  */
 class EmailCore {
+
     private String smtpHost;
     private String popHost;
     private String imapHost;
@@ -42,6 +43,7 @@ class EmailCore {
     private javax.mail.Message message;
 
     private EmailCore(Email.Config config) {
+
         this.account = config.getAccount();
         this.password = config.getPassword();
         this.smtpHost = config.getSmtpHost();
@@ -82,6 +84,11 @@ class EmailCore {
         session = Session.getInstance(properties);
     }
 
+    /**
+     * 设置配置参数
+     * @param config
+     * @return
+     */
     static EmailCore setConfig(Email.Config config) {
         return new EmailCore(config);
     }
@@ -127,7 +134,7 @@ class EmailCore {
 
     /**
      * 发送邮件
-     * @throws MessagingException
+     * @param gotSendCallback
      */
     void send(Email.GotSendCallback gotSendCallback) {
         try {
@@ -144,14 +151,13 @@ class EmailCore {
 
     /**
      * 使用POP3协议或IMAP协议接收服务器上的邮件
-     * @return
-     * @throws MessagingException
-     * @throws IOException
+     * @param protocol
+     * @param gotMessageCallback
      */
-    void receiveAll(int protocolType, Email.GotReceiveCallback gotMessageCallback) {
+    synchronized void receiveAll(int protocol, Email.GotReceiveCallback gotMessageCallback) {
         try {
             Store store;
-            if (protocolType == ProtocolType.POP3) {
+            if (protocol == Protocol.POP3) {
                 store = session.getStore(POP3);
                 store.connect(popHost, account, password);
             } else {
@@ -188,13 +194,13 @@ class EmailCore {
 
     /**
      * 获取全部邮件数量
-     * @param protocolType
+     * @param protocol
      * @param gotCountCallback
      */
-    void getMessageCount(int protocolType, Email.GotCountCallback gotCountCallback) {
+    void getMessageCount(int protocol, Email.GotCountCallback gotCountCallback) {
         try {
             Store store;
-            if (protocolType == ProtocolType.POP3) {
+            if (protocol == Protocol.POP3) {
                 store = session.getStore(POP3);
                 store.connect(popHost, account, password);
             } else {
@@ -231,7 +237,7 @@ class EmailCore {
      * 获取全部UID
      * @param gotUIDListCallback
      */
-    void getUIDList(Email.GotUIDListCallback gotUIDListCallback) {
+    synchronized void getUIDList(Email.GotUIDListCallback gotUIDListCallback) {
         try {
             Store store = session.getStore(IMAP);
             store.connect(imapHost, account, password);
@@ -343,7 +349,7 @@ class EmailCore {
     /**
      * 邮件协议类型
      */
-    interface ProtocolType {
+    interface Protocol {
         int POP3 = 0;
         int IMAP = 1;
     }

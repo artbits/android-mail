@@ -1,6 +1,7 @@
 package com.smailnet.eamil;
 
 interface Constant {
+
     String SMTP = "smtp";
     String POP3 = "pop3";
     String IMAP = "imap";
@@ -22,7 +23,6 @@ interface Constant {
     String MAIL_SMTP_SOCKET_FACTORY_PORT = "mail.smtp.socketFactory.port";
     String MAIL_POP3_SOCKET_FACTORY_PORT = "mail.pop3.socketFactory.port";
     String MAIL_IMAP_SOCKET_FACTORY_PORT = "mail.imap.socketFactory.port";
-    String BLACK_HOLE = "sbl.spamhaus.org";
 
     String SMTP_HOST = "smtp_host";
     String POP3_HOST = "pop3_host";
@@ -30,4 +30,5 @@ interface Constant {
     String POP3_PORT = "pop3_port";
     String IMAP_HOST = "imap_host";
     String IMAP_PORT = "imap_port";
+
 }

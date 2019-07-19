@@ -47,7 +47,7 @@ public final class ReceiveService {
         public void receive(Email.GotReceiveCallback gotReceiveCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .receiveAll(EmailCore.ProtocolType.POP3, new Email.GotReceiveCallback() {
+                            .receiveAll(EmailCore.Protocol.POP3, new Email.GotReceiveCallback() {
                                 @Override
                                 public void complete(int total) {
                                     handler.post(() -> gotReceiveCallback.complete(total));
@@ -78,7 +78,7 @@ public final class ReceiveService {
         public void getMessageCount(Email.GotCountCallback gotCountCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .getMessageCount(EmailCore.ProtocolType.POP3, new Email.GotCountCallback() {
+                            .getMessageCount(EmailCore.Protocol.POP3, new Email.GotCountCallback() {
                                 @Override
                                 public void success(int total) {
                                     handler.post(() -> gotCountCallback.success(total));
@@ -112,7 +112,7 @@ public final class ReceiveService {
         public void receive(Email.GotReceiveCallback gotReceiveCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .receiveAll(EmailCore.ProtocolType.IMAP, new Email.GotReceiveCallback() {
+                            .receiveAll(EmailCore.Protocol.IMAP, new Email.GotReceiveCallback() {
                                 @Override
                                 public void complete(int total) {
                                     handler.post(() -> gotReceiveCallback.complete(total));
@@ -143,7 +143,7 @@ public final class ReceiveService {
         public void getMessageCount(Email.GotCountCallback gotCountCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .getMessageCount(EmailCore.ProtocolType.IMAP, new Email.GotCountCallback() {
+                            .getMessageCount(EmailCore.Protocol.IMAP, new Email.GotCountCallback() {
                                 @Override
                                 public void success(int total) {
                                     handler.post(() -> gotCountCallback.success(total));
@@ -243,5 +243,6 @@ public final class ReceiveService {
                     })
             ).start();
         }
+
     }
 }

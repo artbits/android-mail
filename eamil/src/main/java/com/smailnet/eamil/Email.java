@@ -44,6 +44,7 @@ public final class Email {
      * 邮件的服务器配置内容
      */
     public static class Config {
+
         private String account;
         private String password;
         private String smtpHost;
@@ -52,24 +53,6 @@ public final class Email {
         private int smtpPort;
         private int popPort;
         private int imapPort;
-
-        protected String getAccount() {
-            return account;
-        }
-
-        public Config setAccount(String account) {
-            this.account = account;
-            return this;
-        }
-
-        protected String getPassword() {
-            return password;
-        }
-
-        public Config setPassword(String password) {
-            this.password = password;
-            return this;
-        }
 
         public Config setMailType(int mailType) {
             HashMap<String, Object> hashMap = Converter.MailType.getResult(mailType);
@@ -81,6 +64,16 @@ public final class Email {
                 this.imapHost = String.valueOf(hashMap.get(Constant.IMAP_HOST));
                 this.imapPort = (int) hashMap.get(Constant.IMAP_PORT);
             }
+            return this;
+        }
+
+        public Config setAccount(String account) {
+            this.account = account;
+            return this;
+        }
+
+        public Config setPassword(String password) {
+            this.password = password;
             return this;
         }
 
@@ -100,6 +93,14 @@ public final class Email {
             this.imapHost = host;
             this.imapPort = port;
             return this;
+        }
+
+        protected String getAccount() {
+            return account;
+        }
+
+        protected String getPassword() {
+            return password;
         }
 
         protected String getSmtpHost() {
@@ -125,6 +126,7 @@ public final class Email {
         protected int getImapPort() {
             return imapPort;
         }
+
     }
 
     /**
@@ -208,4 +210,5 @@ public final class Email {
         void success();
         void failure(String msg);
     }
+
 }

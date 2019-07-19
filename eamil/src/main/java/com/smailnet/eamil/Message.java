@@ -1,6 +1,7 @@
 package com.smailnet.eamil;
 
 public final class Message {
+
     private String subject;
     private String from;
     private String to;
