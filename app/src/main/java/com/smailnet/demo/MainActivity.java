@@ -33,14 +33,14 @@ public class MainActivity extends AppCompatActivity {
                         .setNickname("测试员")
                         .setSubject("这是一封测试邮件")
                         .setText("你好")
-                        .send(new Email.GotSendCallback() {
+                        .send(new Email.GetSendCallback() {
                             @Override
-                            public void success() {
+                            public void onSuccess() {
                                 Utils.showToast(MainActivity.this, "发送成功！");
                             }
 
                             @Override
-                            public void failure(String msg) {
+                            public void onFailure(String msg) {
                                 Utils.showToast(MainActivity.this, "错误：" + msg);
                                 Log.i(TAG, "错误：" + msg);
                             }
@@ -51,12 +51,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.pop3_rec).setOnClickListener(view ->
                 Email.getReceiveService(config)
                         .getPOP3Service()
-                        .receive(new Email.GotReceiveCallback() {
-                            @Override
-                            public void complete(int total) {
-                                Utils.showToast(MainActivity.this, "邮件总数：" + total);
-                            }
-
+                        .receive(new Email.GetReceiveCallback() {
                             @Override
                             public void receiving(Message message) {
                                 //每读取一封邮件即回调该封邮件的结果
@@ -64,12 +59,12 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void received(List<Message> messageList) {
-                                //全部邮件读取读取完毕后，再一次性回调全部结果
+                            public void onFinish(List<Message> messageList) {
+                                Utils.showToast(MainActivity.this, "邮件总数：" + messageList.size());
                             }
 
                             @Override
-                            public void failure(String msg) {
+                            public void onFailure(String msg) {
                                 Utils.showToast(MainActivity.this, "错误：" + msg);
                                 Log.i(TAG, "错误：" + msg);
                             }
@@ -80,14 +75,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.pop3_rec_count).setOnClickListener(view ->
                 Email.getReceiveService(config)
                         .getPOP3Service()
-                        .getMessageCount(new Email.GotCountCallback() {
+                        .getMessageCount(new Email.GetCountCallback() {
                             @Override
-                            public void success(int total) {
+                            public void onSuccess(int total) {
                                 Utils.showToast(MainActivity.this, "全部邮件数量：" + total);
                             }
 
                             @Override
-                            public void failure(String msg) {
+                            public void onFailure(String msg) {
                                 Utils.showToast(MainActivity.this, "错误：" + msg);
                             }
                         })
@@ -97,12 +92,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.imap_rec).setOnClickListener(view ->
                 Email.getReceiveService(config)
                         .getIMAPService()
-                        .receive(new Email.GotReceiveCallback() {
-                            @Override
-                            public void complete(int total) {
-                                Utils.showToast(MainActivity.this, "邮件总数：" + total);
-                            }
-
+                        .receive(new Email.GetReceiveCallback() {
                             @Override
                             public void receiving(Message message) {
                                 //每读取一封邮件即回调该封邮件的结果
@@ -110,12 +100,12 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void received(List<Message> messageList) {
-                                //全部邮件读取读取完毕后，再一次性回调全部结果
+                            public void onFinish(List<Message> messageList) {
+                                Utils.showToast(MainActivity.this, "邮件总数：" + messageList.size());
                             }
 
                             @Override
-                            public void failure(String msg) {
+                            public void onFailure(String msg) {
                                 Utils.showToast(MainActivity.this, "错误：" + msg);
                                 Log.i(TAG, "错误：" + msg);
                             }
@@ -126,14 +116,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.imap_rec_count).setOnClickListener(view ->
                 Email.getReceiveService(config)
                         .getIMAPService()
-                        .getMessageCount(new Email.GotCountCallback() {
+                        .getMessageCount(new Email.GetCountCallback() {
                             @Override
-                            public void success(int total) {
+                            public void onSuccess(int total) {
                                 Utils.showToast(MainActivity.this, "全部邮件数量：" + total);
                             }
 
                             @Override
-                            public void failure(String msg) {
+                            public void onFailure(String msg) {
                                 Utils.showToast(MainActivity.this, "错误：" + msg);
                             }
                         })
@@ -143,14 +133,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.imap_rec_unread_count).setOnClickListener(view ->
                 Email.getReceiveService(config)
                         .getIMAPService()
-                        .getUnreadMessageCount(new Email.GotCountCallback() {
+                        .getUnreadMessageCount(new Email.GetCountCallback() {
                             @Override
-                            public void success(int total) {
+                            public void onSuccess(int total) {
                                 Utils.showToast(MainActivity.this, "未读邮件数量：" + total);
                             }
 
                             @Override
-                            public void failure(String msg) {
+                            public void onFailure(String msg) {
                                 Utils.showToast(MainActivity.this, "错误：" + msg);
                             }
                         })
@@ -160,16 +150,16 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.imap_rec_uid).setOnClickListener(view ->
                 Email.getReceiveService(config)
                         .getIMAPService()
-                        .getUIDList(new Email.GotUIDListCallback() {
+                        .getUIDList(new Email.GetUIDListCallback() {
                             @Override
-                            public void success(long[] uidList) {
+                            public void onSuccess(long[] uidList) {
                                 for (long i : uidList) {
                                     Log.i(TAG, "UID：" + i);
                                 }
                             }
 
                             @Override
-                            public void failure(String msg) {
+                            public void onFailure(String msg) {
                                 Utils.showToast(MainActivity.this, "错误：" + msg);
                             }
                         })
