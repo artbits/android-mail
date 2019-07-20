@@ -102,21 +102,21 @@ public final class SendService {
 
     /**
      * 发送邮件
-     * @param gotSendCallback
+     * @param getSendCallback
      */
-    public void send(Email.GotSendCallback gotSendCallback) {
+    public void send(Email.GetSendCallback getSendCallback) {
         new Thread(() ->
                 EmailCore.setConfig(config)
                         .setMessage(nickname, to, cc, bcc, subject, text, content)
-                        .send(new Email.GotSendCallback() {
+                        .send(new Email.GetSendCallback() {
                             @Override
-                            public void success() {
-                                handler.post(gotSendCallback::success);
+                            public void onSuccess() {
+                                handler.post(getSendCallback::onSuccess);
                             }
 
                             @Override
-                            public void failure(String msg) {
-                                handler.post(() -> gotSendCallback.failure(msg));
+                            public void onFailure(String msg) {
+                                handler.post(() -> getSendCallback.onFailure(msg));
                             }
                         })
         ).start();

@@ -159,56 +159,55 @@ public final class Email {
     /**
      * 邮件发送回调
      */
-    public interface GotSendCallback {
-        void success();
-        void failure(String msg);
+    public interface GetSendCallback {
+        void onSuccess();
+        void onFailure(String msg);
     }
 
     /**
      * 邮件接收回调
      */
-    public interface GotReceiveCallback {
-        void complete(int total);
+    public interface GetReceiveCallback {
         void receiving(Message message);
-        void received(List<Message> messageList);
-        void failure(String msg);
+        void onFinish(List<Message> messageList);
+        void onFailure(String msg);
     }
 
     /**
      * 获取消息回调
      */
-    public interface GotMessageCallback {
-        void success(Message message);
-        void failure(String msg);
+    public interface GetMessageCallback {
+        void onSuccess(Message message);
+        void onFailure(String msg);
     }
 
-    public interface GotMessageListCallback {
-        void success(List<Message> messageList);
-        void failure(String msg);
+    public interface GetMessageListCallback {
+        void onSuccess(List<Message> messageList);
+        void onFailure(String msg);
     }
 
     /**
      * 获取邮件数量回调
      */
-    public interface GotCountCallback {
-        void success(int total);
-        void failure(String msg);
+    public interface GetCountCallback {
+        void onSuccess(int total);
+        void onFailure(String msg);
     }
 
     /**
      * 获取邮箱的全部UID
      */
-    public interface GotUIDListCallback {
-        void success(long[] uidList);
-        void failure(String msg);
+    public interface GetUIDListCallback {
+        void onSuccess(long[] uidList);
+        void onFailure(String msg);
     }
 
     /**
      * 连接回调
      */
-    public interface GotConnectCallback {
-        void success();
-        void failure(String msg);
+    public interface GetConnectCallback {
+        void onSuccess();
+        void onFailure(String msg);
     }
 
 }

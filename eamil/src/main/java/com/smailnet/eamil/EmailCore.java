@@ -134,27 +134,27 @@ class EmailCore {
 
     /**
      * 发送邮件
-     * @param gotSendCallback
+     * @param getSendCallback
      */
-    void send(Email.GotSendCallback gotSendCallback) {
+    void send(Email.GetSendCallback getSendCallback) {
         try {
             Transport transport = session.getTransport(SMTP);
             transport.connect(smtpHost, account, password);
             transport.sendMessage(message, message.getRecipients(javax.mail.Message.RecipientType.TO));
             transport.close();
-            gotSendCallback.success();
+            getSendCallback.onSuccess();
         } catch (MessagingException e) {
             e.printStackTrace();
-            gotSendCallback.failure(e.getMessage());
+            getSendCallback.onFailure(e.getMessage());
         }
     }
 
     /**
      * 使用POP3协议或IMAP协议接收服务器上的邮件
      * @param protocol
-     * @param gotMessageCallback
+     * @param getMessageCallback
      */
-    synchronized void receiveAll(int protocol, Email.GotReceiveCallback gotMessageCallback) {
+    synchronized void receiveAll(int protocol, Email.GetReceiveCallback getMessageCallback) {
         try {
             Store store;
             if (protocol == Protocol.POP3) {
@@ -177,27 +177,23 @@ class EmailCore {
                 content = Converter.Content.toString(msg);
                 Message message = new Message(subject, from, to, date, content);
                 messageList.add(message);
-                gotMessageCallback.receiving(message);
+                getMessageCallback.receiving(message);
             }
-            gotMessageCallback.received(messageList);
-            gotMessageCallback.complete(folder.getMessageCount());
+            getMessageCallback.onFinish(messageList);
             folder.close(false);
             store.close();
-        }catch (MessagingException e) {
+        } catch (MessagingException | IOException e) {
             e.printStackTrace();
-            gotMessageCallback.failure(e.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-            gotMessageCallback.failure(e.toString());
+            getMessageCallback.onFailure(e.toString());
         }
     }
 
     /**
      * 获取全部邮件数量
      * @param protocol
-     * @param gotCountCallback
+     * @param getCountCallback
      */
-    void getMessageCount(int protocol, Email.GotCountCallback gotCountCallback) {
+    void getMessageCount(int protocol, Email.GetCountCallback getCountCallback) {
         try {
             Store store;
             if (protocol == Protocol.POP3) {
@@ -209,35 +205,35 @@ class EmailCore {
             }
             Folder folder = store.getFolder("INBOX");
             folder.open(Folder.READ_ONLY);
-            gotCountCallback.success(folder.getMessageCount());
-        }catch (MessagingException e) {
+            getCountCallback.onSuccess(folder.getMessageCount());
+        } catch (MessagingException e) {
             e.printStackTrace();
-            gotCountCallback.failure(e.getMessage());
+            getCountCallback.onFailure(e.getMessage());
         }
     }
 
     /**
      * 获取未读邮件数量
-     * @param gotCountCallback
+     * @param getCountCallback
      */
-    void getUnreadMessageCount(Email.GotCountCallback gotCountCallback) {
+    void getUnreadMessageCount(Email.GetCountCallback getCountCallback) {
         try {
             Store store = session.getStore(IMAP);
             store.connect(imapHost, account, password);
             Folder folder = store.getFolder("INBOX");
             folder.open(Folder.READ_ONLY);
-            gotCountCallback.success(folder.getUnreadMessageCount());
-        }catch (MessagingException e) {
+            getCountCallback.onSuccess(folder.getUnreadMessageCount());
+        } catch (MessagingException e) {
             e.printStackTrace();
-            gotCountCallback.failure(e.getMessage());
+            getCountCallback.onFailure(e.getMessage());
         }
     }
 
     /**
      * 获取全部UID
-     * @param gotUIDListCallback
+     * @param getUIDListCallback
      */
-    synchronized void getUIDList(Email.GotUIDListCallback gotUIDListCallback) {
+    synchronized void getUIDList(Email.GetUIDListCallback getUIDListCallback) {
         try {
             Store store = session.getStore(IMAP);
             store.connect(imapHost, account, password);
@@ -250,19 +246,19 @@ class EmailCore {
                 MimeMessage mimeMessage = (MimeMessage) messages[i];
                 uidList[i] = imapFolder.getUID(mimeMessage);
             }
-            gotUIDListCallback.success(uidList);
-        }catch (MessagingException e) {
+            getUIDListCallback.onSuccess(uidList);
+        } catch (MessagingException e) {
             e.printStackTrace();
-            gotUIDListCallback.failure(e.getMessage());
+            getUIDListCallback.onFailure(e.getMessage());
         }
     }
 
     /**
      * 获取某一封邮件消息
      * @param uid
-     * @param gotMessageCallback
+     * @param getMessageCallback
      */
-    void getMessage(long uid, Email.GotMessageCallback gotMessageCallback) {
+    void getMessage(long uid, Email.GetMessageCallback getMessageCallback) {
         try {
             Store store = session.getStore(IMAP);
             store.connect(imapHost, account, password);
@@ -276,22 +272,19 @@ class EmailCore {
             String date = Converter.Date.toString(msg.getSentDate());
             String content = Converter.Content.toString(msg);
             Message message = new Message(subject, from, to, date, content);
-            gotMessageCallback.success(message);
-        }catch (MessagingException e) {
+            getMessageCallback.onSuccess(message);
+        } catch (MessagingException | IOException e) {
             e.printStackTrace();
-            gotMessageCallback.failure(e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-            gotMessageCallback.failure(e.getMessage());
+            getMessageCallback.onFailure(e.getMessage());
         }
     }
 
     /**
      * 获取多封邮件消息
      * @param uidList
-     * @param gotMessageListCallback
+     * @param getMessageListCallback
      */
-    void getMessageList(long[] uidList, Email.GotMessageListCallback gotMessageListCallback) {
+    void getMessageList(long[] uidList, Email.GetMessageListCallback getMessageListCallback) {
         try {
             Store store = session.getStore(IMAP);
             store.connect(imapHost, account, password);
@@ -309,20 +302,18 @@ class EmailCore {
                 Message message = new Message(subject, from, to, date, content);
                 messageList.add(message);
             }
-            gotMessageListCallback.success(messageList);
-        }catch (MessagingException e) {
+            getMessageListCallback.onSuccess(messageList);
+        }catch (MessagingException | IOException e) {
             e.printStackTrace();
-            gotMessageListCallback.failure(e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-            gotMessageListCallback.failure(e.getMessage());
+            getMessageListCallback.onFailure(e.getMessage());
         }
     }
 
     /**
-     * 邮箱帐号检查
+     * 邮箱帐号及配置的检查
+     * @param getConnectCallback
      */
-    void connect(Email.GotConnectCallback gotConnectCallback) {
+    void connect(Email.GetConnectCallback getConnectCallback) {
         try {
             Transport transport = session.getTransport(SMTP);
             POP3Store pop3Store = (POP3Store) session.getStore(POP3);
@@ -336,13 +327,10 @@ class EmailCore {
             if (!TextUtils.isEmpty(imapHost) && !TextUtils.isEmpty(imapPort)) {
                 imapStore.connect(imapHost, account, password);
             }
-            gotConnectCallback.success();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-            gotConnectCallback.failure(e.getMessage());
+            getConnectCallback.onSuccess();
         } catch (MessagingException e) {
             e.printStackTrace();
-            gotConnectCallback.failure(e.getMessage());
+            getConnectCallback.onFailure(e.getMessage());
         }
     }
 

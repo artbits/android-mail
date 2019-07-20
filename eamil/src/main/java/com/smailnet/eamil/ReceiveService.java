@@ -42,30 +42,25 @@ public final class ReceiveService {
 
         /**
          * 使用POP3协议接收邮件
-         * @param gotReceiveCallback
+         * @param getReceiveCallback
          */
-        public void receive(Email.GotReceiveCallback gotReceiveCallback) {
+        public void receive(Email.GetReceiveCallback getReceiveCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .receiveAll(EmailCore.Protocol.POP3, new Email.GotReceiveCallback() {
-                                @Override
-                                public void complete(int total) {
-                                    handler.post(() -> gotReceiveCallback.complete(total));
-                                }
-
+                            .receiveAll(EmailCore.Protocol.POP3, new Email.GetReceiveCallback() {
                                 @Override
                                 public void receiving(Message message) {
-                                    handler.post(() -> gotReceiveCallback.receiving(message));
+                                    handler.post(() -> getReceiveCallback.receiving(message));
                                 }
 
                                 @Override
-                                public void received(List<Message> messageList) {
-                                    handler.post(() -> gotReceiveCallback.received(messageList));
+                                public void onFinish(List<Message> messageList) {
+                                    handler.post(() -> getReceiveCallback.onFinish(messageList));
                                 }
 
                                 @Override
-                                public void failure(String msg) {
-                                    handler.post(() -> gotReceiveCallback.failure(msg));
+                                public void onFailure(String msg) {
+                                    handler.post(() -> getReceiveCallback.onFailure(msg));
                                 }
                             })
             ).start();
@@ -73,20 +68,20 @@ public final class ReceiveService {
 
         /**
          * 获取全部邮件总数
-         * @return
+         * @param getCountCallback
          */
-        public void getMessageCount(Email.GotCountCallback gotCountCallback) {
+        public void getMessageCount(Email.GetCountCallback getCountCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .getMessageCount(EmailCore.Protocol.POP3, new Email.GotCountCallback() {
+                            .getMessageCount(EmailCore.Protocol.POP3, new Email.GetCountCallback() {
                                 @Override
-                                public void success(int total) {
-                                    handler.post(() -> gotCountCallback.success(total));
+                                public void onSuccess(int total) {
+                                    handler.post(() -> getCountCallback.onSuccess(total));
                                 }
 
                                 @Override
-                                public void failure(String msg) {
-                                    handler.post(() -> gotCountCallback.failure(msg));
+                                public void onFailure(String msg) {
+                                    handler.post(() -> getCountCallback.onFailure(msg));
                                 }
                             })
             ).start();
@@ -107,30 +102,25 @@ public final class ReceiveService {
 
         /**
          * 使用IMAP协议接收邮件
-         * @param gotReceiveCallback
+         * @param getReceiveCallback
          */
-        public void receive(Email.GotReceiveCallback gotReceiveCallback) {
+        public void receive(Email.GetReceiveCallback getReceiveCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .receiveAll(EmailCore.Protocol.IMAP, new Email.GotReceiveCallback() {
-                                @Override
-                                public void complete(int total) {
-                                    handler.post(() -> gotReceiveCallback.complete(total));
-                                }
-
+                            .receiveAll(EmailCore.Protocol.IMAP, new Email.GetReceiveCallback() {
                                 @Override
                                 public void receiving(Message message) {
-                                    handler.post(() -> gotReceiveCallback.receiving(message));
+                                    handler.post(() -> getReceiveCallback.receiving(message));
                                 }
 
                                 @Override
-                                public void received(List<Message> messageList) {
-                                    handler.post(() -> gotReceiveCallback.received(messageList));
+                                public void onFinish(List<Message> messageList) {
+                                    handler.post(() -> getReceiveCallback.onFinish(messageList));
                                 }
 
                                 @Override
-                                public void failure(String msg) {
-                                    handler.post(() -> gotReceiveCallback.failure(msg));
+                                public void onFailure(String msg) {
+                                    handler.post(() -> getReceiveCallback.onFailure(msg));
                                 }
                             })
             ).start();
@@ -138,20 +128,20 @@ public final class ReceiveService {
 
         /**
          * 获取全部邮件总数
-         * @return
+         * @param getCountCallback
          */
-        public void getMessageCount(Email.GotCountCallback gotCountCallback) {
+        public void getMessageCount(Email.GetCountCallback getCountCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .getMessageCount(EmailCore.Protocol.IMAP, new Email.GotCountCallback() {
+                            .getMessageCount(EmailCore.Protocol.IMAP, new Email.GetCountCallback() {
                                 @Override
-                                public void success(int total) {
-                                    handler.post(() -> gotCountCallback.success(total));
+                                public void onSuccess(int total) {
+                                    handler.post(() -> getCountCallback.onSuccess(total));
                                 }
 
                                 @Override
-                                public void failure(String msg) {
-                                    handler.post(() -> gotCountCallback.failure(msg));
+                                public void onFailure(String msg) {
+                                    handler.post(() -> getCountCallback.onFailure(msg));
                                 }
                             })
             ).start();
@@ -159,20 +149,20 @@ public final class ReceiveService {
 
         /**
          * 获取未读邮件总数
-         * @return
+         * @param getCountCallback
          */
-        public void getUnreadMessageCount(Email.GotCountCallback gotCountCallback) {
+        public void getUnreadMessageCount(Email.GetCountCallback getCountCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .getUnreadMessageCount(new Email.GotCountCallback() {
+                            .getUnreadMessageCount(new Email.GetCountCallback() {
                                 @Override
-                                public void success(int total) {
-                                    handler.post(() -> gotCountCallback.success(total));
+                                public void onSuccess(int total) {
+                                    handler.post(() -> getCountCallback.onSuccess(total));
                                 }
 
                                 @Override
-                                public void failure(String msg) {
-                                    handler.post(() -> gotCountCallback.failure(msg));
+                                public void onFailure(String msg) {
+                                    handler.post(() -> getCountCallback.onFailure(msg));
                                 }
                             })
             ).start();
@@ -180,20 +170,20 @@ public final class ReceiveService {
 
         /**
          * 获取全部UID
-         * @param gotUIDListCallback
+         * @param getUIDListCallback
          */
-        public void getUIDList(Email.GotUIDListCallback gotUIDListCallback) {
+        public void getUIDList(Email.GetUIDListCallback getUIDListCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .getUIDList(new Email.GotUIDListCallback() {
+                            .getUIDList(new Email.GetUIDListCallback() {
                                 @Override
-                                public void success(long[] uidList) {
-                                    handler.post(() -> gotUIDListCallback.success(uidList));
+                                public void onSuccess(long[] uidList) {
+                                    handler.post(() -> getUIDListCallback.onSuccess(uidList));
                                 }
 
                                 @Override
-                                public void failure(String msg) {
-                                    handler.post(() -> gotUIDListCallback.failure(msg));
+                                public void onFailure(String msg) {
+                                    handler.post(() -> getUIDListCallback.onFailure(msg));
                                 }
                             })
             ).start();
@@ -202,21 +192,21 @@ public final class ReceiveService {
         /**
          * 获取某条邮件信息
          * @param uid
-         * @param gotMessageCallback
+         * @param getMessageCallback
          */
-        public void getMessage(long uid, Email.GotMessageCallback gotMessageCallback) {
+        public void getMessage(long uid, Email.GetMessageCallback getMessageCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                            .getMessage(uid, new Email.GotMessageCallback() {
+                            .getMessage(uid, new Email.GetMessageCallback() {
                                 @Override
-                                public void success(Message message) {
-                                    handler.post(() -> gotMessageCallback.success(message));
-                                    gotMessageCallback.success(message);
+                                public void onSuccess(Message message) {
+                                    handler.post(() -> getMessageCallback.onSuccess(message));
+                                    getMessageCallback.onSuccess(message);
                                 }
 
                                 @Override
-                                public void failure(String msg) {
-                                    handler.post(() -> gotMessageCallback.failure(msg));
+                                public void onFailure(String msg) {
+                                    handler.post(() -> getMessageCallback.onFailure(msg));
                                 }
                             })
             ).start();
@@ -225,20 +215,20 @@ public final class ReceiveService {
         /**
          * 获取多条邮件信息
          * @param uidList
-         * @param gotMessageListCallback
+         * @param getMessageListCallback
          */
-        public void getMessageList(long[] uidList, Email.GotMessageListCallback gotMessageListCallback) {
+        public void getMessageList(long[] uidList, Email.GetMessageListCallback getMessageListCallback) {
             new Thread(() ->
                     EmailCore.setConfig(config)
-                    .getMessageList(uidList, new Email.GotMessageListCallback() {
+                    .getMessageList(uidList, new Email.GetMessageListCallback() {
                         @Override
-                        public void success(List<Message> messageList) {
-                            handler.post(() -> gotMessageListCallback.success(messageList));
+                        public void onSuccess(List<Message> messageList) {
+                            handler.post(() -> getMessageListCallback.onSuccess(messageList));
                         }
 
                         @Override
-                        public void failure(String msg) {
-                            handler.post(() -> gotMessageListCallback.failure(msg));
+                        public void onFailure(String msg) {
+                            handler.post(() -> getMessageListCallback.onFailure(msg));
                         }
                     })
             ).start();

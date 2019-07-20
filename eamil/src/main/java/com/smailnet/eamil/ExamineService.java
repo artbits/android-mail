@@ -15,20 +15,20 @@ public final class ExamineService {
 
     /**
      * 连接邮件服务器检查
-     * @param gotConnectCallback
+     * @param getConnectCallback
      */
-    public void connect(Email.GotConnectCallback gotConnectCallback) {
+    public void connect(Email.GetConnectCallback getConnectCallback) {
         new Thread(() ->
                 EmailCore.setConfig(config)
-                        .connect(new Email.GotConnectCallback() {
+                        .connect(new Email.GetConnectCallback() {
                             @Override
-                            public void success() {
-                                handler.post(gotConnectCallback::success);
+                            public void onSuccess() {
+                                handler.post(getConnectCallback::onSuccess);
                             }
 
                             @Override
-                            public void failure(String msg) {
-                                handler.post(() -> gotConnectCallback.failure(msg));
+                            public void onFailure(String msg) {
+                                handler.post(() -> getConnectCallback.onFailure(msg));
                             }
                         })
         ).start();
