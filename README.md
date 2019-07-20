@@ -4,13 +4,13 @@
 
 Email for Android是基于JavaMail封装的电子邮件框架，简化了开发者在Android客户端中编写发送电子邮件的的代码，同时还支持读取邮箱中的邮件。把它集成到你的Android项目中，你只需简单配置邮件服务器的参数，调用一些简易的API，即可完成你所需的功能，所见即所得。
 
+本文档是3.x版本的文档，如果你想阅读2.x版本的文档请点击 [这里](https://github.com/mailhu/email/blob/master/old_doc.md)
+
 * 相关阅读：
   + [《中国第一封电子邮件》](https://baike.baidu.com/item/%E4%B8%AD%E5%9B%BD%E7%AC%AC%E4%B8%80%E5%B0%81%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6)
   + [《SMTP百度百科》](https://baike.baidu.com/item/SMTP)
   + [《IMAP百度百科》](https://baike.baidu.com/item/imap)
   + [《POP3百度百科》](https://baike.baidu.com/item/POP3)
-
-如果你想阅读2.x版本的文档请点击 [这里](https://github.com/mailhu/email/blob/master/old_doc.md)
 
 # 安装引入
 步骤一、将JitPack存储库添加到根目录的build.gradle中：
@@ -25,7 +25,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:3.1.0'
+    implementation 'com.github.mailhu:email:3.1.1'
 }
 ```
 注：因为该库内部使用了Java 8新特性，如果你的项目依赖该库在构建时失败，出现如下错误：
@@ -80,14 +80,14 @@ Email.getSendService(config)
         .setNickname("小学生")          //设置发信人的昵称
         .setSubject("这是一封测试邮件")  //邮件主题
         .setText("Hello World !")       //邮件正文，若是发送HTML类型的正文用setContent()
-        .send(new Email.GotSendCallback() {
+        .send(new Email.GetSendCallback() {
             @Override
-            public void success() {
+            public void onSuccess() {
                 Log.i(TAG, "发送成功！");
             }
 
             @Override
-            public void failure(String msg) {
+            public void onFailure(String msg) {
                 Log.i(TAG, "错误信息：" + msg);
             }
         });
@@ -98,13 +98,7 @@ Email.getSendService(config)
 ```java
 Email.getReceiveService(config)
         .getIMAPService()           //如果你想使用POP3协议，这里改为getPOP3Service()
-        .receive(new Email.GotReceiveCallback() {
-            @Override
-            public void complete(int total) {
-                //读取完邮箱的全部邮件会回调这个方法
-                Log.i(TAG, "全部邮件数量：" + total);
-            }
-
+        .receive(new Email.GetReceiveCallback() {
             @Override
             public void receiving(Message message) {
                 //每读取一封邮件立即回调该方法，返回该封邮件的数据
@@ -112,12 +106,13 @@ Email.getReceiveService(config)
             }
 
             @Override
-            public void received(List<Message> messageList) {
-                //读取完邮箱的全部邮件会回调这个方法，一次性返回全部邮件的数据
+            public void onFinish(List<Message> messageList) {
+                //读取完邮箱的全部邮件会回调这个方法
+                Log.i(TAG, "全部邮件数量：" + messageList.size());
             }
 
             @Override
-            public void failure(String msg) {
+            public void onFailure(String msg) {
                 Log.i(TAG, "错误信息：" + msg);
             }
         });
@@ -128,16 +123,16 @@ UID是邮箱创建的邮件序号，每个用户邮箱账号的序列号都是�
 ```java
 Email.getReceiveService(config)
         .getIMAPService()
-        .getUIDList(new Email.GotUIDListCallback() {
+        .getUIDList(new Email.GetUIDListCallback() {
             @Override
-            public void success(long[] uidList) {
+            public void onSuccess(long[] uidList) {
                 for (long i : uidList) {
                     Log.i(TAG, "UID：" + i);
                 }
             }
 
             @Override
-            public void failure(String msg) {
+            public void onFailure(String msg) {
                 Log.i(TAG, "错误信息：" + msg);
             }
         });
@@ -148,9 +143,9 @@ Email.getReceiveService(config)
 ```java
 Email.getReceiveService(config)
         .getIMAPService()
-        .getMessage(870, new Email.GotMessageCallback() {
+        .getMessage(870, new Email.GetMessageCallback() {
             @Override
-            public void success(Message message) {
+            public void onSuccess(Message message) {
                 Log.i(TAG, "主题：" + message.getSubject());
                 Log.i(TAG, "发信人：" + message.getFrom());
                 Log.i(TAG, "收信人：" + message.getTo());
@@ -159,7 +154,7 @@ Email.getReceiveService(config)
             }
 
             @Override
-            public void failure(String msg) {
+            public void onFailure(String msg) {
                 Log.i(TAG, "错误信息：" + msg);
             }
         });
@@ -170,14 +165,14 @@ Email.getReceiveService(config)
 long[] uidList= new long[]{15, 40, 869, 870};
 Email.getReceiveService(config)
         .getIMAPService()
-        .getMessageList(uidList, new Email.GotMessageListCallback() {
+        .getMessageList(uidList, new Email.GetMessageListCallback() {
             @Override
-            public void success(List<Message> messageList) {
+            public void onSuccess(List<Message> messageList) {
                 //messageList是对应该组UID的邮件数据
             }
 
             @Override
-            public void failure(String msg) {
+            public void onFailure(String msg) {
                 Log.i(TAG, "错误信息：" + msg);
             }
         });
@@ -188,14 +183,14 @@ Email.getReceiveService(config)
 ```java
 Email.getReceiveService(config)
         .getIMAPService()           //如果你想使用POP3协议，这里改为getPOP3Service()
-        .getMessageCount(new Email.GotCountCallback() {
+        .getMessageCount(new Email.GetCountCallback() {
             @Override
-            public void success(int total) {
+            public void onSuccess(int total) {
                 Log.i(TAG, "邮箱中邮件总数：" + total);
             }
 
             @Override
-            public void failure(String msg) {
+            public void onFailure(String msg) {
                 Log.i(TAG, "错误信息：" + msg);
             }
         });
@@ -205,14 +200,14 @@ Email.getReceiveService(config)
 ```java
 Email.getReceiveService(config)
         .getIMAPService()
-        .getUnreadMessageCount(new Email.GotCountCallback() {
+        .getUnreadMessageCount(new Email.GetCountCallback() {
             @Override
-            public void success(int total) {
+            public void onSuccess(int total) {
                 Log.i(TAG, "未读邮件数：" + total);
             }
 
             @Override
-            public void failure(String msg) {
+            public void onFailure(String msg) {
                 Log.i(TAG, "错误信息：" + msg);
             }
         });
@@ -221,14 +216,14 @@ Email.getReceiveService(config)
 ###  ● 检查邮配置和账号密码是否正确
 ```java
 Email.getExamineService(config)
-        .connect(new Email.GotConnectCallback() {
+        .connect(new Email.GetConnectCallback() {
             @Override
-            public void success() {
+            public void onSuccess() {
                 Log.i(TAG, "连接成功！");
             }
 
             @Override
-            public void failure(String msg) {
+            public void onFailure(String msg) {
                 Log.i(TAG, "错误信息：" + msg);
             }
         });
@@ -252,6 +247,9 @@ Email.getExamineService(config)
 ```
 
 # 更新日志
+* Email for Android 3.1.0
+  + 规范回调接口的命名和简化接收邮件回调接口的逻辑
+
 * Email for Android 3.1.0
   + 修改JavaMail的版本，用Android版本的JavaMail替换原来Java标准版的JavaMail
   + 彻底修复读取邮件时Object对象类型转Multipartd类型时出现java.lang.ClassCastException的错误
