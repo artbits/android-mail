@@ -7,6 +7,7 @@ Email for Android是基于JavaMail封装的电子邮件框架，简化了开发�
 本文档是3.x版本的文档，如果你想阅读2.x版本的文档请点击 [这里](https://github.com/mailhu/email/blob/master/old_doc.md)
 
 * 相关阅读：
+  + [《一个邮件框架的重构记录》](https://www.jianshu.com/p/e43456c752c9)
   + [《中国第一封电子邮件》](https://baike.baidu.com/item/%E4%B8%AD%E5%9B%BD%E7%AC%AC%E4%B8%80%E5%B0%81%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6)
   + [《SMTP百度百科》](https://baike.baidu.com/item/SMTP)
   + [《IMAP百度百科》](https://baike.baidu.com/item/imap)
