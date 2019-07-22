@@ -51,7 +51,9 @@ android {
 ```
 
 ###  ● 配置邮件服务器的参数
-快速配置，目前只支持QQ，Foxmail，网易邮箱
+[如何开启邮箱SMTP，IMAP，POP3服务和获取授权码？](https://github.com/mailhu/email#%E5%BC%80%E5%90%AF%E6%9C%8D%E5%8A%A1%E4%B8%8E%E8%8E%B7%E5%8F%96%E6%8E%88%E6%9D%83%E7%A0%81)
+
+快速配置，目前只支持QQ邮箱，Foxmail，网易邮箱
 ```java
 Email.Config config = new Email.Config()
         .setMailType(Email.MailType.QQ)     //选择邮箱类型
@@ -247,7 +249,7 @@ Email.getExamineService(config)
 ```
 
 # 更新日志
-* Email for Android 3.1.0
+* Email for Android 3.1.1
   + 规范回调接口的命名和简化接收邮件回调接口的逻辑
 
 * Email for Android 3.1.0
