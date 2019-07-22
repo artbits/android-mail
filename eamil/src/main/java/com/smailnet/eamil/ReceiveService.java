@@ -201,7 +201,6 @@ public final class ReceiveService {
                                 @Override
                                 public void onSuccess(Message message) {
                                     handler.post(() -> getMessageCallback.onSuccess(message));
-                                    getMessageCallback.onSuccess(message);
                                 }
 
                                 @Override
