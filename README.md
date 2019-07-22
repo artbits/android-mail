@@ -25,7 +25,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:3.1.1'
+    implementation 'com.github.mailhu:email:3.1.2'
 }
 ```
 注：因为该库内部使用了Java 8新特性，如果你的项目依赖该库在构建时失败，出现如下错误：
@@ -249,6 +249,9 @@ Email.getExamineService(config)
 ```
 
 # 更新日志
+* Email for Android 3.1.2
+  + 修复getMessage方法回调两次的问题
+
 * Email for Android 3.1.1
   + 规范回调接口的命名和简化接收邮件回调接口的逻辑
 
