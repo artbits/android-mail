@@ -7,7 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.smailnet.eamil.Email;
-import com.smailnet.eamil.Message;
+import com.smailnet.eamil.entity.Message;
 
 import java.util.List;
 
@@ -53,9 +53,9 @@ public class MainActivity extends AppCompatActivity {
                         .getPOP3Service()
                         .receive(new Email.GetReceiveCallback() {
                             @Override
-                            public void receiving(Message message) {
+                            public void receiving(Message message, int index, int total) {
                                 //每读取一封邮件即回调该封邮件的结果
-                                Log.i(TAG, "标题：" + message.getSubject() + " 时间：" + message.getDate());
+                                Log.i(TAG, "标题：" + message.getSubject() + " 时间：" + message.getSentDate().getText());
                             }
 
                             @Override
@@ -94,9 +94,9 @@ public class MainActivity extends AppCompatActivity {
                         .getIMAPService()
                         .receive(new Email.GetReceiveCallback() {
                             @Override
-                            public void receiving(Message message) {
+                            public void receiving(Message message, int index, int total) {
                                 //每读取一封邮件即回调该封邮件的结果
-                                Log.i(TAG, "标题：" + message.getSubject() + " 时间：" + message.getDate());
+                                Log.i(TAG, "标题：" + message.getSubject() + " 时间：" + message.getSentDate().getText());
                             }
 
                             @Override
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     static class Utils {
-        public static void showToast(Context context, String s) {
+        static void showToast(Context context, String s) {
             Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
         }
     }
