@@ -31,4 +31,6 @@ interface Constant {
     String IMAP_HOST = "imap_host";
     String IMAP_PORT = "imap_port";
 
+    String GLOBAL_CONFIG_EXCEPTION = "The Email framework has not yet been configured globally.";
+    String CONFIG_EXCEPTION = "Email.Config object can not be empty";
 }

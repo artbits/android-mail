@@ -16,6 +16,8 @@
 package com.smailnet.eamil;
 
 
+import com.smailnet.eamil.entity.Message;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,6 +32,8 @@ import java.util.List;
  * @version 3.0.0
  */
 public final class Email {
+
+    private static GlobalConfig globalConfig;
 
     /**
      * 常用的邮箱的类型选择
@@ -54,8 +58,8 @@ public final class Email {
         private int popPort;
         private int imapPort;
 
-        public Config setMailType(int mailType) {
-            HashMap<String, Object> hashMap = Converter.MailType.getResult(mailType);
+        public Config setMailType(int type) {
+            HashMap<String, Object> hashMap = Converter.MailType.getParam(type);
             if (hashMap != null) {
                 this.smtpHost = String.valueOf(hashMap.get(Constant.SMTP_HOST));
                 this.smtpPort = (int) hashMap.get(Constant.SMTP_PORT);
@@ -95,38 +99,66 @@ public final class Email {
             return this;
         }
 
-        protected String getAccount() {
+        String getAccount() {
             return account;
         }
 
-        protected String getPassword() {
+        String getPassword() {
             return password;
         }
 
-        protected String getSmtpHost() {
+        String getSmtpHost() {
             return smtpHost;
         }
 
-        protected String getPopHost() {
+        String getPopHost() {
             return popHost;
         }
 
-        protected String getImapHost() {
+        String getImapHost() {
             return imapHost;
         }
 
-        protected int getSmtpPort() {
+        int getSmtpPort() {
             return smtpPort;
         }
 
-        protected int getPopPort() {
+        int getPopPort() {
             return popPort;
         }
 
-        protected int getImapPort() {
+        int getImapPort() {
             return imapPort;
         }
 
+    }
+
+    /**
+     * 获取全局配置
+     * @return
+     */
+    public static GlobalConfig setGlobalConfig() {
+        globalConfig = (globalConfig == null)? new GlobalConfig() : globalConfig;
+        return globalConfig;
+    }
+
+    /**
+     * 框架内部获取全局配置变量
+     * @return
+     */
+    static GlobalConfig getGlobalConfig() {
+        if (globalConfig == null) {
+            throw new RuntimeException(Constant.GLOBAL_CONFIG_EXCEPTION);
+        }
+        return globalConfig;
+    }
+
+    /**
+     * 获取发送邮件服务
+     * @return
+     */
+    public static SendService getSendService() {
+        return new SendService();
     }
 
     /**
@@ -140,11 +172,27 @@ public final class Email {
 
     /**
      * 获取接收邮件服务
+     * @return
+     */
+    public static ReceiveService getReceiveService() {
+        return new ReceiveService();
+    }
+
+    /**
+     * 获取接收邮件服务
      * @param config
      * @return
      */
     public static ReceiveService getReceiveService(Config config) {
         return new ReceiveService(config);
+    }
+
+    /**
+     * 检查邮件服务器
+     * @return
+     */
+    public static ExamineService getExamineService() {
+        return new ExamineService();
     }
 
     /**
@@ -168,7 +216,7 @@ public final class Email {
      * 邮件接收回调
      */
     public interface GetReceiveCallback {
-        void receiving(Message message);
+        void receiving(Message message, int index, int total);
         void onFinish(List<Message> messageList);
         void onFailure(String msg);
     }

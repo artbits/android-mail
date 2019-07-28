@@ -2,17 +2,21 @@ package com.smailnet.eamil;
 
 import android.annotation.SuppressLint;
 
+import com.smailnet.eamil.entity.From;
+import com.smailnet.eamil.entity.SentDate;
+import com.smailnet.eamil.entity.Message;
+import com.smailnet.eamil.entity.To;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import javax.mail.Address;
-import javax.mail.Message;
+import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeUtility;
 
 /**
  * 数据转换的工具类
@@ -20,50 +24,14 @@ import javax.mail.internet.MimeUtility;
 class Converter {
 
     /**
-     * 邮件地址转换
+     * 常用邮箱类型的转换
      */
-    public static class MailAddress {
+    static class MailType {
 
-        public static Address[] toArrays(String address) {
-            int length = (new String[]{address}).length;
-            Address[] addresses = new InternetAddress[length];
-            try {
-                addresses[0] = new InternetAddress(address);
-                return addresses;
-            } catch (AddressException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        public static String toString(Address[] addresses) {
-            if (addresses != null && addresses.length != 0) {
-                String address = String.valueOf(addresses[0]);
-                try {
-                    if (address.startsWith("=?GB") || address.startsWith("=?gb")
-                            || address.startsWith("=?UTF") || address.startsWith("=?utf")) {
-                        address = MimeUtility.decodeText(address);
-                    }
-                    return address;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }else {
-                return null;
-            }
-        }
-
-    }
-
-    /**
-     * 常用邮件类型的转换
-     */
-    public static class MailType {
-
-        public static HashMap<String, Object> getResult(int mailType) {
+        //获取该邮箱对应的服务器配置参数
+        static HashMap<String, Object> getParam(int type) {
             HashMap<String, Object> hashMap = new HashMap<>();
-            switch (mailType) {
+            switch (type) {
                 case Email.MailType.QQ:
                 case Email.MailType.FOXMAIL:
                     hashMap.put(Constant.SMTP_HOST, "smtp.qq.com");
@@ -89,16 +57,62 @@ class Converter {
     }
 
     /**
+     * 邮件地址转换
+     */
+    static class MailAddress {
+
+        //字符串类型地址转为数组类型
+        static Address[] toArrays(String address) {
+            try {
+                int length = (new String[]{address}).length;
+                Address[] addresses = new InternetAddress[length];
+                addresses[0] = new InternetAddress(address);
+                return addresses;
+            } catch (AddressException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        //获取邮件地址
+        static String getAddress(Address[] addresses) {
+            if (addresses != null && addresses.length != 0) {
+                InternetAddress address = (InternetAddress) addresses[0];
+                return address.getAddress();
+            } else {
+                return null;
+            }
+        }
+
+        //获取该邮件地址对应的用户昵称
+        static String getNickname(Address[] addresses) {
+            InternetAddress address = (InternetAddress) addresses[0];
+            return address.getPersonal();
+        }
+
+    }
+
+    /**
      * 日期转换
      */
-    public static class Date {
+    static class Date {
 
+        //Date对象转为字符串类型，格式为yyyy年M月d日 hh:mm
         @SuppressLint("SimpleDateFormat")
-        public static String toString(java.util.Date date){
+        static String toString(java.util.Date date){
             if (date != null){
-                return new SimpleDateFormat("yyyy-MM-dd").format(date);
+                return new SimpleDateFormat("yyyy年M月d日 hh:mm").format(date);
             }else {
                 return null;
+            }
+        }
+
+        //Date对象转为长整型，时间单位为毫秒
+        static long toLong(java.util.Date date) {
+            if (date != null){
+                return date.getTime();
+            }else {
+                return 0;
             }
         }
 
@@ -107,14 +121,15 @@ class Converter {
     /**
      * 消息内容转换
      */
-    public static class Content {
+    static class Content {
 
-        public static String toString(Message message) throws IOException, MessagingException {
+        //解析邮件内容并转为字符串类型
+        static String toString(javax.mail.Message message) throws IOException, MessagingException {
             StringBuilder bodyText = new StringBuilder();
             if (message.isMimeType("text/plain")) {
-                bodyText.append(String.valueOf(message.getContent()));
+                bodyText.append(message.getContent());
             } else if (message.isMimeType("text/html")) {
-                bodyText.append(String.valueOf(message.getContent()));
+                bodyText.append(message.getContent());
             } else if (message.isMimeType("multipart/*")) {
                 Multipart multipart = (Multipart) message.getContent();
                 for (int i = 0, counts = multipart.getCount(); i < counts; i++) {
@@ -122,6 +137,31 @@ class Converter {
                 }
             }
             return bodyText.toString();
+        }
+
+    }
+
+    /**
+     * 邮件数据转换
+     */
+    static class InternetMessage {
+
+        //把JavaMail的Message对象的重要数据复制到Email的Message对象中
+        static Message toLocalMessage(long uid, javax.mail.Message message, boolean isFast) throws MessagingException, IOException {
+            //邮件主题
+            String subject = message.getSubject();
+            //邮件内容
+            String content = (isFast)? null : Content.toString(message);
+            //邮件的发送日期
+            SentDate sentDate = new SentDate(Date.toLong(message.getSentDate()), Date.toString(message.getSentDate()));
+            //发件人
+            From from = new From(MailAddress.getAddress(message.getFrom()), MailAddress.getNickname(message.getFrom()));
+            //收件人
+            To to = new To(MailAddress.getAddress(message.getAllRecipients()), MailAddress.getNickname(message.getFrom()));
+            //邮件是否已读
+            boolean isSeen = message.getFlags().contains(Flags.Flag.SEEN);
+            //返回转换结果
+            return new Message(uid, subject, content, sentDate, from, to, isSeen);
         }
 
     }

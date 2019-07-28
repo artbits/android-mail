@@ -10,7 +10,6 @@ import javax.mail.internet.MimeUtility;
 
 public final class SendService {
 
-    private Email.Config config;
     private String nickname;
     private String subject;
     private String text;
@@ -20,10 +19,16 @@ public final class SendService {
     private Address[] bcc;
 
     private Handler handler;
+    private EmailCore core;
+
+    SendService() {
+        handler = new Handler(Looper.getMainLooper());
+        core = EmailCore.getAutoConfig();
+    }
 
     SendService(Email.Config config) {
-        this.config = config;
         handler = new Handler(Looper.getMainLooper());
+        core = EmailCore.setConfig(config);
     }
 
     /**
@@ -105,20 +110,20 @@ public final class SendService {
      * @param getSendCallback
      */
     public void send(Email.GetSendCallback getSendCallback) {
-        new Thread(() ->
-                EmailCore.setConfig(config)
-                        .setMessage(nickname, to, cc, bcc, subject, text, content)
-                        .send(new Email.GetSendCallback() {
-                            @Override
-                            public void onSuccess() {
-                                handler.post(getSendCallback::onSuccess);
-                            }
+        new Thread(() -> {
+            core.setMessage(nickname, to, cc, bcc, subject, text, content);
+            core.send(new Email.GetSendCallback() {
+                @Override
+                public void onSuccess() {
+                    handler.post(getSendCallback::onSuccess);
+                }
 
-                            @Override
-                            public void onFailure(String msg) {
-                                handler.post(() -> getSendCallback.onFailure(msg));
-                            }
-                        })
-        ).start();
+                @Override
+                public void onFailure(String msg) {
+                    handler.post(() -> getSendCallback.onFailure(msg));
+                }
+            });
+        }).start();
     }
+
 }

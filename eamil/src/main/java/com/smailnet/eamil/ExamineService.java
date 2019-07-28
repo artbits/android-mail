@@ -5,12 +5,17 @@ import android.os.Looper;
 
 public final class ExamineService {
 
-    private Email.Config config;
     private Handler handler;
+    private EmailCore core;
+
+    ExamineService() {
+        handler = new Handler(Looper.getMainLooper());
+        core = EmailCore.getAutoConfig();
+    }
 
     ExamineService(Email.Config config) {
-        this.config = config;
         handler = new Handler(Looper.getMainLooper());
+        core = EmailCore.setConfig(config);
     }
 
     /**
@@ -19,18 +24,17 @@ public final class ExamineService {
      */
     public void connect(Email.GetConnectCallback getConnectCallback) {
         new Thread(() ->
-                EmailCore.setConfig(config)
-                        .connect(new Email.GetConnectCallback() {
-                            @Override
-                            public void onSuccess() {
-                                handler.post(getConnectCallback::onSuccess);
-                            }
+                core.connect(new Email.GetConnectCallback() {
+                    @Override
+                    public void onSuccess() {
+                        handler.post(getConnectCallback::onSuccess);
+                    }
 
-                            @Override
-                            public void onFailure(String msg) {
-                                handler.post(() -> getConnectCallback.onFailure(msg));
-                            }
-                        })
+                    @Override
+                    public void onFailure(String msg) {
+                        handler.post(() -> getConnectCallback.onFailure(msg));
+                    }
+                })
         ).start();
     }
 }
