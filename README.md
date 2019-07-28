@@ -26,7 +26,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:3.1.2'
+    implementation 'com.github.mailhu:email:3.2.0'
 }
 ```
 注：因为该库内部使用了Java 8新特性，如果你的项目依赖该库在构建时失败，出现如下错误：
@@ -70,13 +70,31 @@ Email.Config config = new Email.Config()
         .setAccount("from@qq.com")          //发件人的邮箱
         .setPassword("password");           //发件人邮箱的密码或者授权码
 ```
+如果你需要频繁使用到Email.Config对象，还可以使用全局配置API，只需配置一次，全局多次使用。
+```java
+//快速配置
+Email.setGlobalConfig()
+        .setMailType(Email.MailType.QQ)     //选择邮箱类型
+        .setAccount("from@qq.com")          //发件人的邮箱
+        .setPassword("password");           //发件人邮箱的密码或者授权码
+
+
+//自定义配置
+Email.setGlobalConfig()
+        .setSMTP("smtp.qq.com", 465)        //设置SMTP发件服务器主机地址和端口
+        .setIMAP("imap.qq.com", 993)        //设置IMAP收件服务器主机地址和端口
+        .setPOP3("pop.qq.com", 995)         //设置POP3收件服务器主机地址和端口
+        .setAccount("from@qq.com")          //发件人的邮箱
+        .setPassword("password");           //发件人邮箱的密码或者授权码     
+```
 
 **注：下面示例代码中的全部回调接口已是从子线程切换回UI线程，可以在里面直接更新UI。**
 
 ###  ● 发送邮件
 发送邮件setCc( )和setBcc( )方法非必选，可省略；setText( )和setContent( )必需二选一。
+如果你已经设置了全局配置，getSendService( )方法无需再传入参数config，getReceiveService( )方法和getExamineService( )方法同理。
 ```java
-Email.getSendService(config)
+Email.getSendService(config)            //已设置全局配置后，无需再传入参数config
         .setTo("to@qq.com")             //收件人的邮箱地址
         .setCc("cc@qq.com")             //抄送人的邮箱地址（非必选）
         .setBcc("bcc@qq.com")           //密送人的邮箱地址（非必选）
@@ -97,15 +115,15 @@ Email.getSendService(config)
 ```
 
 ###  ● 读取邮箱中的邮件
-使用IMAP协议或POP3协议读取邮箱中的内容，以下使用IMAP协议为例
+使用IMAP协议或POP3协议读取邮箱中的邮件，以下使用IMAP协议为例
 ```java
 Email.getReceiveService(config)
         .getIMAPService()           //如果你想使用POP3协议，这里改为getPOP3Service()
         .receive(new Email.GetReceiveCallback() {
             @Override
-            public void receiving(Message message) {
+            public void receiving(Message message, int index, int total) {
                 //每读取一封邮件立即回调该方法，返回该封邮件的数据
-                Log.i(TAG, "标题：" + message.getSubject() + " 时间：" + message.getDate());
+                Log.i(TAG, "标题：" + message.getSubject() + " 时间：" + message.getSentDate().getText());
             }
 
             @Override
@@ -120,6 +138,29 @@ Email.getReceiveService(config)
             }
         });
 ```
+
+使用IMAP协议快速读取邮箱中的邮件，**但不解析邮件中的内容**，速度提升50%（不支持POP3协议）
+```java
+Email.getReceiveService(config)
+        .getIMAPService()
+        .fastReceive(new Email.GetReceiveCallback() {
+            @Override
+            public void receiving(Message message, int index, int total) {
+                Log.i(TAG, "标题：" + message.getSubject() + " 时间：" + message.getSentDate().getText());
+            }
+
+            @Override
+            public void onFinish(List<Message> messageList) {
+
+            }
+
+            @Override
+            public void onFailure(String msg) {
+
+            }
+        });
+```
+
 
 ###  ● 获取邮箱中全部邮件的UID
 UID是邮箱创建的邮件序号，每个用户邮箱账号的序列号都是独一无二的。使用UID来同步邮件速度很快，每次同步最新的UID下来，再与之前缓存的UID进行比较即可分析哪些邮件是新的，哪些邮件是已被删除的。
@@ -150,9 +191,9 @@ Email.getReceiveService(config)
             @Override
             public void onSuccess(Message message) {
                 Log.i(TAG, "主题：" + message.getSubject());
-                Log.i(TAG, "发信人：" + message.getFrom());
-                Log.i(TAG, "收信人：" + message.getTo());
-                Log.i(TAG, "日期：" + message.getDate());
+                Log.i(TAG, "发件人：" + message.getFrom().getNickname());
+                Log.i(TAG, "收件人：" + message.getTo().getNickname());
+                Log.i(TAG, "日期：" + message.getSentDate().getText());
                 Log.i(TAG, "内容：" + message.getContent());
             }
 
@@ -232,6 +273,31 @@ Email.getExamineService(config)
         });
 ```
 
+###  ● Message对象的成员方法说明
+```java
+//获取邮件的uid，仅使用IMAP协议时生效
+long uid = message.getUid();
+//获取邮件的主题
+String subject = message.getSubject();
+//获取该封邮件的内容
+String content = message.getContent();
+//获取发件人（对方）的邮箱地址
+String fromAddress = message.getFrom().getAddress();
+//获取发件人（对方）的昵称
+String fromNickname = message.getFrom().getNickname();
+//获取收件人（自己）的邮箱地址
+String toAddress = message.getTo().getAddress();
+//获取发件人（自己）的昵称
+String toNickname = message.getTo().getNickname();
+//获取邮件的发送时间，格式为格式为yyyy年M月d日 hh:mm
+String date = message.getSentDate().getText();
+//获取邮件的发送时间，单位毫秒
+long millisecond = message.getSentDate().getMillisecond();
+//判断该封邮件是否已读
+boolean isSeen = message.isSeen();
+```
+
+
 # 开启服务与获取授权码
 若使用QQ邮箱（其他邮箱参考QQ邮箱），开启服务的步骤：登录QQ邮箱，进入【设置】-【帐户】，把下列服务开启，然后获取授权码。如下图：
 
@@ -250,6 +316,11 @@ Email.getExamineService(config)
 ```
 
 # 更新日志
+* Email for Android 3.2.0
+  + 增加邮件服务器参数的全局配置API
+  + 增加快速读取邮件的API
+  + Message类增加获取收件人、发件人昵称和判断邮件是否已读功能
+
 * Email for Android 3.1.2
   + 修复getMessage方法回调两次的问题
 
