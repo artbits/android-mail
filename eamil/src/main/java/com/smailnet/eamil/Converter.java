@@ -133,6 +133,9 @@ class Converter {
             } else if (message.isMimeType("multipart/*")) {
                 Multipart multipart = (Multipart) message.getContent();
                 for (int i = 0, counts = multipart.getCount(); i < counts; i++) {
+                    if (multipart.getBodyPart(i).isMimeType("text/plain")) {
+                        continue;
+                    }
                     bodyText.append(multipart.getBodyPart(i).getContent());
                 }
             }
@@ -157,7 +160,7 @@ class Converter {
             //发件人
             From from = new From(MailAddress.getAddress(message.getFrom()), MailAddress.getNickname(message.getFrom()));
             //收件人
-            To to = new To(MailAddress.getAddress(message.getAllRecipients()), MailAddress.getNickname(message.getFrom()));
+            To to = new To(MailAddress.getAddress(message.getAllRecipients()), MailAddress.getNickname(message.getAllRecipients()));
             //邮件是否已读
             boolean isSeen = message.getFlags().contains(Flags.Flag.SEEN);
             //返回转换结果

@@ -16,6 +16,8 @@
 package com.smailnet.eamil;
 
 
+import android.content.Context;
+
 import com.smailnet.eamil.entity.Message;
 
 import java.util.HashMap;
@@ -34,15 +36,6 @@ import java.util.List;
 public final class Email {
 
     private static GlobalConfig globalConfig;
-
-    /**
-     * 常用的邮箱的类型选择
-     */
-    public interface MailType {
-        int QQ = 1;
-        int FOXMAIL = 2;
-        int NETEASE = 3;
-    }
 
     /**
      * 邮件的服务器配置内容
@@ -131,6 +124,14 @@ public final class Email {
             return imapPort;
         }
 
+    }
+
+    /**
+     * Email框架初始化，该方法应该在自定义的Application中调用。
+     * @param context
+     */
+    public static void initialize(Context context) {
+        globalConfig = new GlobalConfig();
     }
 
     /**
@@ -256,6 +257,15 @@ public final class Email {
     public interface GetConnectCallback {
         void onSuccess();
         void onFailure(String msg);
+    }
+
+    /**
+     * 常用的邮箱的类型选择
+     */
+    public interface MailType {
+        int QQ = 1;
+        int FOXMAIL = 2;
+        int NETEASE = 3;
     }
 
 }
