@@ -26,7 +26,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:3.2.0'
+    implementation 'com.github.mailhu:email:3.2.1'
 }
 ```
 注：因为该库内部使用了Java 8新特性，如果你的项目依赖该库在构建时失败，出现如下错误：
@@ -316,6 +316,11 @@ boolean isSeen = message.isSeen();
 ```
 
 # 更新日志
+* Email for Android 3.2.1
+  + 修复获取收件人昵称错误的问题
+  + 对解析的邮件内容进行“提纯”
+  + 增加框架初始化的方法
+
 * Email for Android 3.2.0
   + 增加邮件服务器参数的全局配置API
   + 增加快速读取邮件的API
