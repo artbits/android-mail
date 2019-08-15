@@ -33,4 +33,5 @@ interface Constant {
 
     String GLOBAL_CONFIG_EXCEPTION = "The Email framework has not yet been configured globally.";
     String CONFIG_EXCEPTION = "Email.Config object can not be empty";
+    String MESSAGE_EXCEPTION = "Message does not exist";
 }

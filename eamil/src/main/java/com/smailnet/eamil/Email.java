@@ -230,6 +230,9 @@ public final class Email {
         void onFailure(String msg);
     }
 
+    /**
+     * 获取全部消息回调
+     */
     public interface GetMessageListCallback {
         void onSuccess(List<Message> messageList);
         void onFailure(String msg);
@@ -243,8 +246,13 @@ public final class Email {
         void onFailure(String msg);
     }
 
+    public interface GetSyncMessageCallback {
+        void onSuccess(List<Message> messageList, long[] deleteUidList);
+        void onFailure(String msg);
+    }
+
     /**
-     * 获取邮箱的全部UID
+     * 获取邮箱的全部UID回调
      */
     public interface GetUIDListCallback {
         void onSuccess(long[] uidList);
@@ -255,6 +263,14 @@ public final class Email {
      * 连接回调
      */
     public interface GetConnectCallback {
+        void onSuccess();
+        void onFailure(String msg);
+    }
+
+    /**
+     * 标记回调
+     */
+    public interface GetFlagCallback {
         void onSuccess();
         void onFailure(String msg);
     }

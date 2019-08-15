@@ -9,11 +9,13 @@ import com.sun.mail.pop3.POP3Store;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Address;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -256,20 +258,19 @@ class EmailCore {
         try {
             Store store = session.getStore(IMAP);
             store.connect(imapHost, account, password);
-            Folder folder = store.getFolder("INBOX");
-            folder.open(Folder.READ_ONLY);
-            javax.mail.Message[] messages = folder.getMessages();
+            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
+            imapFolder.open(Folder.READ_ONLY);
+            javax.mail.Message[] messages = imapFolder.getMessages();
             List<Message> messageList = new ArrayList<>();
             int total = messages.length;
             int index = 0;
             for (javax.mail.Message msg: messages){
-                Message message = Converter.InternetMessage
-                        .toLocalMessage(((IMAPFolder) folder).getUID(msg), msg, true);
+                Message message = Converter.InternetMessage.toLocalMessage(imapFolder.getUID(msg), msg, true);
                 messageList.add(message);
                 getReceiveCallback.receiving(message, ++index, total);
             }
             getReceiveCallback.onFinish(messageList);
-            folder.close(false);
+            imapFolder.close(false);
             store.close();
         } catch (MessagingException | IOException e) {
             e.printStackTrace();
@@ -319,21 +320,111 @@ class EmailCore {
     }
 
     /**
-     * 获取全部UID
-     * @param getUIDListCallback
+     * 同步消息，极快。
+     * @param originalUidList
+     * @param getSyncMessageCallback
      */
-    synchronized void getUIDList(Email.GetUIDListCallback getUIDListCallback) {
+    void syncMessage(long[] originalUidList, Email.GetSyncMessageCallback getSyncMessageCallback) {
         try {
             Store store = session.getStore(IMAP);
             store.connect(imapHost, account, password);
-            Folder folder = store.getFolder("INBOX");
-            folder.open(Folder.READ_ONLY);
-            IMAPFolder imapFolder = (IMAPFolder) folder;
+            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
+            imapFolder.open(Folder.READ_ONLY);
+            javax.mail.Message[] messages = imapFolder.getMessages();
+
+            //对原uid列表排序
+            Arrays.sort(originalUidList);
+
+            //需要返回的新消息和需要删除本地邮件的uid
+            List<Message> messageList = new ArrayList<>();
+            long[] deleteUidList = new long[]{};
+
+            //判断同步类型
+            switch (UIDHandle.proofreading(originalUidList, messages, imapFolder)) {
+                case UIDHandle.SyncType.SYNC_ALL:
+                    for (javax.mail.Message msg: messages){
+                        long uid = imapFolder.getUID(msg);
+                        Message message = Converter.InternetMessage.toLocalMessage(uid, msg, true);
+                        messageList.add(message);
+                    }
+                    break;
+                case UIDHandle.SyncType.DELETE_ALL:
+                    for (javax.mail.Message msg : messages) {
+                        MimeMessage mimeMessage = (MimeMessage) msg;
+                        deleteUidList = UIDHandle.insertUid(deleteUidList, imapFolder.getUID(mimeMessage));
+                    }
+                    break;
+                case UIDHandle.SyncType.JUST_DELETE:
+                    for (javax.mail.Message msg : messages) {
+                        MimeMessage mimeMessage = (MimeMessage) msg;
+                        long uid = imapFolder.getUID(mimeMessage);
+                        if (UIDHandle.binarySearch(originalUidList, uid)) {
+                            originalUidList = UIDHandle.deleteUid(originalUidList, uid);
+                        }
+                    }
+                    for (long uid : originalUidList) {
+                        deleteUidList = UIDHandle.insertUid(deleteUidList, uid);
+                    }
+                    break;
+                case UIDHandle.SyncType.JUST_ADD:
+                    int originalLength = originalUidList.length;
+                    long originalLastUid = originalUidList[originalLength-1];
+                    for (int index = messages.length-1; index >= 0; index--) {
+                        javax.mail.Message msg = messages[index];
+                        long uid = imapFolder.getUID(msg);
+                        if (uid > originalLastUid) {
+                            Message message = Converter.InternetMessage.toLocalMessage(uid, msg, true);
+                            messageList.add(message);
+                        } else {
+                            break;
+                        }
+                    }
+                    break;
+                case UIDHandle.SyncType.ADD_And_DELETE:
+                    originalLength = originalUidList.length;
+                    originalLastUid = originalUidList[originalLength-1];
+                    for (int index = messages.length-1; index >= 0; index--) {
+                        javax.mail.Message msg = messages[index];
+                        long uid = imapFolder.getUID(msg);
+                        if (uid > originalLastUid) {
+                            Message message = Converter.InternetMessage.toLocalMessage(uid, msg, true);
+                            messageList.add(message);
+                        } else if (UIDHandle.binarySearch(originalUidList, uid)) {
+                            originalUidList = UIDHandle.deleteUid(originalUidList, uid);
+                        }
+                    }
+                    for (long uid : originalUidList) {
+                        deleteUidList = UIDHandle.insertUid(deleteUidList, uid);
+                    }
+                    break;
+                case UIDHandle.SyncType.NO_SYNC:
+                    break;
+            }
+
+            //结果回调
+            getSyncMessageCallback.onSuccess(messageList, deleteUidList);
+        } catch (MessagingException | IOException e) {
+            e.printStackTrace();
+            getSyncMessageCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取全部UID
+     * @param getUIDListCallback
+     */
+    void getUIDList(Email.GetUIDListCallback getUIDListCallback) {
+        try {
+            Store store = session.getStore(IMAP);
+            store.connect(imapHost, account, password);
+            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
+            imapFolder.open(Folder.READ_ONLY);
             javax.mail.Message[] messages = imapFolder.getMessages();
             long[] uidList = new long[messages.length];
             for (int i = 0, len = messages.length; i < len; i++) {
                 MimeMessage mimeMessage = (MimeMessage) messages[i];
                 uidList[i] = imapFolder.getUID(mimeMessage);
+
             }
             getUIDListCallback.onSuccess(uidList);
         } catch (MessagingException e) {
@@ -351,12 +442,15 @@ class EmailCore {
         try {
             Store store = session.getStore(IMAP);
             store.connect(imapHost, account, password);
-            Folder folder = store.getFolder("INBOX");
-            folder.open(Folder.READ_ONLY);
-            IMAPFolder imapFolder = (IMAPFolder) folder;
+            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
+            imapFolder.open(Folder.READ_ONLY);
             javax.mail.Message msg = imapFolder.getMessageByUID(uid);
-            Message message = Converter.InternetMessage.toLocalMessage(imapFolder.getUID(msg), msg, false);
-            getMessageCallback.onSuccess(message);
+            if (msg != null) {
+                Message message = Converter.InternetMessage.toLocalMessage(uid, msg, false);
+                getMessageCallback.onSuccess(message);
+            } else {
+                getMessageCallback.onFailure(Constant.MESSAGE_EXCEPTION);
+            }
         } catch (MessagingException | IOException e) {
             e.printStackTrace();
             getMessageCallback.onFailure(e.getMessage());
@@ -372,19 +466,47 @@ class EmailCore {
         try {
             Store store = session.getStore(IMAP);
             store.connect(imapHost, account, password);
-            Folder folder = store.getFolder("INBOX");
-            folder.open(Folder.READ_ONLY);
-            IMAPFolder imapFolder = (IMAPFolder) folder;
+            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
+            imapFolder.open(Folder.READ_ONLY);
             javax.mail.Message[] messages = imapFolder.getMessagesByUID(uidList);
             List<Message> messageList = new ArrayList<>();
             for (javax.mail.Message msg : messages) {
-                Message message = Converter.InternetMessage.toLocalMessage(imapFolder.getUID(msg), msg, false);
-                messageList.add(message);
+                if (msg != null) {
+                    Message message = Converter.InternetMessage.toLocalMessage(imapFolder.getUID(msg), msg, false);
+                    messageList.add(message);
+                }
             }
             getMessageListCallback.onSuccess(messageList);
         }catch (MessagingException | IOException e) {
             e.printStackTrace();
             getMessageListCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 标记邮件消息
+     * @param uid
+     * @param flag
+     * @param getFlagCallback
+     */
+    void setFlagMessage(long uid, int flag, Email.GetFlagCallback getFlagCallback) {
+        try {
+            Store store = session.getStore(IMAP);
+            store.connect(imapHost, account, password);
+            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
+            imapFolder.open(Folder.READ_WRITE);
+            javax.mail.Message msg = imapFolder.getMessageByUID(uid);
+            if (msg != null) {
+                msg.setFlag(Flags.Flag.DELETED, true);
+                getFlagCallback.onSuccess();
+            } else {
+               getFlagCallback.onFailure(Constant.MESSAGE_EXCEPTION);
+            }
+            imapFolder.close();
+            store.close();
+        }catch (MessagingException e) {
+            e.printStackTrace();
+            getFlagCallback.onFailure(e.getMessage());
         }
     }
 
@@ -420,4 +542,5 @@ class EmailCore {
         int POP3 = 0;
         int IMAP = 1;
     }
+
 }

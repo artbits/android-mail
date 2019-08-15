@@ -186,6 +186,27 @@ public final class ReceiveService {
         }
 
         /**
+         * 同步消息
+         * @param originalUidList
+         * @param getSyncMessageCallback
+         */
+        public void syncMessage(long[] originalUidList, Email.GetSyncMessageCallback getSyncMessageCallback) {
+            new Thread(() ->
+                    core.syncMessage(originalUidList, new Email.GetSyncMessageCallback() {
+                        @Override
+                        public void onSuccess(List<Message> messageList, long[] deleteUidList) {
+                            handler.post(() -> getSyncMessageCallback.onSuccess(messageList, deleteUidList));
+                        }
+
+                        @Override
+                        public void onFailure(String msg) {
+                            handler.post(() -> getSyncMessageCallback.onFailure(msg));
+                        }
+                    })
+            ).start();
+        }
+
+        /**
          * 获取全部UID
          * @param getUIDListCallback
          */
@@ -242,6 +263,28 @@ public final class ReceiveService {
                         @Override
                         public void onFailure(String msg) {
                             handler.post(() -> getMessageListCallback.onFailure(msg));
+                        }
+                    })
+            ).start();
+        }
+
+        /**
+         * 标记消息
+         * @param uid
+         * @param flag
+         * @param getFlagCallback
+         */
+        private void setFlagMessage(long uid, int flag, Email.GetFlagCallback getFlagCallback) {
+            new Thread(() ->
+                    core.setFlagMessage(uid, flag, new Email.GetFlagCallback() {
+                        @Override
+                        public void onSuccess() {
+                            handler.post(getFlagCallback::onSuccess);
+                        }
+
+                        @Override
+                        public void onFailure(String msg) {
+                            handler.post(() -> getFlagCallback.onFailure(msg));
                         }
                     })
             ).start();
