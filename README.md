@@ -161,6 +161,30 @@ Email.getReceiveService(config)
         });
 ```
 
+使用IMAP协议极速读取邮箱中的邮件，**但不解析邮件中的内容**，速度最快，更加智能和人性化（不支持POP3协议）；例如：第一次登录邮箱时，框架会拉取全部邮件消息，耗时会相对长一点，拉取到邮件消息并缓存到SQLite数据库中，下一次拉取消息，只需传入本地已存在的uid数组，框架会自动差异拉取邮件消息。**（推荐使用syncMessage方法来同步邮件）**
+```java
+//本地已缓存有的邮件uid时
+long[] originalUidList = new long[]{15, 40, 35};
+//本地没有邮件uid时
+//long[] originalUidList = new long[]{};
+
+//极速同步
+Email.getReceiveService()
+        .getIMAPService()
+        .syncMessage(originalUidList, new Email.GetSyncMessageCallback() {
+            @Override
+            public void onSuccess(List<Message> messageList, long[] deleteUidList) {
+                //messageList是本地还不存在的邮件消息，需要把这些消息缓存到本地。
+                //deleteUidList是需要删除本地对应uid的消息。
+            }
+
+            @Override
+            public void onFailure(String msg) {
+
+            }
+        });
+```
+
 
 ###  ● 获取邮箱中全部邮件的UID
 UID是邮箱创建的邮件序号，每个用户邮箱账号的序列号都是独一无二的。使用UID来同步邮件速度很快，每次同步最新的UID下来，再与之前缓存的UID进行比较即可分析哪些邮件是新的，哪些邮件是已被删除的。
@@ -316,6 +340,10 @@ boolean isSeen = message.isSeen();
 ```
 
 # 更新日志
+* Email for Android 3.2.2
+  + 增加消息极速同步API
+  + 修复一些已知bug
+
 * Email for Android 3.2.1
   + 修复获取收件人昵称错误的问题
   + 对解析的邮件内容进行“提纯”
