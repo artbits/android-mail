@@ -54,7 +54,7 @@ android {
 ###  ● 配置邮件服务器的参数
 [如何开启邮箱SMTP，IMAP，POP3服务和获取授权码？](https://github.com/mailhu/email#%E5%BC%80%E5%90%AF%E6%9C%8D%E5%8A%A1%E4%B8%8E%E8%8E%B7%E5%8F%96%E6%8E%88%E6%9D%83%E7%A0%81)
 
-快速配置，目前只支持QQ邮箱，Foxmail，网易邮箱
+快速配置，目前只支持QQ邮箱、Foxmail、163邮箱、126邮箱。
 ```java
 Email.Config config = new Email.Config()
         .setMailType(Email.MailType.QQ)     //选择邮箱类型
