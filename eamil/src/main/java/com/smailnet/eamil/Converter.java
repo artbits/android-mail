@@ -41,13 +41,21 @@ class Converter {
                     hashMap.put(Constant.POP3_PORT, 995);
                     hashMap.put(Constant.IMAP_PORT, 993);
                     return hashMap;
-                case Email.MailType.NETEASE:
+                case Email.MailType.$163:
                     hashMap.put(Constant.SMTP_HOST, "smtp.163.com");
                     hashMap.put(Constant.POP3_HOST, "pop.163.com");
                     hashMap.put(Constant.IMAP_HOST, "imap.163.com");
-                    hashMap.put(Constant.SMTP_PORT, 25);
-                    hashMap.put(Constant.POP3_PORT, 110);
-                    hashMap.put(Constant.IMAP_PORT, 143);
+                    hashMap.put(Constant.SMTP_PORT, 465);
+                    hashMap.put(Constant.POP3_PORT, 995);
+                    hashMap.put(Constant.IMAP_PORT, 993);
+                    return hashMap;
+                case Email.MailType.$126:
+                    hashMap.put(Constant.SMTP_HOST, "smtp.126.com");
+                    hashMap.put(Constant.POP3_HOST, "pop.126.com");
+                    hashMap.put(Constant.IMAP_HOST, "imap.126.com");
+                    hashMap.put(Constant.SMTP_PORT, 465);
+                    hashMap.put(Constant.POP3_PORT, 995);
+                    hashMap.put(Constant.IMAP_PORT, 993);
                     return hashMap;
                 default:
                     return null;
@@ -86,8 +94,12 @@ class Converter {
 
         //获取该邮件地址对应的用户昵称
         static String getNickname(Address[] addresses) {
-            InternetAddress address = (InternetAddress) addresses[0];
-            return address.getPersonal();
+            if (addresses != null && addresses.length != 0) {
+                InternetAddress address = (InternetAddress) addresses[0];
+                return address.getPersonal();
+            } else {
+                return null;
+            }
         }
 
     }

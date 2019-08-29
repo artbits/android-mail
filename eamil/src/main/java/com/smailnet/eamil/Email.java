@@ -35,8 +35,6 @@ import java.util.List;
  */
 public final class Email {
 
-    private static GlobalConfig globalConfig;
-
     /**
      * 邮件的服务器配置内容
      */
@@ -50,6 +48,9 @@ public final class Email {
         private int smtpPort;
         private int popPort;
         private int imapPort;
+        private boolean smtpSSL;
+        private boolean popSSL;
+        private boolean imapSSL;
 
         public Config setMailType(int type) {
             HashMap<String, Object> hashMap = Converter.MailType.getParam(type);
@@ -60,6 +61,9 @@ public final class Email {
                 this.popPort = (int) hashMap.get(Constant.POP3_PORT);
                 this.imapHost = String.valueOf(hashMap.get(Constant.IMAP_HOST));
                 this.imapPort = (int) hashMap.get(Constant.IMAP_PORT);
+                this.smtpSSL = true;
+                this.popSSL = true;
+                this.imapSSL = true;
             }
             return this;
         }
@@ -74,21 +78,24 @@ public final class Email {
             return this;
         }
 
-        public Config setSMTP(String host, int port) {
+        public Config setSMTP(String host, int port, boolean ssl) {
             this.smtpHost = host;
             this.smtpPort = port;
+            this.smtpSSL = ssl;
             return this;
         }
 
-        public Config setPOP3(String host, int port) {
+        public Config setPOP3(String host, int port, boolean ssl) {
             this.popHost = host;
             this.popPort = port;
+            this.popSSL = ssl;
             return this;
         }
 
-        public Config setIMAP(String host, int port) {
+        public Config setIMAP(String host, int port, boolean ssl) {
             this.imapHost = host;
             this.imapPort = port;
+            this.imapSSL = ssl;
             return this;
         }
 
@@ -124,6 +131,17 @@ public final class Email {
             return imapPort;
         }
 
+        boolean isSmtpSSL() {
+            return smtpSSL;
+        }
+
+        boolean isPopSSL() {
+            return popSSL;
+        }
+
+        boolean isImapSSL() {
+            return imapSSL;
+        }
     }
 
     /**
@@ -131,27 +149,15 @@ public final class Email {
      * @param context
      */
     public static void initialize(Context context) {
-        globalConfig = new GlobalConfig();
+        Manager.initContext(context);
     }
 
     /**
-     * 获取全局配置
+     * 获取全局配置对象
      * @return
      */
-    public static GlobalConfig setGlobalConfig() {
-        globalConfig = (globalConfig == null)? new GlobalConfig() : globalConfig;
-        return globalConfig;
-    }
-
-    /**
-     * 框架内部获取全局配置变量
-     * @return
-     */
-    static GlobalConfig getGlobalConfig() {
-        if (globalConfig == null) {
-            throw new RuntimeException(Constant.GLOBAL_CONFIG_EXCEPTION);
-        }
-        return globalConfig;
+    public static GlobalConfig getGlobalConfig() {
+        return (Manager.globalConfig == null) ? Manager.initGlobalConfig() : Manager.getGlobalConfig();
     }
 
     /**
@@ -281,7 +287,8 @@ public final class Email {
     public interface MailType {
         int QQ = 1;
         int FOXMAIL = 2;
-        int NETEASE = 3;
+        int $163 = 3;
+        int $126 = 4;
     }
 
 }

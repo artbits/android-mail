@@ -23,12 +23,12 @@ public final class SendService {
 
     SendService() {
         handler = new Handler(Looper.getMainLooper());
-        core = EmailCore.getAutoConfig();
+        core = new EmailCore();
     }
 
     SendService(Email.Config config) {
         handler = new Handler(Looper.getMainLooper());
-        core = EmailCore.setConfig(config);
+        core = new EmailCore(config);
     }
 
     /**

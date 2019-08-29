@@ -10,12 +10,12 @@ public final class ExamineService {
 
     ExamineService() {
         handler = new Handler(Looper.getMainLooper());
-        core = EmailCore.getAutoConfig();
+        core = new EmailCore();
     }
 
     ExamineService(Email.Config config) {
         handler = new Handler(Looper.getMainLooper());
-        core = EmailCore.setConfig(config);
+        core = new EmailCore(config);
     }
 
     /**

@@ -12,9 +12,14 @@ public final class GlobalConfig {
     private int smtpPort;
     private int popPort;
     private int imapPort;
+    private int type;
+    private boolean smtpSSL;
+    private boolean popSSL;
+    private boolean imapSSL;
 
-    public GlobalConfig setMailType(int mailType) {
-        HashMap<String, Object> hashMap = Converter.MailType.getParam(mailType);
+    public GlobalConfig setMailType(int type) {
+        this.type = type;
+        HashMap<String, Object> hashMap = Converter.MailType.getParam(type);
         if (hashMap != null) {
             this.smtpHost = String.valueOf(hashMap.get(Constant.SMTP_HOST));
             this.smtpPort = (int) hashMap.get(Constant.SMTP_PORT);
@@ -22,8 +27,15 @@ public final class GlobalConfig {
             this.popPort = (int) hashMap.get(Constant.POP3_PORT);
             this.imapHost = String.valueOf(hashMap.get(Constant.IMAP_HOST));
             this.imapPort = (int) hashMap.get(Constant.IMAP_PORT);
+            this.smtpSSL = true;
+            this.popSSL = true;
+            this.imapSSL = true;
         }
         return this;
+    }
+
+    int getType() {
+        return type;
     }
 
     public GlobalConfig setAccount(String account) {
@@ -36,21 +48,24 @@ public final class GlobalConfig {
         return this;
     }
 
-    public GlobalConfig setSMTP(String host, int port) {
+    public GlobalConfig setSMTP(String host, int port, boolean ssl) {
         this.smtpHost = host;
         this.smtpPort = port;
+        this.smtpSSL = ssl;
         return this;
     }
 
-    public GlobalConfig setPOP3(String host, int port) {
+    public GlobalConfig setPOP3(String host, int port, boolean ssl) {
         this.popHost = host;
         this.popPort = port;
+        this.popSSL = ssl;
         return this;
     }
 
-    public GlobalConfig setIMAP(String host, int port) {
+    public GlobalConfig setIMAP(String host, int port, boolean ssl) {
         this.imapHost = host;
         this.imapPort = port;
+        this.imapSSL = ssl;
         return this;
     }
 
@@ -84,5 +99,17 @@ public final class GlobalConfig {
 
     int getImapPort() {
         return imapPort;
+    }
+
+    boolean isSmtpSSL() {
+        return smtpSSL;
+    }
+
+    boolean isPopSSL() {
+        return popSSL;
+    }
+
+    boolean isImapSSL() {
+        return imapSSL;
     }
 }

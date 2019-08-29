@@ -23,6 +23,11 @@ interface Constant {
     String MAIL_SMTP_SOCKET_FACTORY_PORT = "mail.smtp.socketFactory.port";
     String MAIL_POP3_SOCKET_FACTORY_PORT = "mail.pop3.socketFactory.port";
     String MAIL_IMAP_SOCKET_FACTORY_PORT = "mail.imap.socketFactory.port";
+    String SSL_SOCKET_FACTORY = "javax.net.ssl.SSLSocketFactory";
+    String MAIL_SMTP_STARTTLS_ENABLE = "mail.smtp.starttls.enable";
+    String MAIL_SMTP_SSL_ENABLE = "mail.smtp.ssl.enable";
+    String MAIL_POP_SSL_ENABLE = "mail.pop.ssl.enable";
+    String MAIL_IMAP_SSL_ENABLE = "mail.imap.ssl.enable";
 
     String SMTP_HOST = "smtp_host";
     String POP3_HOST = "pop3_host";
@@ -32,6 +37,5 @@ interface Constant {
     String IMAP_PORT = "imap_port";
 
     String GLOBAL_CONFIG_EXCEPTION = "The Email framework has not yet been configured globally.";
-    String CONFIG_EXCEPTION = "Email.Config object can not be empty";
     String MESSAGE_EXCEPTION = "Message does not exist";
 }

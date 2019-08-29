@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.smailnet.eamil.entity.Message;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
+import com.sun.mail.pop3.POP3Folder;
 import com.sun.mail.pop3.POP3Store;
 
 import java.io.IOException;
@@ -16,147 +17,35 @@ import java.util.Properties;
 
 import javax.mail.Address;
 import javax.mail.Flags;
-import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import static com.smailnet.eamil.Constant.IMAP;
-import static com.smailnet.eamil.Constant.POP3;
-import static com.smailnet.eamil.Constant.SMTP;
 
 /**
  * 该框架内部的核心类
  */
 class EmailCore {
 
-    private String smtpHost;
-    private String popHost;
-    private String imapHost;
-    private String smtpPort;
-    private String popPort;
-    private String imapPort;
-    private String account;
-    private String password;
-    private Session session;
+    //配置对象
+    private Email.Config config;
+    //JavaMail的消息对象
     private javax.mail.Message message;
 
-    private static EmailCore core;
-
     /**
      * 构造方法
      */
-    private EmailCore() {
+    EmailCore() {
 
-        GlobalConfig globalConfig = Email.getGlobalConfig();
-        this.account = globalConfig.getAccount();
-        this.password = globalConfig.getPassword();
-        this.smtpHost = globalConfig.getSmtpHost();
-        this.popHost = globalConfig.getPopHost();
-        this.imapHost = globalConfig.getImapHost();
-        this.smtpPort = String.valueOf(globalConfig.getSmtpPort());
-        this.popPort = String.valueOf(globalConfig.getPopPort());
-        this.imapPort = String.valueOf(globalConfig.getImapPort());
-
-        String sslSocketFactory = "javax.net.ssl.SSLSocketFactory";
-        String isFallback = "false";
-
-        Properties properties = new Properties();
-        if (!TextUtils.isEmpty(smtpHost) && !TextUtils.isEmpty(smtpPort)) {
-            properties.put(Constant.MAIL_SMTP_SOCKET_FACTORY_CLASS, sslSocketFactory);
-            properties.put(Constant.MAIL_SMTP_SOCKET_FACTORY_FALLBACK, isFallback);
-            properties.put(Constant.MAIL_SMTP_SOCKET_FACTORY_PORT, smtpPort);
-            properties.put(Constant.MAIL_SMTP_POST, smtpPort);
-            properties.put(Constant.MAIL_SMTP_HOST, smtpHost);
-            properties.put(Constant.MAIL_SMTP_AUTH, true);
-        }
-        if (!TextUtils.isEmpty(popHost) && !TextUtils.isEmpty(popPort)) {
-            properties.put(Constant.MAIL_POP3_SOCKET_FACTORY_CLASS, sslSocketFactory);
-            properties.put(Constant.MAIL_POP3_SOCKET_FACTORY_FALLBACK, isFallback);
-            properties.put(Constant.MAIL_POP3_SOCKET_FACTORY_PORT, popPort);
-            properties.put(Constant.MAIL_POP3_POST, popPort);
-            properties.put(Constant.MAIL_POP3_HOST, popHost);
-            properties.put(Constant.MAIL_POP3_AUTH, true);
-        }
-        if (!TextUtils.isEmpty(imapHost) && !TextUtils.isEmpty(imapPort)) {
-            properties.put(Constant.MAIL_IMAP_SOCKET_FACTORY_CLASS, sslSocketFactory);
-            properties.put(Constant.MAIL_IMAP_SOCKET_FACTORY_FALLBACK, isFallback);
-            properties.put(Constant.MAIL_IMAP_SOCKET_FACTORY_PORT, imapPort);
-            properties.put(Constant.MAIL_IMAP_POST, imapPort);
-            properties.put(Constant.MAIL_IMAP_HOST, imapHost);
-            properties.put(Constant.MAIL_IMAP_AUTH, true);
-        }
-        session = Session.getInstance(properties);
     }
 
     /**
      * 构造方法
      * @param config
      */
-    private EmailCore(Email.Config config) {
-
-        this.account = config.getAccount();
-        this.password = config.getPassword();
-        this.smtpHost = config.getSmtpHost();
-        this.popHost = config.getPopHost();
-        this.imapHost = config.getImapHost();
-        this.smtpPort = String.valueOf(config.getSmtpPort());
-        this.popPort = String.valueOf(config.getPopPort());
-        this.imapPort = String.valueOf(config.getImapPort());
-
-        String sslSocketFactory = "javax.net.ssl.SSLSocketFactory";
-        String isFallback = "false";
-
-        Properties properties = new Properties();
-        if (!TextUtils.isEmpty(smtpHost) && !TextUtils.isEmpty(smtpPort)) {
-            properties.put(Constant.MAIL_SMTP_SOCKET_FACTORY_CLASS, sslSocketFactory);
-            properties.put(Constant.MAIL_SMTP_SOCKET_FACTORY_FALLBACK, isFallback);
-            properties.put(Constant.MAIL_SMTP_SOCKET_FACTORY_PORT, smtpPort);
-            properties.put(Constant.MAIL_SMTP_POST, smtpPort);
-            properties.put(Constant.MAIL_SMTP_HOST, smtpHost);
-            properties.put(Constant.MAIL_SMTP_AUTH, true);
-        }
-        if (!TextUtils.isEmpty(popHost) && !TextUtils.isEmpty(popPort)) {
-            properties.put(Constant.MAIL_POP3_SOCKET_FACTORY_CLASS, sslSocketFactory);
-            properties.put(Constant.MAIL_POP3_SOCKET_FACTORY_FALLBACK, isFallback);
-            properties.put(Constant.MAIL_POP3_SOCKET_FACTORY_PORT, popPort);
-            properties.put(Constant.MAIL_POP3_POST, popPort);
-            properties.put(Constant.MAIL_POP3_HOST, popHost);
-            properties.put(Constant.MAIL_POP3_AUTH, true);
-        }
-        if (!TextUtils.isEmpty(imapHost) && !TextUtils.isEmpty(imapPort)) {
-            properties.put(Constant.MAIL_IMAP_SOCKET_FACTORY_CLASS, sslSocketFactory);
-            properties.put(Constant.MAIL_IMAP_SOCKET_FACTORY_FALLBACK, isFallback);
-            properties.put(Constant.MAIL_IMAP_SOCKET_FACTORY_PORT, imapPort);
-            properties.put(Constant.MAIL_IMAP_POST, imapPort);
-            properties.put(Constant.MAIL_IMAP_HOST, imapHost);
-            properties.put(Constant.MAIL_IMAP_AUTH, true);
-        }
-        session = Session.getInstance(properties);
-    }
-
-    /**
-     * 设置配置参数
-     * @param config
-     * @return
-     */
-    static EmailCore setConfig(Email.Config config) {
-        if (config == null) {
-            throw new RuntimeException(Constant.CONFIG_EXCEPTION);
-        }
-        return new EmailCore(config);
-    }
-
-    /**
-     * 获取自动配置
-     * @return
-     */
-    static EmailCore getAutoConfig() {
-        core = (core == null)? new EmailCore() : core;
-        return core;
+    EmailCore(Email.Config config) {
+        this.config = config;
     }
 
     /**
@@ -173,6 +62,9 @@ class EmailCore {
      */
     void setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content) {
         try {
+            String account = (config != null) ? config.getAccount() : Manager.getGlobalConfig().getAccount();
+            Properties properties = (config != null) ? EmailUtils.getProperties(config) : EmailUtils.getProperties();
+            Session session = Session.getInstance(properties);
             javax.mail.Message message = new MimeMessage(session);
             message.addRecipients(javax.mail.Message.RecipientType.TO, to);
             if (cc != null) {
@@ -203,10 +95,8 @@ class EmailCore {
      */
     void send(Email.GetSendCallback getSendCallback) {
         try {
-            Transport transport = session.getTransport(SMTP);
-            transport.connect(smtpHost, account, password);
+            Transport transport = Manager.getTransport();
             transport.sendMessage(message, message.getRecipients(javax.mail.Message.RecipientType.TO));
-            transport.close();
             getSendCallback.onSuccess();
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -221,29 +111,31 @@ class EmailCore {
      */
     void receive(int protocol, Email.GetReceiveCallback getReceiveCallback) {
         try {
-            Store store;
             if (protocol == Protocol.POP3) {
-                store = session.getStore(POP3);
-                store.connect(popHost, account, password);
-            } else {
-                store = session.getStore(IMAP);
-                store.connect(imapHost, account, password);
+                POP3Store store = (config != null) ? EmailUtils.getPOP3Store(config) : Manager.getPOP3Store();
+                POP3Folder folder = Manager.getInboxFolder(store);
+                javax.mail.Message[] messages = folder.getMessages();
+                List<Message> messageList = new ArrayList<>();
+                int total = messages.length, index = 0;
+                for (javax.mail.Message msg: messages){
+                    Message message = Converter.InternetMessage.toLocalMessage(0, msg, false);
+                    messageList.add(message);
+                    getReceiveCallback.receiving(message, ++index, total);
+                }
+                getReceiveCallback.onFinish(messageList);
+            } else if (protocol == Protocol.IMAP) {
+                IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
+                IMAPFolder folder = Manager.getInboxFolder(store);
+                javax.mail.Message[] messages = folder.getMessages();
+                List<Message> messageList = new ArrayList<>();
+                int total = messages.length, index = 0;
+                for (javax.mail.Message msg: messages){
+                    Message message = Converter.InternetMessage.toLocalMessage(folder.getUID(msg), msg, false);
+                    messageList.add(message);
+                    getReceiveCallback.receiving(message, ++index, total);
+                }
+                getReceiveCallback.onFinish(messageList);
             }
-            Folder folder = store.getFolder("INBOX");
-            folder.open(Folder.READ_ONLY);
-            javax.mail.Message[] messages = folder.getMessages();
-            List<Message> messageList = new ArrayList<>();
-            int total = messages.length;
-            int index = 0;
-            for (javax.mail.Message msg: messages){
-                long uid = (protocol == Protocol.POP3)? 0 : ((IMAPFolder) folder).getUID(msg);
-                Message message = Converter.InternetMessage.toLocalMessage(uid, msg, false);
-                messageList.add(message);
-                getReceiveCallback.receiving(message, ++index, total);
-            }
-            getReceiveCallback.onFinish(messageList);
-            folder.close(false);
-            store.close();
         } catch (MessagingException | IOException e) {
             e.printStackTrace();
             getReceiveCallback.onFailure(e.toString());
@@ -256,22 +148,17 @@ class EmailCore {
      */
     void fastReceive(Email.GetReceiveCallback getReceiveCallback) {
         try {
-            Store store = session.getStore(IMAP);
-            store.connect(imapHost, account, password);
-            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
-            imapFolder.open(Folder.READ_ONLY);
-            javax.mail.Message[] messages = imapFolder.getMessages();
+            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
+            IMAPFolder folder = Manager.getInboxFolder(store);
+            javax.mail.Message[] messages = folder.getMessages();
             List<Message> messageList = new ArrayList<>();
-            int total = messages.length;
-            int index = 0;
-            for (javax.mail.Message msg: messages){
-                Message message = Converter.InternetMessage.toLocalMessage(imapFolder.getUID(msg), msg, true);
+            int total = messages.length, index = 0;
+            for (javax.mail.Message msg: messages) {
+                Message message = Converter.InternetMessage.toLocalMessage(folder.getUID(msg), msg, true);
                 messageList.add(message);
                 getReceiveCallback.receiving(message, ++index, total);
             }
             getReceiveCallback.onFinish(messageList);
-            imapFolder.close(false);
-            store.close();
         } catch (MessagingException | IOException e) {
             e.printStackTrace();
             getReceiveCallback.onFailure(e.toString());
@@ -285,17 +172,15 @@ class EmailCore {
      */
     void getMessageCount(int protocol, Email.GetCountCallback getCountCallback) {
         try {
-            Store store;
             if (protocol == Protocol.POP3) {
-                store = session.getStore(POP3);
-                store.connect(popHost, account, password);
-            } else {
-                store = session.getStore(IMAP);
-                store.connect(imapHost, account, password);
+                POP3Store store = (config != null) ? EmailUtils.getPOP3Store(config) : Manager.getPOP3Store();
+                POP3Folder folder = Manager.getInboxFolder(store);
+                getCountCallback.onSuccess(folder.getMessageCount());
+            } else if (protocol == Protocol.IMAP) {
+                IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
+                IMAPFolder folder = Manager.getInboxFolder(store);
+                getCountCallback.onSuccess(folder.getMessageCount());
             }
-            Folder folder = store.getFolder("INBOX");
-            folder.open(Folder.READ_ONLY);
-            getCountCallback.onSuccess(folder.getMessageCount());
         } catch (MessagingException e) {
             e.printStackTrace();
             getCountCallback.onFailure(e.getMessage());
@@ -308,10 +193,8 @@ class EmailCore {
      */
     void getUnreadMessageCount(Email.GetCountCallback getCountCallback) {
         try {
-            Store store = session.getStore(IMAP);
-            store.connect(imapHost, account, password);
-            Folder folder = store.getFolder("INBOX");
-            folder.open(Folder.READ_ONLY);
+            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
+            IMAPFolder folder = Manager.getInboxFolder(store);
             getCountCallback.onSuccess(folder.getUnreadMessageCount());
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -326,11 +209,9 @@ class EmailCore {
      */
     void syncMessage(long[] originalUidList, Email.GetSyncMessageCallback getSyncMessageCallback) {
         try {
-            Store store = session.getStore(IMAP);
-            store.connect(imapHost, account, password);
-            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
-            imapFolder.open(Folder.READ_ONLY);
-            javax.mail.Message[] messages = imapFolder.getMessages();
+            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
+            IMAPFolder folder = Manager.getInboxFolder(store);
+            javax.mail.Message[] messages = folder.getMessages();
 
             //对原uid列表排序
             Arrays.sort(originalUidList);
@@ -340,10 +221,10 @@ class EmailCore {
             long[] deleteUidList = new long[]{};
 
             //判断同步类型
-            switch (UIDHandle.proofreading(originalUidList, messages, imapFolder)) {
+            switch (UIDHandle.proofreading(originalUidList, messages, folder)) {
                 case UIDHandle.SyncType.SYNC_ALL:
                     for (javax.mail.Message msg: messages){
-                        long uid = imapFolder.getUID(msg);
+                        long uid = folder.getUID(msg);
                         Message message = Converter.InternetMessage.toLocalMessage(uid, msg, true);
                         messageList.add(message);
                     }
@@ -351,13 +232,13 @@ class EmailCore {
                 case UIDHandle.SyncType.DELETE_ALL:
                     for (javax.mail.Message msg : messages) {
                         MimeMessage mimeMessage = (MimeMessage) msg;
-                        deleteUidList = UIDHandle.insertUid(deleteUidList, imapFolder.getUID(mimeMessage));
+                        deleteUidList = UIDHandle.insertUid(deleteUidList, folder.getUID(mimeMessage));
                     }
                     break;
                 case UIDHandle.SyncType.JUST_DELETE:
                     for (javax.mail.Message msg : messages) {
                         MimeMessage mimeMessage = (MimeMessage) msg;
-                        long uid = imapFolder.getUID(mimeMessage);
+                        long uid = folder.getUID(mimeMessage);
                         if (UIDHandle.binarySearch(originalUidList, uid)) {
                             originalUidList = UIDHandle.deleteUid(originalUidList, uid);
                         }
@@ -371,7 +252,7 @@ class EmailCore {
                     long originalLastUid = originalUidList[originalLength-1];
                     for (int index = messages.length-1; index >= 0; index--) {
                         javax.mail.Message msg = messages[index];
-                        long uid = imapFolder.getUID(msg);
+                        long uid = folder.getUID(msg);
                         if (uid > originalLastUid) {
                             Message message = Converter.InternetMessage.toLocalMessage(uid, msg, true);
                             messageList.add(message);
@@ -385,7 +266,7 @@ class EmailCore {
                     originalLastUid = originalUidList[originalLength-1];
                     for (int index = messages.length-1; index >= 0; index--) {
                         javax.mail.Message msg = messages[index];
-                        long uid = imapFolder.getUID(msg);
+                        long uid = folder.getUID(msg);
                         if (uid > originalLastUid) {
                             Message message = Converter.InternetMessage.toLocalMessage(uid, msg, true);
                             messageList.add(message);
@@ -400,7 +281,6 @@ class EmailCore {
                 case UIDHandle.SyncType.NO_SYNC:
                     break;
             }
-
             //结果回调
             getSyncMessageCallback.onSuccess(messageList, deleteUidList);
         } catch (MessagingException | IOException e) {
@@ -415,16 +295,13 @@ class EmailCore {
      */
     void getUIDList(Email.GetUIDListCallback getUIDListCallback) {
         try {
-            Store store = session.getStore(IMAP);
-            store.connect(imapHost, account, password);
-            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
-            imapFolder.open(Folder.READ_ONLY);
-            javax.mail.Message[] messages = imapFolder.getMessages();
+            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
+            IMAPFolder folder = Manager.getInboxFolder(store);
+            javax.mail.Message[] messages = folder.getMessages();
             long[] uidList = new long[messages.length];
             for (int i = 0, len = messages.length; i < len; i++) {
                 MimeMessage mimeMessage = (MimeMessage) messages[i];
-                uidList[i] = imapFolder.getUID(mimeMessage);
-
+                uidList[i] = folder.getUID(mimeMessage);
             }
             getUIDListCallback.onSuccess(uidList);
         } catch (MessagingException e) {
@@ -440,11 +317,9 @@ class EmailCore {
      */
     void getMessage(long uid, Email.GetMessageCallback getMessageCallback) {
         try {
-            Store store = session.getStore(IMAP);
-            store.connect(imapHost, account, password);
-            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
-            imapFolder.open(Folder.READ_ONLY);
-            javax.mail.Message msg = imapFolder.getMessageByUID(uid);
+            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
+            IMAPFolder folder = Manager.getInboxFolder(store);
+            javax.mail.Message msg = folder.getMessageByUID(uid);
             if (msg != null) {
                 Message message = Converter.InternetMessage.toLocalMessage(uid, msg, false);
                 getMessageCallback.onSuccess(message);
@@ -464,15 +339,13 @@ class EmailCore {
      */
     void getMessageList(long[] uidList, Email.GetMessageListCallback getMessageListCallback) {
         try {
-            Store store = session.getStore(IMAP);
-            store.connect(imapHost, account, password);
-            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
-            imapFolder.open(Folder.READ_ONLY);
-            javax.mail.Message[] messages = imapFolder.getMessagesByUID(uidList);
+            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
+            IMAPFolder folder = Manager.getInboxFolder(store);
+            javax.mail.Message[] messages = folder.getMessagesByUID(uidList);
             List<Message> messageList = new ArrayList<>();
             for (javax.mail.Message msg : messages) {
                 if (msg != null) {
-                    Message message = Converter.InternetMessage.toLocalMessage(imapFolder.getUID(msg), msg, false);
+                    Message message = Converter.InternetMessage.toLocalMessage(folder.getUID(msg), msg, false);
                     messageList.add(message);
                 }
             }
@@ -484,26 +357,22 @@ class EmailCore {
     }
 
     /**
-     * 标记邮件消息
+     * 标记邮件消息（待定，暂无时间开发）
      * @param uid
      * @param flag
      * @param getFlagCallback
      */
     void setFlagMessage(long uid, int flag, Email.GetFlagCallback getFlagCallback) {
         try {
-            Store store = session.getStore(IMAP);
-            store.connect(imapHost, account, password);
-            IMAPFolder imapFolder = (IMAPFolder) store.getFolder("INBOX");
-            imapFolder.open(Folder.READ_WRITE);
-            javax.mail.Message msg = imapFolder.getMessageByUID(uid);
+            IMAPStore store = Manager.getImapStore();
+            IMAPFolder folder = Manager.getInboxFolder(store);
+            javax.mail.Message msg = folder.getMessageByUID(uid);
             if (msg != null) {
                 msg.setFlag(Flags.Flag.DELETED, true);
                 getFlagCallback.onSuccess();
             } else {
                getFlagCallback.onFailure(Constant.MESSAGE_EXCEPTION);
             }
-            imapFolder.close();
-            store.close();
         }catch (MessagingException e) {
             e.printStackTrace();
             getFlagCallback.onFailure(e.getMessage());
@@ -516,17 +385,27 @@ class EmailCore {
      */
     void connect(Email.GetConnectCallback getConnectCallback) {
         try {
-            Transport transport = session.getTransport(SMTP);
-            POP3Store pop3Store = (POP3Store) session.getStore(POP3);
-            IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
-            if (!TextUtils.isEmpty(smtpHost) && !TextUtils.isEmpty(smtpPort)) {
-                transport.connect(smtpHost, account, password);
-            }
-            if (!TextUtils.isEmpty(popHost) && !TextUtils.isEmpty(popPort)) {
-                pop3Store.connect(popHost, account, password);
-            }
-            if (!TextUtils.isEmpty(imapHost) && !TextUtils.isEmpty(imapPort)) {
-                imapStore.connect(imapHost, account, password);
+            if (config != null) {
+                if (!TextUtils.isEmpty(config.getSmtpHost()) && !TextUtils.isEmpty(String.valueOf(config.getSmtpPort()))) {
+                    EmailUtils.getTransport(config);
+                }
+                if (!TextUtils.isEmpty(config.getPopHost()) && !TextUtils.isEmpty(String.valueOf(config.getPopPort()))) {
+                    EmailUtils.getPOP3Store(config);
+                }
+                if (!TextUtils.isEmpty(config.getImapHost()) && !TextUtils.isEmpty(String.valueOf(config.getImapPort()))) {
+                    EmailUtils.getIMAPStore(config);
+                }
+            } else {
+                GlobalConfig config = Manager.getGlobalConfig();
+                if (!TextUtils.isEmpty(config.getSmtpHost()) && !TextUtils.isEmpty(String.valueOf(config.getSmtpPort()))) {
+                    EmailUtils.getTransport();
+                }
+                if (!TextUtils.isEmpty(config.getPopHost()) && !TextUtils.isEmpty(String.valueOf(config.getPopPort()))) {
+                    EmailUtils.getPOP3Store();
+                }
+                if (!TextUtils.isEmpty(config.getImapHost()) && !TextUtils.isEmpty(String.valueOf(config.getImapPort()))) {
+                    EmailUtils.getIMAPStore();
+                }
             }
             getConnectCallback.onSuccess();
         } catch (MessagingException e) {

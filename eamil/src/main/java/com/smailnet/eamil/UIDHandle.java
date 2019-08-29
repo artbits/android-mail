@@ -55,16 +55,16 @@ class UIDHandle {
 
     /**
      * 插入uid
-     * @param uidList
+     * @param arrays
      * @param value
      * @return
      */
-    static long[] insertUid(long[] uidList, long value) {
-        int length = uidList.length + 1;
-        int index = uidList.length;
-        uidList = Arrays.copyOf(uidList, length);
-        uidList[index] = value;
-        return uidList;
+    static long[] insertUid(long[] arrays, long value) {
+        int length = arrays.length + 1;
+        int index = arrays.length;
+        arrays = Arrays.copyOf(arrays, length);
+        arrays[index] = value;
+        return arrays;
     }
 
     /**
@@ -74,13 +74,14 @@ class UIDHandle {
      * @return
      */
     static long[] deleteUid(long[] arrays, long value) {
-        long[] longs = new long[]{};
-        for (long i : arrays) {
-            if (i != value) {
-                longs = insertUid(longs, value);
+        for (int i = 0, len = arrays.length; i < len; i++) {
+            if (arrays[i] == value) {
+                arrays[i] = arrays[arrays.length-1];
+                arrays = Arrays.copyOf(arrays, arrays.length-1);
+                break;
             }
         }
-        return longs;
+        return arrays;
     }
 
     /**
