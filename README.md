@@ -26,7 +26,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:3.2.1'
+    implementation 'com.github.mailhu:email:3.3.0'
 }
 ```
 注：因为该库内部使用了Java 8新特性，如果你的项目依赖该库在构建时失败，出现如下错误：
@@ -64,9 +64,9 @@ Email.Config config = new Email.Config()
 自定义配置，自行填写你使用的邮箱的服务器host和port
 ```java
 Email.Config config = new Email.Config()
-        .setSMTP("smtp.qq.com", 465)        //设置SMTP发件服务器主机地址和端口
-        .setIMAP("imap.qq.com", 993)        //设置IMAP收件服务器主机地址和端口
-        .setPOP3("pop.qq.com", 995)         //设置POP3收件服务器主机地址和端口
+        .setSMTP("smtp.qq.com", 465, true)  //设置SMTP发件服务器主机地址、端口和是否开启ssl
+        .setIMAP("imap.qq.com", 993, true)  //设置IMAP收件服务器主机地址、端口和是否开启ssl
+        .setPOP3("pop.qq.com", 995, true)   //设置POP3收件服务器主机地址、端口和是否开启ssl
         .setAccount("from@qq.com")          //发件人的邮箱
         .setPassword("password");           //发件人邮箱的密码或者授权码
 ```
@@ -81,9 +81,9 @@ Email.setGlobalConfig()
 
 //自定义配置
 Email.setGlobalConfig()
-        .setSMTP("smtp.qq.com", 465)        //设置SMTP发件服务器主机地址和端口
-        .setIMAP("imap.qq.com", 993)        //设置IMAP收件服务器主机地址和端口
-        .setPOP3("pop.qq.com", 995)         //设置POP3收件服务器主机地址和端口
+        .setSMTP("smtp.qq.com", 465, true)  //设置SMTP发件服务器主机地址、端口和是否开启ssl
+        .setIMAP("imap.qq.com", 993, true)  //设置IMAP收件服务器主机地址、端口和是否开启ssl
+        .setPOP3("pop.qq.com", 995, true)   //设置POP3收件服务器主机地址、端口和是否开启ssl
         .setAccount("from@qq.com")          //发件人的邮箱
         .setPassword("password");           //发件人邮箱的密码或者授权码     
 ```
@@ -340,6 +340,14 @@ boolean isSeen = message.isSeen();
 ```
 
 # 更新日志
+* Email for Android 3.3.0
+  + 增加是否设置SSL的功能
+  + 增加126邮箱的快速配置
+  + 修复163，126邮箱读取邮件被阻止的问题
+  + 修复163邮箱快速配置端口错误的问题
+  + 重构和优化内部代码
+
+
 * Email for Android 3.2.2
   + 增加消息极速同步API
   + 修复一些已知bug
