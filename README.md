@@ -26,7 +26,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:3.3.0'
+    implementation 'com.github.mailhu:email:3.3.1'
 }
 ```
 注：因为该库内部使用了Java 8新特性，如果你的项目依赖该库在构建时失败，出现如下错误：
@@ -340,6 +340,10 @@ boolean isSeen = message.isSeen();
 ```
 
 # 更新日志
+* Email for Android 3.3.1
+  + 修复使用局部配置时发送邮件出现崩溃的现象
+  + 优化内部代码
+
 * Email for Android 3.3.0
   + 增加是否设置SSL的功能
   + 增加126邮箱的快速配置
