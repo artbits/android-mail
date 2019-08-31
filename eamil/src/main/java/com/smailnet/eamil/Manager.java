@@ -69,7 +69,7 @@ class Manager {
      * @return
      */
     static Transport getTransport() throws MessagingException {
-        if (Manager.transport == null) {
+        if (Manager.transport == null || !Manager.transport.isConnected()) {
             Manager.transport = EmailUtils.getTransport();
         }
         return transport;
@@ -80,7 +80,7 @@ class Manager {
      * @return
      */
     static IMAPStore getImapStore() throws MessagingException {
-        if (Manager.imapStore == null) {
+        if (Manager.imapStore == null || !Manager.imapStore.isConnected()) {
             Manager.imapStore = EmailUtils.getIMAPStore();
         }
         return imapStore;
@@ -91,7 +91,7 @@ class Manager {
      * @return
      */
     static POP3Store getPOP3Store() throws MessagingException {
-        if (Manager.pop3Store == null) {
+        if (Manager.pop3Store == null || !Manager.pop3Store.isConnected()) {
             Manager.pop3Store = EmailUtils.getPOP3Store();
         }
         return pop3Store;
@@ -104,7 +104,7 @@ class Manager {
      * @throws MessagingException
      */
     static IMAPFolder getInboxFolder(IMAPStore store) throws MessagingException {
-        if (Manager.imapInboxFolder == null) {
+        if (Manager.imapInboxFolder == null || !Manager.imapInboxFolder.isOpen()) {
             Manager.imapInboxFolder = EmailUtils.getInboxFolder(store);
         }
         return imapInboxFolder;
@@ -117,9 +117,27 @@ class Manager {
      * @throws MessagingException
      */
     static POP3Folder getInboxFolder(POP3Store store) throws MessagingException {
-        if (Manager.pop3InboxFolder == null) {
+        if (Manager.pop3InboxFolder == null || !Manager.pop3InboxFolder.isOpen()) {
             Manager.pop3InboxFolder = EmailUtils.getInboxFolder(store);
         }
         return pop3InboxFolder;
+    }
+
+    static void destroy() throws MessagingException {
+        if (transport.isConnected()) {
+            transport.close();
+        }
+        if (imapStore.isConnected()) {
+            imapStore.close();
+        }
+        if (pop3Store.isConnected()) {
+            pop3Store.close();
+        }
+        if (imapInboxFolder.isOpen()) {
+            imapInboxFolder.close();
+        }
+        if (pop3InboxFolder.isOpen()) {
+            pop3InboxFolder.close();
+        }
     }
 }

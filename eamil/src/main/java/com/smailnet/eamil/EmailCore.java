@@ -95,7 +95,7 @@ class EmailCore {
      */
     void send(Email.GetSendCallback getSendCallback) {
         try {
-            Transport transport = Manager.getTransport();
+            Transport transport = (config != null) ? EmailUtils.getTransport(config) : Manager.getTransport();
             transport.sendMessage(message, message.getRecipients(javax.mail.Message.RecipientType.TO));
             getSendCallback.onSuccess();
         } catch (MessagingException e) {

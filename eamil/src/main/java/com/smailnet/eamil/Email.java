@@ -23,6 +23,8 @@ import com.smailnet.eamil.entity.Message;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 /**
  * Email for Android是基于JavaMail封装的电子邮件框架，简化了开发者在Android客户端
  * 中编写发送电子邮件的的代码，同时还支持读取邮箱中的邮件。把它集成到你的Android项
@@ -150,6 +152,20 @@ public final class Email {
      */
     public static void initialize(Context context) {
         Manager.initContext(context);
+    }
+
+    /**
+     * 销毁Email框架内部的某些对象。
+     * @return
+     */
+    public static boolean destroy() {
+        try {
+            Manager.destroy();
+            return true;
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**

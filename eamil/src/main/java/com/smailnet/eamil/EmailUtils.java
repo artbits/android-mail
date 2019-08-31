@@ -40,6 +40,7 @@ class EmailUtils {
                 properties.put(Constant.MAIL_SMTP_SOCKET_FACTORY_FALLBACK, false);
                 properties.put(Constant.MAIL_SMTP_SOCKET_FACTORY_PORT, smtpPort);
             } else {
+                properties.put(Constant.MAIL_SMTP_STARTTLS_ENABLE, true);
                 properties.put(Constant.MAIL_SMTP_POST, smtpPort);
             }
         }
@@ -94,6 +95,7 @@ class EmailUtils {
                 properties.put(Constant.MAIL_SMTP_SOCKET_FACTORY_FALLBACK, false);
                 properties.put(Constant.MAIL_SMTP_SOCKET_FACTORY_PORT, smtpPort);
             } else {
+                properties.put(Constant.MAIL_SMTP_STARTTLS_ENABLE, true);
                 properties.put(Constant.MAIL_SMTP_POST, smtpPort);
             }
         }
