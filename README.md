@@ -73,14 +73,14 @@ Email.Config config = new Email.Config()
 如果你需要频繁使用到Email.Config对象，还可以使用全局配置API，只需配置一次，全局多次使用。
 ```java
 //快速配置
-Email.setGlobalConfig()
+Email.getGlobalConfig()
         .setMailType(Email.MailType.QQ)     //选择邮箱类型
         .setAccount("from@qq.com")          //发件人的邮箱
         .setPassword("password");           //发件人邮箱的密码或者授权码
 
 
 //自定义配置
-Email.setGlobalConfig()
+Email.getGlobalConfig()
         .setSMTP("smtp.qq.com", 465, true)  //设置SMTP发件服务器主机地址、端口和是否开启ssl
         .setIMAP("imap.qq.com", 993, true)  //设置IMAP收件服务器主机地址、端口和是否开启ssl
         .setPOP3("pop.qq.com", 995, true)   //设置POP3收件服务器主机地址、端口和是否开启ssl
