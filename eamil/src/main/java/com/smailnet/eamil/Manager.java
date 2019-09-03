@@ -27,13 +27,13 @@ class Manager {
     //POP3Folder对象
     private static POP3Folder pop3InboxFolder = null;
     //全局配置对象
-    static GlobalConfig globalConfig = null;
+    private static GlobalConfig globalConfig = null;
 
     /**
      * 设置Context
      * @param context
      */
-    static void initContext(Context context) {
+    static void setContext(Context context) {
         Manager.context = context;
     }
 
@@ -46,20 +46,12 @@ class Manager {
     }
 
     /**
-     * 设置全局变量
-     */
-    static GlobalConfig initGlobalConfig() {
-        Manager.globalConfig = new GlobalConfig();
-        return Manager.globalConfig;
-    }
-
-    /**
      * 获取全局变量
      * @return
      */
     static GlobalConfig getGlobalConfig() {
         if (globalConfig == null) {
-            throw new RuntimeException(Constant.GLOBAL_CONFIG_EXCEPTION);
+            globalConfig = new GlobalConfig();
         }
         return globalConfig;
     }
@@ -123,20 +115,24 @@ class Manager {
         return pop3InboxFolder;
     }
 
+    /**
+     * 销毁对象
+     * @throws MessagingException
+     */
     static void destroy() throws MessagingException {
-        if (transport.isConnected()) {
+        if (transport != null && transport.isConnected()) {
             transport.close();
         }
-        if (imapStore.isConnected()) {
+        if (imapStore != null && imapStore.isConnected()) {
             imapStore.close();
         }
-        if (pop3Store.isConnected()) {
+        if (pop3Store != null && pop3Store.isConnected()) {
             pop3Store.close();
         }
-        if (imapInboxFolder.isOpen()) {
+        if (imapInboxFolder != null && imapInboxFolder.isOpen()) {
             imapInboxFolder.close();
         }
-        if (pop3InboxFolder.isOpen()) {
+        if (pop3InboxFolder != null && pop3InboxFolder.isOpen()) {
             pop3InboxFolder.close();
         }
     }

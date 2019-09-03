@@ -40,6 +40,20 @@ class Converter {
                     hashMap.put(Constant.SMTP_PORT, 465);
                     hashMap.put(Constant.POP3_PORT, 995);
                     hashMap.put(Constant.IMAP_PORT, 993);
+                    hashMap.put(Constant.SMTP_SSL, true);
+                    hashMap.put(Constant.POP3_SSL, true);
+                    hashMap.put(Constant.IMAP_SSL, true);
+                    return hashMap;
+                case Email.MailType.EXMAIL:
+                    hashMap.put(Constant.SMTP_HOST, "smtp.exmail.qq.com");
+                    hashMap.put(Constant.POP3_HOST, "pop.exmail.qq.com");
+                    hashMap.put(Constant.IMAP_HOST, "imap.exmail.qq.com");
+                    hashMap.put(Constant.SMTP_PORT, 465);
+                    hashMap.put(Constant.POP3_PORT, 995);
+                    hashMap.put(Constant.IMAP_PORT, 993);
+                    hashMap.put(Constant.SMTP_SSL, true);
+                    hashMap.put(Constant.POP3_SSL, true);
+                    hashMap.put(Constant.IMAP_SSL, true);
                     return hashMap;
                 case Email.MailType.$163:
                     hashMap.put(Constant.SMTP_HOST, "smtp.163.com");
@@ -48,6 +62,9 @@ class Converter {
                     hashMap.put(Constant.SMTP_PORT, 465);
                     hashMap.put(Constant.POP3_PORT, 995);
                     hashMap.put(Constant.IMAP_PORT, 993);
+                    hashMap.put(Constant.SMTP_SSL, true);
+                    hashMap.put(Constant.POP3_SSL, true);
+                    hashMap.put(Constant.IMAP_SSL, true);
                     return hashMap;
                 case Email.MailType.$126:
                     hashMap.put(Constant.SMTP_HOST, "smtp.126.com");
@@ -56,6 +73,20 @@ class Converter {
                     hashMap.put(Constant.SMTP_PORT, 465);
                     hashMap.put(Constant.POP3_PORT, 995);
                     hashMap.put(Constant.IMAP_PORT, 993);
+                    hashMap.put(Constant.SMTP_SSL, true);
+                    hashMap.put(Constant.POP3_SSL, true);
+                    hashMap.put(Constant.IMAP_SSL, true);
+                    return hashMap;
+                case Email.MailType.OUTLOOK:
+                    hashMap.put(Constant.SMTP_HOST, "smtp-mail.outlook.com");
+                    hashMap.put(Constant.IMAP_HOST, "imap-mail.outlook.com");
+                    hashMap.put(Constant.POP3_HOST, "");
+                    hashMap.put(Constant.SMTP_PORT, 25);
+                    hashMap.put(Constant.IMAP_PORT, 993);
+                    hashMap.put(Constant.POP3_PORT, 0);
+                    hashMap.put(Constant.SMTP_SSL, false);
+                    hashMap.put(Constant.IMAP_SSL, true);
+                    hashMap.put(Constant.POP3_SSL, true);
                     return hashMap;
                 default:
                     return null;

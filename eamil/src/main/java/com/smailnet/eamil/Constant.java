@@ -35,6 +35,9 @@ interface Constant {
     String POP3_PORT = "pop3_port";
     String IMAP_HOST = "imap_host";
     String IMAP_PORT = "imap_port";
+    String SMTP_SSL = "smtp_ssl";
+    String POP3_SSL = "pop3_ssl";
+    String IMAP_SSL = "imap_ssl";
 
     String GLOBAL_CONFIG_EXCEPTION = "The Email framework has not yet been configured globally.";
     String MESSAGE_EXCEPTION = "Message does not exist";

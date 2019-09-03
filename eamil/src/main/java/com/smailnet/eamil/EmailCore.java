@@ -125,7 +125,7 @@ class EmailCore {
                 getReceiveCallback.onFinish(messageList);
             } else if (protocol == Protocol.IMAP) {
                 IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-                IMAPFolder folder = Manager.getInboxFolder(store);
+                IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
                 javax.mail.Message[] messages = folder.getMessages();
                 List<Message> messageList = new ArrayList<>();
                 int total = messages.length, index = 0;
@@ -149,7 +149,7 @@ class EmailCore {
     void fastReceive(Email.GetReceiveCallback getReceiveCallback) {
         try {
             IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = Manager.getInboxFolder(store);
+            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
             javax.mail.Message[] messages = folder.getMessages();
             List<Message> messageList = new ArrayList<>();
             int total = messages.length, index = 0;
@@ -178,7 +178,7 @@ class EmailCore {
                 getCountCallback.onSuccess(folder.getMessageCount());
             } else if (protocol == Protocol.IMAP) {
                 IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-                IMAPFolder folder = Manager.getInboxFolder(store);
+                IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
                 getCountCallback.onSuccess(folder.getMessageCount());
             }
         } catch (MessagingException e) {
@@ -194,7 +194,7 @@ class EmailCore {
     void getUnreadMessageCount(Email.GetCountCallback getCountCallback) {
         try {
             IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = Manager.getInboxFolder(store);
+            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
             getCountCallback.onSuccess(folder.getUnreadMessageCount());
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -210,7 +210,7 @@ class EmailCore {
     void syncMessage(long[] originalUidList, Email.GetSyncMessageCallback getSyncMessageCallback) {
         try {
             IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = Manager.getInboxFolder(store);
+            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
             javax.mail.Message[] messages = folder.getMessages();
 
             //对原uid列表排序
@@ -296,7 +296,7 @@ class EmailCore {
     void getUIDList(Email.GetUIDListCallback getUIDListCallback) {
         try {
             IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = Manager.getInboxFolder(store);
+            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
             javax.mail.Message[] messages = folder.getMessages();
             long[] uidList = new long[messages.length];
             for (int i = 0, len = messages.length; i < len; i++) {
@@ -318,7 +318,7 @@ class EmailCore {
     void getMessage(long uid, Email.GetMessageCallback getMessageCallback) {
         try {
             IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = Manager.getInboxFolder(store);
+            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
             javax.mail.Message msg = folder.getMessageByUID(uid);
             if (msg != null) {
                 Message message = Converter.InternetMessage.toLocalMessage(uid, msg, false);
@@ -340,7 +340,7 @@ class EmailCore {
     void getMessageList(long[] uidList, Email.GetMessageListCallback getMessageListCallback) {
         try {
             IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = Manager.getInboxFolder(store);
+            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
             javax.mail.Message[] messages = folder.getMessagesByUID(uidList);
             List<Message> messageList = new ArrayList<>();
             for (javax.mail.Message msg : messages) {

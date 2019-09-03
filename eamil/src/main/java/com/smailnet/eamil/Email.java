@@ -50,11 +50,13 @@ public final class Email {
         private int smtpPort;
         private int popPort;
         private int imapPort;
+        private int type;
         private boolean smtpSSL;
         private boolean popSSL;
         private boolean imapSSL;
 
         public Config setMailType(int type) {
+            this.type = type;
             HashMap<String, Object> hashMap = Converter.MailType.getParam(type);
             if (hashMap != null) {
                 this.smtpHost = String.valueOf(hashMap.get(Constant.SMTP_HOST));
@@ -63,9 +65,9 @@ public final class Email {
                 this.popPort = (int) hashMap.get(Constant.POP3_PORT);
                 this.imapHost = String.valueOf(hashMap.get(Constant.IMAP_HOST));
                 this.imapPort = (int) hashMap.get(Constant.IMAP_PORT);
-                this.smtpSSL = true;
-                this.popSSL = true;
-                this.imapSSL = true;
+                this.smtpSSL = (boolean) hashMap.get(Constant.SMTP_SSL);
+                this.popSSL = (boolean) hashMap.get(Constant.POP3_SSL);
+                this.imapSSL = (boolean) hashMap.get(Constant.IMAP_SSL);
             }
             return this;
         }
@@ -99,6 +101,10 @@ public final class Email {
             this.imapPort = port;
             this.imapSSL = ssl;
             return this;
+        }
+
+        int getType() {
+            return type;
         }
 
         String getAccount() {
@@ -151,7 +157,7 @@ public final class Email {
      * @param context
      */
     public static void initialize(Context context) {
-        Manager.initContext(context);
+        Manager.setContext(context);
     }
 
     /**
@@ -173,7 +179,7 @@ public final class Email {
      * @return
      */
     public static GlobalConfig getGlobalConfig() {
-        return (Manager.globalConfig == null) ? Manager.initGlobalConfig() : Manager.getGlobalConfig();
+        return Manager.getGlobalConfig();
     }
 
     /**
@@ -303,8 +309,10 @@ public final class Email {
     public interface MailType {
         int QQ = 1;
         int FOXMAIL = 2;
-        int $163 = 3;
-        int $126 = 4;
+        int EXMAIL = 3;
+        int $163 = 4;
+        int $126 = 5;
+        int OUTLOOK = 6;
     }
 
 }

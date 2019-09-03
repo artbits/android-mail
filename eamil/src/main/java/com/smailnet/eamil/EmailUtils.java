@@ -233,4 +233,23 @@ class EmailUtils {
         return folder;
     }
 
+    /**
+     * 获取InboxFolder
+     * @param store
+     * @param config
+     * @return
+     * @throws MessagingException
+     */
+    static IMAPFolder getInboxFolder(IMAPStore store, Email.Config config) throws MessagingException {
+        IMAPFolder folder = (IMAPFolder) store.getFolder("INBOX");
+        if (config.getType() == Email.MailType.$163 || config.getType() == Email.MailType.$126) {
+            folder.doCommand(protocol -> {
+                protocol.id("FUTONG");
+                return null;
+            });
+        }
+        folder.open(Folder.READ_WRITE);
+        return folder;
+    }
+
 }
