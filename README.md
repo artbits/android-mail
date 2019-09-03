@@ -26,7 +26,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:3.3.1'
+    implementation 'com.github.mailhu:email:3.3.2'
 }
 ```
 注：因为该库内部使用了Java 8新特性，如果你的项目依赖该库在构建时失败，出现如下错误：
@@ -54,14 +54,14 @@ android {
 ###  ● 配置邮件服务器的参数
 [如何开启邮箱SMTP，IMAP，POP3服务和获取授权码？](https://github.com/mailhu/email#%E5%BC%80%E5%90%AF%E6%9C%8D%E5%8A%A1%E4%B8%8E%E8%8E%B7%E5%8F%96%E6%8E%88%E6%9D%83%E7%A0%81)
 
-快速配置，目前只支持QQ邮箱、Foxmail、163邮箱、126邮箱。
+快速配置，目前只支持QQ邮箱、Foxmail、腾讯企业邮（EXMAIL）、Outlook、163邮箱、126邮箱。
 ```java
 Email.Config config = new Email.Config()
         .setMailType(Email.MailType.QQ)     //选择邮箱类型
         .setAccount("from@qq.com")          //发件人的邮箱
         .setPassword("password");           //发件人邮箱的密码或者授权码
 ```
-自定义配置，自行填写你使用的邮箱的服务器host和port
+自定义配置，自行填写你使用的邮件的服务器host和port
 ```java
 Email.Config config = new Email.Config()
         .setSMTP("smtp.qq.com", 465, true)  //设置SMTP发件服务器主机地址、端口和是否开启ssl
@@ -340,6 +340,12 @@ boolean isSeen = message.isSeen();
 ```
 
 # 更新日志
+* Email for Android 3.3.2
+  + 快速配置增加对腾讯企业邮、outlook邮箱的支持
+  + 修复使用局部配置时读取邮件出现崩溃的现象
+  + 修复Email框架销毁内部对象出现空指针的问题
+  + 优化内部代码
+  
 * Email for Android 3.3.1
   + 修复使用局部配置时发送邮件出现崩溃的现象
   + 优化内部代码
