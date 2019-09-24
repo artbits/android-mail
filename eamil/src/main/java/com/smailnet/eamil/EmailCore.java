@@ -11,16 +11,11 @@ import com.sun.mail.pop3.POP3Store;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
-import javax.mail.Address;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
-import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 /**
@@ -30,8 +25,6 @@ class EmailCore {
 
     //配置对象
     private Email.Config config;
-    //JavaMail的消息对象
-    private javax.mail.Message message;
 
     /**
      * 构造方法
@@ -49,51 +42,10 @@ class EmailCore {
     }
 
     /**
-     * 组装需要发送的邮件信息
-     * @param nickname
-     * @param to
-     * @param cc
-     * @param bcc
-     * @param subject
-     * @param text
-     * @param content
-     * @return
-     * @throws MessagingException
-     */
-    void setMessage(String nickname, Address[] to, Address[] cc, Address[] bcc, String subject, String text, Object content) {
-        try {
-            String account = (config != null) ? config.getAccount() : Manager.getGlobalConfig().getAccount();
-            Properties properties = (config != null) ? EmailUtils.getProperties(config) : EmailUtils.getProperties();
-            Session session = Session.getInstance(properties);
-            javax.mail.Message message = new MimeMessage(session);
-            message.addRecipients(javax.mail.Message.RecipientType.TO, to);
-            if (cc != null) {
-                message.addRecipients(javax.mail.Message.RecipientType.CC, cc);
-            }
-            if (bcc != null) {
-                message.addRecipients(javax.mail.Message.RecipientType.BCC, bcc);
-            }
-            message.setFrom(new InternetAddress(nickname + "<" + account + ">"));
-            message.setSubject(subject);
-            if (text != null) {
-                message.setText(text);
-            } else if (content != null) {
-                message.setContent(content, "text/html");
-            }
-            message.setSentDate(new Date());
-            message.saveChanges();
-            this.message = message;
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            this.message = null;
-        }
-    }
-
-    /**
      * 发送邮件
      * @param getSendCallback
      */
-    void send(Email.GetSendCallback getSendCallback) {
+    void send(MimeMessage message, Email.GetSendCallback getSendCallback) {
         try {
             Transport transport = (config != null) ? EmailUtils.getTransport(config) : Manager.getTransport();
             transport.sendMessage(message, message.getRecipients(javax.mail.Message.RecipientType.TO));
@@ -118,7 +70,7 @@ class EmailCore {
                 List<Message> messageList = new ArrayList<>();
                 int total = messages.length, index = 0;
                 for (javax.mail.Message msg: messages){
-                    Message message = Converter.InternetMessage.toLocalMessage(0, msg, false);
+                    Message message = Converter.MessageConversion.toLocalMessage(0, msg, false);
                     messageList.add(message);
                     getReceiveCallback.receiving(message, ++index, total);
                 }
@@ -130,7 +82,7 @@ class EmailCore {
                 List<Message> messageList = new ArrayList<>();
                 int total = messages.length, index = 0;
                 for (javax.mail.Message msg: messages){
-                    Message message = Converter.InternetMessage.toLocalMessage(folder.getUID(msg), msg, false);
+                    Message message = Converter.MessageConversion.toLocalMessage(folder.getUID(msg), msg, false);
                     messageList.add(message);
                     getReceiveCallback.receiving(message, ++index, total);
                 }
@@ -154,7 +106,7 @@ class EmailCore {
             List<Message> messageList = new ArrayList<>();
             int total = messages.length, index = 0;
             for (javax.mail.Message msg: messages) {
-                Message message = Converter.InternetMessage.toLocalMessage(folder.getUID(msg), msg, true);
+                Message message = Converter.MessageConversion.toLocalMessage(folder.getUID(msg), msg, true);
                 messageList.add(message);
                 getReceiveCallback.receiving(message, ++index, total);
             }
@@ -225,7 +177,7 @@ class EmailCore {
                 case UIDHandle.SyncType.SYNC_ALL:
                     for (javax.mail.Message msg: messages){
                         long uid = folder.getUID(msg);
-                        Message message = Converter.InternetMessage.toLocalMessage(uid, msg, true);
+                        Message message = Converter.MessageConversion.toLocalMessage(uid, msg, true);
                         messageList.add(message);
                     }
                     break;
@@ -254,7 +206,7 @@ class EmailCore {
                         javax.mail.Message msg = messages[index];
                         long uid = folder.getUID(msg);
                         if (uid > originalLastUid) {
-                            Message message = Converter.InternetMessage.toLocalMessage(uid, msg, true);
+                            Message message = Converter.MessageConversion.toLocalMessage(uid, msg, true);
                             messageList.add(message);
                         } else {
                             break;
@@ -268,7 +220,7 @@ class EmailCore {
                         javax.mail.Message msg = messages[index];
                         long uid = folder.getUID(msg);
                         if (uid > originalLastUid) {
-                            Message message = Converter.InternetMessage.toLocalMessage(uid, msg, true);
+                            Message message = Converter.MessageConversion.toLocalMessage(uid, msg, true);
                             messageList.add(message);
                         } else if (UIDHandle.binarySearch(originalUidList, uid)) {
                             originalUidList = UIDHandle.deleteUid(originalUidList, uid);
@@ -321,7 +273,7 @@ class EmailCore {
             IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
             javax.mail.Message msg = folder.getMessageByUID(uid);
             if (msg != null) {
-                Message message = Converter.InternetMessage.toLocalMessage(uid, msg, false);
+                Message message = Converter.MessageConversion.toLocalMessage(uid, msg, false);
                 getMessageCallback.onSuccess(message);
             } else {
                 getMessageCallback.onFailure(Constant.MESSAGE_EXCEPTION);
@@ -345,7 +297,7 @@ class EmailCore {
             List<Message> messageList = new ArrayList<>();
             for (javax.mail.Message msg : messages) {
                 if (msg != null) {
-                    Message message = Converter.InternetMessage.toLocalMessage(folder.getUID(msg), msg, false);
+                    Message message = Converter.MessageConversion.toLocalMessage(folder.getUID(msg), msg, false);
                     messageList.add(message);
                 }
             }

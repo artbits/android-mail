@@ -3,32 +3,29 @@ package com.smailnet.eamil;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.io.UnsupportedEncodingException;
+import java.io.File;
+import java.util.HashMap;
 
-import javax.mail.Address;
-import javax.mail.internet.MimeUtility;
+import javax.mail.internet.MimeMessage;
 
 public final class SendService {
 
-    private String nickname;
-    private String subject;
-    private String text;
-    private Object content;
-    private Address[] to;
-    private Address[] cc;
-    private Address[] bcc;
-
     private Handler handler;
     private EmailCore core;
+    private Email.Config config;
+    private HashMap<String, Object> messageMap;
 
     SendService() {
         handler = new Handler(Looper.getMainLooper());
         core = new EmailCore();
+        messageMap = new HashMap<>();
     }
 
     SendService(Email.Config config) {
+        this.config = config;
         handler = new Handler(Looper.getMainLooper());
         core = new EmailCore(config);
+        messageMap = new HashMap<>();
     }
 
     /**
@@ -37,7 +34,7 @@ public final class SendService {
      * @return
      */
     public SendService setTo(String to) {
-        this.to = Converter.MailAddress.toArrays(to);
+        messageMap.put("to", Converter.AddressConversion.toArrays(to));
         return this;
     }
 
@@ -47,7 +44,7 @@ public final class SendService {
      * @return
      */
     public SendService setCc(String cc) {
-        this.cc = Converter.MailAddress.toArrays(cc);
+        messageMap.put("cc", Converter.AddressConversion.toArrays(cc));
         return this;
     }
 
@@ -57,7 +54,7 @@ public final class SendService {
      * @return
      */
     public SendService setBcc(String bcc) {
-        this.bcc = Converter.MailAddress.toArrays(bcc);
+        messageMap.put("bcc", Converter.AddressConversion.toArrays(bcc));
         return this;
     }
 
@@ -67,11 +64,7 @@ public final class SendService {
      * @return
      */
     public SendService setNickname(String nickname) {
-        try {
-            this.nickname = MimeUtility.encodeText(nickname);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        messageMap.put("nickname", Converter.CodingConversion.encodeText(nickname));
         return this;
     }
 
@@ -81,7 +74,7 @@ public final class SendService {
      * @return
      */
     public SendService setSubject(String subject) {
-        this.subject = subject;
+        messageMap.put("subject", subject);
         return this;
     }
 
@@ -91,17 +84,38 @@ public final class SendService {
      * @return
      */
     public SendService setText(String text) {
-        this.text = text;
+        messageMap.put("text", text);
         return this;
     }
 
     /**
      * 设置邮件内容（HTML）
+     * @param html
+     * @return
+     */
+    public SendService setHTML(String html) {
+        messageMap.put("html", html);
+        return this;
+    }
+
+    /**
+     * 设置邮件内容（HTML），该方法已废弃，已被setHTML()方法替换
      * @param content
      * @return
      */
+    @Deprecated
     public SendService setContent(Object content) {
-        this.content = content;
+        messageMap.put("html", content);
+        return this;
+    }
+
+    /**
+     * 设置附件
+     * @param attachment
+     * @return
+     */
+    public SendService setAttachment(File attachment) {
+        messageMap.put("attachment", attachment);
         return this;
     }
 
@@ -111,8 +125,8 @@ public final class SendService {
      */
     public void send(Email.GetSendCallback getSendCallback) {
         new Thread(() -> {
-            core.setMessage(nickname, to, cc, bcc, subject, text, content);
-            core.send(new Email.GetSendCallback() {
+            MimeMessage message = Converter.MessageConversion.toInternetMessage(config, messageMap);
+             core.send(message, new Email.GetSendCallback() {
                 @Override
                 public void onSuccess() {
                     handler.post(getSendCallback::onSuccess);

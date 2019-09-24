@@ -8,6 +8,9 @@ import com.sun.mail.imap.IMAPStore;
 import com.sun.mail.pop3.POP3Folder;
 import com.sun.mail.pop3.POP3Store;
 
+import java.io.File;
+import java.util.Objects;
+
 import javax.mail.MessagingException;
 import javax.mail.Transport;
 
@@ -28,6 +31,8 @@ class Manager {
     private static POP3Folder pop3InboxFolder = null;
     //全局配置对象
     private static GlobalConfig globalConfig = null;
+    //保存附件的目录路径
+    private static String directory = null;
 
     /**
      * 设置Context
@@ -134,6 +139,31 @@ class Manager {
         }
         if (pop3InboxFolder != null && pop3InboxFolder.isOpen()) {
             pop3InboxFolder.close();
+        }
+    }
+
+    /**
+     * 获取目录路径
+     * @return
+     */
+    static String getDirectory() {
+        return directory;
+    }
+
+    /**
+     * 设置目录路径
+     * @param directory
+     */
+    static void setDirectory(String directory) {
+        if (directory == null) {
+            Manager.directory = Objects.requireNonNull(context.getExternalFilesDir(""))
+                    .getAbsolutePath() + "/attachments/";
+            File file = new File(Manager.directory);
+            file.mkdir();
+        } else if (directory.lastIndexOf('/') == directory.length()-1) {
+            Manager.directory = directory;
+        } else {
+            Manager.directory = directory + "/";
         }
     }
 }

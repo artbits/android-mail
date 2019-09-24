@@ -57,7 +57,7 @@ public final class Email {
 
         public Config setMailType(int type) {
             this.type = type;
-            HashMap<String, Object> hashMap = Converter.MailType.getParam(type);
+            HashMap<String, Object> hashMap = Converter.MailTypeConversion.getParam(type);
             if (hashMap != null) {
                 this.smtpHost = String.valueOf(hashMap.get(Constant.SMTP_HOST));
                 this.smtpPort = (int) hashMap.get(Constant.SMTP_PORT);
@@ -158,6 +158,17 @@ public final class Email {
      */
     public static void initialize(Context context) {
         Manager.setContext(context);
+        Manager.setDirectory(null);
+    }
+
+    /**
+     * Email框架初始化，该方法应该在自定义的Application中调用。
+     * @param context
+     * @param directory
+     */
+    public static void initialize(Context context, String directory) {
+        Manager.setContext(context);
+        Manager.setDirectory(directory);
     }
 
     /**
