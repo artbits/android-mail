@@ -26,7 +26,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:email:3.3.2'
+    implementation 'com.github.mailhu:email:3.3.3'
 }
 ```
 注：因为该库内部使用了Java 8新特性，如果你的项目依赖该库在构建时失败，出现如下错误：
@@ -45,11 +45,26 @@ android {
 ```
 
 # 使用文档
-###  ● 获取联网权限
-在Android项目中的AndroidManifest.xml文件中添加联网权限。
+###  ● 获取相关权限
+在Android项目中的AndroidManifest.xml文件中添加相关权限。依赖3.3.3及以上的版本，必需添加读写存储空间的权限，并弹出对话框让用户接收，才能保证框架的正常运行。
 ```xml
+<!--获取联网权限-->
 <uses-permission android:name="android.permission.INTERNET"/>
+<!--获取读写存储空间权限-->
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 ```
+
+###  ● 初始化框架
+在你的项目自定义的Application类中对框架进行初始化，如果你只想使用框架的默认目录路径来存储邮件中的附件，可以直接使用如下方法来初始化，它默认的路径是：/storage/emulated/0/Android/data/包名/files/attachments/
+```java
+Email.initialize(this);
+```
+或者，你也可以在初始化框架时自定义存储附件的路径，代码如下：
+```java
+String directory = "/storage/emulated/0/"; //自定义的目录路径
+Email.initialize(this, directory);
+```
+
 
 ###  ● 配置邮件服务器的参数
 [如何开启邮箱SMTP，IMAP，POP3服务和获取授权码？](https://github.com/mailhu/email#%E5%BC%80%E5%90%AF%E6%9C%8D%E5%8A%A1%E4%B8%8E%E8%8E%B7%E5%8F%96%E6%8E%88%E6%9D%83%E7%A0%81)
@@ -100,7 +115,8 @@ Email.getSendService(config)            //已设置全局配置后，无需再�
         .setBcc("bcc@qq.com")           //密送人的邮箱地址（非必选）
         .setNickname("小学生")          //设置发信人的昵称
         .setSubject("这是一封测试邮件")  //邮件主题
-        .setText("Hello World !")       //邮件正文，若是发送HTML类型的正文用setContent()
+        .setText("Hello World !")       //邮件正文，若是发送HTML类型的正文用setHTML()方法
+        .setAttachment(file)            //设置附件（非必选）
         .send(new Email.GetSendCallback() {
             @Override
             public void onSuccess() {
@@ -313,10 +329,14 @@ String fromNickname = message.getFrom().getNickname();
 String toAddress = message.getTo().getAddress();
 //获取发件人（自己）的昵称
 String toNickname = message.getTo().getNickname();
-//获取邮件的发送时间，格式为格式为yyyy年M月d日 hh:mm
+//获取该封邮件的发送时间，格式为格式为yyyy年M月d日 hh:mm
 String date = message.getSentDate().getText();
-//获取邮件的发送时间，单位毫秒
+//获取该封邮件发送时的时间戳，单位毫秒
 long millisecond = message.getSentDate().getMillisecond();
+//判断该封邮件是否存在附件
+boolean hasAttachment = message.hasAttachment();
+//获取该封邮件的附件（注：附件有可能不止一份，而是多份）
+List<File> attachments = message.getAttachments();
 //判断该封邮件是否已读
 boolean isSeen = message.isSeen();
 ```
@@ -340,6 +360,14 @@ boolean isSeen = message.isSeen();
 ```
 
 # 更新日志
+* Email for Android 3.3.3
+  + 增加发送附件和读取邮件中的附件的功能
+  + 因3.3.3版本新增附件功能，需要获取读写存储空间的权限
+  + 框架使用initialization方法时，可自定义附件的存储路径
+  + SendService类的setContent方法已被setHTML方法替代，并且会在后续版本中删除
+  + 解析有些邮件内容时出现内容重复或内容丢失的问题已解决
+  + 优化和重构内部部分代码
+
 * Email for Android 3.3.2
   + 快速配置增加对腾讯企业邮、outlook邮箱的支持
   + 修复使用局部配置时读取邮件出现崩溃的现象
