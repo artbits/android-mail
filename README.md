@@ -46,7 +46,7 @@ android {
 
 # 使用文档
 ###  ● 获取相关权限
-在Android项目中的AndroidManifest.xml文件中添加相关权限。依赖3.3.3及以上的版本，必需添加读写存储空间的权限，并弹出对话框让用户接收，才能保证框架的正常运行。
+在Android项目中的AndroidManifest.xml文件中添加相关权限。依赖3.3.3及以上的版本，必需添加读写存储空间的权限，并弹出对话框让用户接受，才能保证框架的正常运行。
 ```xml
 <!--获取联网权限-->
 <uses-permission android:name="android.permission.INTERNET"/>
