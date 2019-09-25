@@ -294,13 +294,13 @@ class Converter {
             //邮件文本内容
             String content = (isFast)? null : ContentConversion.toString(message, false);
             //邮件是否存在附件
-            boolean isAttachment = (!isFast) && ContentConversion.isAttachment(message);
+            boolean hasAttachment = (!isFast) && ContentConversion.isAttachment(message);
             //获取附件
-            List<File> attachments = (isFast || !isAttachment) ? null : ContentConversion.getAttachments(message);
+            List<File> attachments = (isFast || !hasAttachment) ? null : ContentConversion.getAttachments(message);
             //邮件是否已读
             boolean isSeen = message.getFlags().contains(Flags.Flag.SEEN);
             //返回转换结果
-            return new Message(uid, subject, content, sentDate, from, to, attachments, isAttachment, isSeen);
+            return new Message(uid, subject, content, sentDate, from, to, attachments, hasAttachment, isSeen);
         }
 
         //把Email的Message对象的数据复制到JavaMail的message对象

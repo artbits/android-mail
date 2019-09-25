@@ -55,7 +55,7 @@ public final class Message {
         return attachments;
     }
 
-    public boolean isAttachment() {
+    public boolean hasAttachment() {
         return attachment;
     }
 
