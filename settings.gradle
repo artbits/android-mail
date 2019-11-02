@@ -1,1 +1,1 @@
-include ':app', ':eamil'
+include ':app', ':library'
