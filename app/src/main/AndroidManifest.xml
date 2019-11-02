@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.smailnet.demo">
 
+    <!--获取联网权限-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--获取读写存储空间权限-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".EmailApp"
