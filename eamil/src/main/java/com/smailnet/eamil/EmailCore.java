@@ -2,53 +2,46 @@ package com.smailnet.eamil;
 
 import android.text.TextUtils;
 
-import com.smailnet.eamil.entity.Message;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
-import com.sun.mail.pop3.POP3Folder;
-import com.sun.mail.pop3.POP3Store;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.mail.Flags;
+import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Transport;
+import javax.mail.event.MessageCountEvent;
+import javax.mail.event.MessageCountListener;
 import javax.mail.internet.MimeMessage;
+import javax.mail.search.FromStringTerm;
+import javax.mail.search.RecipientStringTerm;
+import javax.mail.search.SubjectTerm;
 
 /**
  * 该框架内部的核心类
  */
 class EmailCore {
 
-    //配置对象
-    private Email.Config config;
-
-    /**
-     * 构造方法
-     */
-    EmailCore() {
-
-    }
-
-    /**
-     * 构造方法
-     * @param config
-     */
-    EmailCore(Email.Config config) {
-        this.config = config;
-    }
-
     /**
      * 发送邮件
+     * @param config
+     * @param draft
      * @param getSendCallback
      */
-    void send(MimeMessage message, Email.GetSendCallback getSendCallback) {
+    static void send(EmailKit.Config config, Draft draft, EmailKit.GetSendCallback getSendCallback) {
         try {
-            Transport transport = (config != null) ? EmailUtils.getTransport(config) : Manager.getTransport();
+            MimeMessage message = Converter.MessageUtils.toInternetMessage(config, draft);
+            Transport transport = EmailUtils.getTransport(config);
             transport.sendMessage(message, message.getRecipients(javax.mail.Message.RecipientType.TO));
+            if (draft.getCc() != null && draft.getCc().length != 0) {
+                transport.sendMessage(message, message.getRecipients(javax.mail.Message.RecipientType.CC));
+            }
+            if (draft.getBcc() != null && draft.getBcc().length != 0) {
+                transport.sendMessage(message, message.getRecipients(javax.mail.Message.RecipientType.BCC));
+            }
             getSendCallback.onSuccess();
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -57,198 +50,109 @@ class EmailCore {
     }
 
     /**
-     * 使用POP3协议或IMAP协议接收服务器上的邮件
-     * @param protocol
+     * 使用IMAP协议接收服务器上的邮件
+     * @param config
+     * @param folderName
      * @param getReceiveCallback
      */
-    void receive(int protocol, Email.GetReceiveCallback getReceiveCallback) {
+     static void receive(EmailKit.Config config, String folderName, EmailKit.GetReceiveCallback getReceiveCallback) {
         try {
-            if (protocol == Protocol.POP3) {
-                POP3Store store = (config != null) ? EmailUtils.getPOP3Store(config) : Manager.getPOP3Store();
-                POP3Folder folder = Manager.getInboxFolder(store);
-                javax.mail.Message[] messages = folder.getMessages();
-                List<Message> messageList = new ArrayList<>();
-                int total = messages.length, index = 0;
-                for (javax.mail.Message msg: messages){
-                    Message message = Converter.MessageConversion.toLocalMessage(0, msg, false);
-                    messageList.add(message);
-                    getReceiveCallback.receiving(message, ++index, total);
-                }
-                getReceiveCallback.onFinish(messageList);
-            } else if (protocol == Protocol.IMAP) {
-                IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-                IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
-                javax.mail.Message[] messages = folder.getMessages();
-                List<Message> messageList = new ArrayList<>();
-                int total = messages.length, index = 0;
-                for (javax.mail.Message msg: messages){
-                    Message message = Converter.MessageConversion.toLocalMessage(folder.getUID(msg), msg, false);
-                    messageList.add(message);
-                    getReceiveCallback.receiving(message, ++index, total);
-                }
-                getReceiveCallback.onFinish(messageList);
-            }
-        } catch (MessagingException | IOException e) {
-            e.printStackTrace();
-            getReceiveCallback.onFailure(e.toString());
-        }
-    }
-
-    /**
-     * 使用IMAP协议快速接收服务器上的邮件，不解析邮件内容
-     * @param getReceiveCallback
-     */
-    void fastReceive(Email.GetReceiveCallback getReceiveCallback) {
-        try {
-            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
+            IMAPStore store =  EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
             javax.mail.Message[] messages = folder.getMessages();
             List<Message> messageList = new ArrayList<>();
             int total = messages.length, index = 0;
-            for (javax.mail.Message msg: messages) {
-                Message message = Converter.MessageConversion.toLocalMessage(folder.getUID(msg), msg, true);
+            for (javax.mail.Message msg: messages){
+                Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
                 messageList.add(message);
                 getReceiveCallback.receiving(message, ++index, total);
             }
             getReceiveCallback.onFinish(messageList);
-        } catch (MessagingException | IOException e) {
+        } catch (MessagingException e) {
             e.printStackTrace();
             getReceiveCallback.onFailure(e.toString());
         }
     }
 
     /**
-     * 获取全部邮件数量
-     * @param protocol
-     * @param getCountCallback
+     * 加载邮件
+     * @param lastUID
+     * @param getLoadCallback
      */
-    void getMessageCount(int protocol, Email.GetCountCallback getCountCallback) {
+    static void load(EmailKit.Config config, String folderName, long lastUID, EmailKit.GetLoadCallback getLoadCallback) {
         try {
-            if (protocol == Protocol.POP3) {
-                POP3Store store = (config != null) ? EmailUtils.getPOP3Store(config) : Manager.getPOP3Store();
-                POP3Folder folder = Manager.getInboxFolder(store);
-                getCountCallback.onSuccess(folder.getMessageCount());
-            } else if (protocol == Protocol.IMAP) {
-                IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-                IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
-                getCountCallback.onSuccess(folder.getMessageCount());
+            IMAPStore store =  EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
+            long[] uids = UIDHandle.nextUIDArray(folder, lastUID);
+            javax.mail.Message[] messages = folder.getMessagesByUID(uids);
+            List<Message> msgList = new ArrayList<>();
+            for (javax.mail.Message msg: messages){
+                Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
+                msgList.add(message);
             }
+            getLoadCallback.onSuccess(msgList);
         } catch (MessagingException e) {
             e.printStackTrace();
-            getCountCallback.onFailure(e.getMessage());
+            getLoadCallback.onFailure(e.toString());
         }
     }
 
     /**
-     * 获取未读邮件数量
-     * @param getCountCallback
+     * 同步uid
+     * @param config
+     * @param folderName
+     * @param localUIDArray
+     * @param getSyncCallback
      */
-    void getUnreadMessageCount(Email.GetCountCallback getCountCallback) {
+    static void sync(EmailKit.Config config, String folderName, long[] localUIDArray, EmailKit.GetSyncCallback getSyncCallback) {
         try {
-            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
-            getCountCallback.onSuccess(folder.getUnreadMessageCount());
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
+            HashMap<String, long[]> map = UIDHandle.syncUIDArray(folder, localUIDArray);
+            long[] newArray = map.get("new");
+            long[] delArray = map.get("del");
+            javax.mail.Message[] messages = folder.getMessagesByUID(newArray);
+            List<Message> newMsgList = new ArrayList<>();
+            for (javax.mail.Message msg : messages) {
+                Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
+                newMsgList.add(message);
+            }
+            getSyncCallback.onSuccess(newMsgList, delArray);
         } catch (MessagingException e) {
             e.printStackTrace();
-            getCountCallback.onFailure(e.getMessage());
+            getSyncCallback.onFailure(e.toString());
         }
     }
 
     /**
-     * 同步消息，极快。
-     * @param originalUidList
-     * @param getSyncMessageCallback
+     * 获取数量统计
+     * @param config
+     * @param folderName
+     * @param getCountCallback
      */
-    void syncMessage(long[] originalUidList, Email.GetSyncMessageCallback getSyncMessageCallback) {
+    static void getMsgCount(EmailKit.Config config, String folderName, EmailKit.GetCountCallback getCountCallback) {
         try {
-            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
-            javax.mail.Message[] messages = folder.getMessages();
-
-            //对原uid列表排序
-            Arrays.sort(originalUidList);
-
-            //需要返回的新消息和需要删除本地邮件的uid
-            List<Message> messageList = new ArrayList<>();
-            long[] deleteUidList = new long[]{};
-
-            //判断同步类型
-            switch (UIDHandle.proofreading(originalUidList, messages, folder)) {
-                case UIDHandle.SyncType.SYNC_ALL:
-                    for (javax.mail.Message msg: messages){
-                        long uid = folder.getUID(msg);
-                        Message message = Converter.MessageConversion.toLocalMessage(uid, msg, true);
-                        messageList.add(message);
-                    }
-                    break;
-                case UIDHandle.SyncType.DELETE_ALL:
-                    for (javax.mail.Message msg : messages) {
-                        MimeMessage mimeMessage = (MimeMessage) msg;
-                        deleteUidList = UIDHandle.insertUid(deleteUidList, folder.getUID(mimeMessage));
-                    }
-                    break;
-                case UIDHandle.SyncType.JUST_DELETE:
-                    for (javax.mail.Message msg : messages) {
-                        MimeMessage mimeMessage = (MimeMessage) msg;
-                        long uid = folder.getUID(mimeMessage);
-                        if (UIDHandle.binarySearch(originalUidList, uid)) {
-                            originalUidList = UIDHandle.deleteUid(originalUidList, uid);
-                        }
-                    }
-                    for (long uid : originalUidList) {
-                        deleteUidList = UIDHandle.insertUid(deleteUidList, uid);
-                    }
-                    break;
-                case UIDHandle.SyncType.JUST_ADD:
-                    int originalLength = originalUidList.length;
-                    long originalLastUid = originalUidList[originalLength-1];
-                    for (int index = messages.length-1; index >= 0; index--) {
-                        javax.mail.Message msg = messages[index];
-                        long uid = folder.getUID(msg);
-                        if (uid > originalLastUid) {
-                            Message message = Converter.MessageConversion.toLocalMessage(uid, msg, true);
-                            messageList.add(message);
-                        } else {
-                            break;
-                        }
-                    }
-                    break;
-                case UIDHandle.SyncType.ADD_And_DELETE:
-                    originalLength = originalUidList.length;
-                    originalLastUid = originalUidList[originalLength-1];
-                    for (int index = messages.length-1; index >= 0; index--) {
-                        javax.mail.Message msg = messages[index];
-                        long uid = folder.getUID(msg);
-                        if (uid > originalLastUid) {
-                            Message message = Converter.MessageConversion.toLocalMessage(uid, msg, true);
-                            messageList.add(message);
-                        } else if (UIDHandle.binarySearch(originalUidList, uid)) {
-                            originalUidList = UIDHandle.deleteUid(originalUidList, uid);
-                        }
-                    }
-                    for (long uid : originalUidList) {
-                        deleteUidList = UIDHandle.insertUid(deleteUidList, uid);
-                    }
-                    break;
-                case UIDHandle.SyncType.NO_SYNC:
-                    break;
-            }
-            //结果回调
-            getSyncMessageCallback.onSuccess(messageList, deleteUidList);
-        } catch (MessagingException | IOException e) {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
+            int count = folder.getMessageCount();
+            int unread = folder.getUnreadMessageCount();
+            getCountCallback.onSuccess(count, unread);
+        } catch (MessagingException e) {
             e.printStackTrace();
-            getSyncMessageCallback.onFailure(e.getMessage());
+            getCountCallback.onFailure(e.getMessage());
         }
     }
 
     /**
      * 获取全部UID
+     * @param config
+     * @param folderName
      * @param getUIDListCallback
      */
-    void getUIDList(Email.GetUIDListCallback getUIDListCallback) {
+    static void getUIDList(EmailKit.Config config, String folderName, EmailKit.GetUIDListCallback getUIDListCallback) {
         try {
-            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
             javax.mail.Message[] messages = folder.getMessages();
             long[] uidList = new long[messages.length];
             for (int i = 0, len = messages.length; i < len; i++) {
@@ -264,114 +168,390 @@ class EmailCore {
 
     /**
      * 获取某一封邮件消息
+     * @param config
+     * @param folderName
      * @param uid
-     * @param getMessageCallback
+     * @param getMsgCallback
      */
-    void getMessage(long uid, Email.GetMessageCallback getMessageCallback) {
+    static void getMsg(EmailKit.Config config, String folderName, long uid, EmailKit.GetMsgCallback getMsgCallback) {
         try {
-            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
             javax.mail.Message msg = folder.getMessageByUID(uid);
             if (msg != null) {
-                Message message = Converter.MessageConversion.toLocalMessage(uid, msg, false);
-                getMessageCallback.onSuccess(message);
+                Message message = Converter.MessageUtils.toLocalMessage(uid, msg);
+                getMsgCallback.onSuccess(message);
             } else {
-                getMessageCallback.onFailure(Constant.MESSAGE_EXCEPTION);
+                getMsgCallback.onFailure("Message does not exist");
             }
-        } catch (MessagingException | IOException e) {
+        } catch (MessagingException e) {
             e.printStackTrace();
-            getMessageCallback.onFailure(e.getMessage());
+            getMsgCallback.onFailure(e.getMessage());
         }
     }
 
     /**
      * 获取多封邮件消息
+     * @param config
+     * @param folderName
      * @param uidList
-     * @param getMessageListCallback
+     * @param getMsgListCallback
      */
-    void getMessageList(long[] uidList, Email.GetMessageListCallback getMessageListCallback) {
+    static void getMsgList(EmailKit.Config config, String folderName, long[] uidList, EmailKit.GetMsgListCallback getMsgListCallback) {
         try {
-            IMAPStore store = (config != null) ? EmailUtils.getIMAPStore(config) : Manager.getImapStore();
-            IMAPFolder folder = (config != null) ? EmailUtils.getInboxFolder(store, config) : Manager.getInboxFolder(store);
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
             javax.mail.Message[] messages = folder.getMessagesByUID(uidList);
             List<Message> messageList = new ArrayList<>();
             for (javax.mail.Message msg : messages) {
                 if (msg != null) {
-                    Message message = Converter.MessageConversion.toLocalMessage(folder.getUID(msg), msg, false);
+                    Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
                     messageList.add(message);
                 }
             }
-            getMessageListCallback.onSuccess(messageList);
-        }catch (MessagingException | IOException e) {
+            getMsgListCallback.onSuccess(messageList);
+        }catch (MessagingException e) {
             e.printStackTrace();
-            getMessageListCallback.onFailure(e.getMessage());
+            getMsgListCallback.onFailure(e.getMessage());
         }
     }
 
     /**
-     * 标记邮件消息（待定，暂无时间开发）
-     * @param uid
-     * @param flag
-     * @param getFlagCallback
+     * 获取默认的文件夹列表
+     * @param config
+     * @param getFolderListCallback
      */
-    void setFlagMessage(long uid, int flag, Email.GetFlagCallback getFlagCallback) {
+    static void getDefaultFolderList(EmailKit.Config config, EmailKit.GetFolderListCallback getFolderListCallback) {
         try {
-            IMAPStore store = Manager.getImapStore();
-            IMAPFolder folder = Manager.getInboxFolder(store);
+            IMAPStore store = EmailUtils.getStore(config);
+            List<String> folderList = new ArrayList<>();
+            for (Folder folder : store.getDefaultFolder().list()) {
+                folderList.add(folder.getFullName());
+            }
+            getFolderListCallback.onSuccess(folderList);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getFolderListCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取默认的文件夹列表（无回调）
+     * @param config
+     * @return
+     */
+    static List<String> getDefaultFolderList(EmailKit.Config config) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            List<String> folderList = new ArrayList<>();
+            for (Folder folder : store.getDefaultFolder().list()) {
+                folderList.add(folder.getFullName());
+            }
+            return folderList;
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 移动消息
+     * @param config
+     * @param originalFolderName
+     * @param targetFolderName
+     * @param uid
+     * @param getOperateCallback
+     */
+    static void moveMsg(EmailKit.Config config, String originalFolderName, String targetFolderName, long uid, EmailKit.GetOperateCallback getOperateCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder originalFolder = EmailUtils.getFolder(originalFolderName, store, config);
+            IMAPFolder targetFolder = EmailUtils.getFolder(targetFolderName, store, config);
+            javax.mail.Message msg = originalFolder.getMessageByUID(uid);
+            if (msg != null) {
+                originalFolder.copyMessages(new javax.mail.Message[]{msg}, targetFolder);
+                originalFolder.setFlags(new javax.mail.Message[]{msg}, new Flags(Flags.Flag.DELETED), true);
+                originalFolder.close(true);
+                targetFolder.close(true);
+                getOperateCallback.onSuccess();
+            } else {
+                originalFolder.close();
+                targetFolder.close();
+                getOperateCallback.onFailure(Constant.MESSAGE_EXCEPTION);
+            }
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getOperateCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 批量移动消息
+     * @param config
+     * @param originalFolderName
+     * @param targetFolderName
+     * @param uidList
+     * @param getOperateCallback
+     */
+    static void moveMsgList(EmailKit.Config config, String originalFolderName, String targetFolderName, long[] uidList, EmailKit.GetOperateCallback getOperateCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder originalFolder = EmailUtils.getFolder(originalFolderName, store, config);
+            IMAPFolder targetFolder = EmailUtils.getFolder(targetFolderName, store, config);
+            javax.mail.Message[] msgList = originalFolder.getMessagesByUID(uidList);
+            originalFolder.copyMessages(msgList, targetFolder);
+            originalFolder.setFlags(msgList, new Flags(Flags.Flag.DELETED), true);
+            originalFolder.close(true);
+            targetFolder.close(true);
+            getOperateCallback.onSuccess();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getOperateCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 星标消息
+     * @param config
+     * @param folderName
+     * @param uid
+     * @param star
+     * @param getOperateCallback
+     */
+    static void starMsg(EmailKit.Config config, String folderName, long uid, boolean star, EmailKit.GetOperateCallback getOperateCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
             javax.mail.Message msg = folder.getMessageByUID(uid);
             if (msg != null) {
-                msg.setFlag(Flags.Flag.DELETED, true);
-                getFlagCallback.onSuccess();
+                folder.setFlags(new javax.mail.Message[]{msg}, new Flags(Flags.Flag.FLAGGED), star);
+                folder.close(true);
+                getOperateCallback.onSuccess();
             } else {
-               getFlagCallback.onFailure(Constant.MESSAGE_EXCEPTION);
+                folder.close();
+                getOperateCallback.onFailure(Constant.MESSAGE_EXCEPTION);
             }
-        }catch (MessagingException e) {
+        } catch (MessagingException e) {
             e.printStackTrace();
-            getFlagCallback.onFailure(e.getMessage());
+            getOperateCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 批量星标消息
+     * @param config
+     * @param folderName
+     * @param uidList
+     * @param star
+     * @param getOperateCallback
+     */
+    static void starMsgList(EmailKit.Config config, String folderName, long[] uidList, boolean star, EmailKit.GetOperateCallback getOperateCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
+            javax.mail.Message[] msgList = folder.getMessagesByUID(uidList);
+            folder.setFlags(msgList, new Flags(Flags.Flag.FLAGGED), star);
+            folder.close(true);
+            getOperateCallback.onSuccess();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getOperateCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 删除消息
+     * @param config
+     * @param folderName
+     * @param uid
+     * @param getOperateCallback
+     */
+    static void deleteMsg(EmailKit.Config config, String folderName, long uid, EmailKit.GetOperateCallback getOperateCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
+            javax.mail.Message msg = folder.getMessageByUID(uid);
+            if (msg != null) {
+                folder.setFlags(new javax.mail.Message[]{msg}, new Flags(Flags.Flag.DELETED), true);
+                folder.close(true);
+                getOperateCallback.onSuccess();
+            } else {
+                folder.close();
+                getOperateCallback.onFailure(Constant.MESSAGE_EXCEPTION);
+            }
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getOperateCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 批量删除邮件
+     * @param config
+     * @param folderName
+     * @param uidList
+     * @param getOperateCallback
+     */
+    static void deleteMsgList(EmailKit.Config config, String folderName, long[] uidList, EmailKit.GetOperateCallback getOperateCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
+            javax.mail.Message[] msgList = folder.getMessagesByUID(uidList);
+            folder.setFlags(msgList, new Flags(Flags.Flag.DELETED), true);
+            folder.close(true);
+            getOperateCallback.onSuccess();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getOperateCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 保存消息到草稿箱文件夹
+     * @param config
+     * @param draft
+     * @param getOperateCallback
+     */
+    static void saveToDraft(EmailKit.Config config, Draft draft, EmailKit.GetOperateCallback getOperateCallback) {
+        try {
+            MimeMessage message = Converter.MessageUtils.toInternetMessage(config, draft);
+            IMAPStore store =  EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder("Drafts", store, config);
+            folder.appendMessages(new MimeMessage[]{message});
+            folder.close(true);
+            getOperateCallback.onSuccess();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getOperateCallback.onFailure(e.getMessage());
         }
     }
 
     /**
      * 邮箱帐号及配置的检查
-     * @param getConnectCallback
+     * @param config
+     * @param getAuthCallback
      */
-    void connect(Email.GetConnectCallback getConnectCallback) {
+    static void auth(EmailKit.Config config, EmailKit.GetAuthCallback getAuthCallback) {
         try {
-            if (config != null) {
-                if (!TextUtils.isEmpty(config.getSmtpHost()) && !TextUtils.isEmpty(String.valueOf(config.getSmtpPort()))) {
-                    EmailUtils.getTransport(config);
-                }
-                if (!TextUtils.isEmpty(config.getPopHost()) && !TextUtils.isEmpty(String.valueOf(config.getPopPort()))) {
-                    EmailUtils.getPOP3Store(config);
-                }
-                if (!TextUtils.isEmpty(config.getImapHost()) && !TextUtils.isEmpty(String.valueOf(config.getImapPort()))) {
-                    EmailUtils.getIMAPStore(config);
-                }
-            } else {
-                GlobalConfig config = Manager.getGlobalConfig();
-                if (!TextUtils.isEmpty(config.getSmtpHost()) && !TextUtils.isEmpty(String.valueOf(config.getSmtpPort()))) {
-                    EmailUtils.getTransport();
-                }
-                if (!TextUtils.isEmpty(config.getPopHost()) && !TextUtils.isEmpty(String.valueOf(config.getPopPort()))) {
-                    EmailUtils.getPOP3Store();
-                }
-                if (!TextUtils.isEmpty(config.getImapHost()) && !TextUtils.isEmpty(String.valueOf(config.getImapPort()))) {
-                    EmailUtils.getIMAPStore();
-                }
+            if (!TextUtils.isEmpty(config.getSmtpHost()) && !TextUtils.isEmpty(String.valueOf(config.getSmtpPort()))) {
+                EmailUtils.getTransport(config);
             }
-            getConnectCallback.onSuccess();
+            if (!TextUtils.isEmpty(config.getImapHost()) && !TextUtils.isEmpty(String.valueOf(config.getImapPort()))) {
+                EmailUtils.getStore(config);
+            }
+            getAuthCallback.onSuccess();
         } catch (MessagingException e) {
             e.printStackTrace();
-            getConnectCallback.onFailure(e.getMessage());
+            getAuthCallback.onFailure(e.getMessage());
         }
     }
 
     /**
-     * 邮件协议类型
+     * 监听收件箱的新消息，如果邮件服务器支持idle，即可正常使用这个方法
+     * @param config
+     * @param onMsgListener
      */
-    interface Protocol {
-        int POP3 = 0;
-        int IMAP = 1;
+    static void monitorNewMsg(EmailKit.Config config, EmailKit.OnMsgListener onMsgListener) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder("INBOX", store, config);
+            folder.addMessageCountListener(new MessageCountListener() {
+                @Override
+                public void messagesAdded(MessageCountEvent e) {
+                    try {
+                        List<Message> messageList = new ArrayList<>();
+                        for (javax.mail.Message msg : e.getMessages()) {
+                            Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
+                            messageList.add(message);
+                        }
+                        onMsgListener.onMsg(messageList);
+                    } catch (Exception ex) {
+                        onMsgListener.onError(ex.getMessage());
+                    }
+                }
+
+                @Override
+                public void messagesRemoved(MessageCountEvent e) {
+
+                }
+            });
+            while (true) folder.idle(true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            onMsgListener.onError(ex.getMessage());
+        }
+    }
+
+    /**
+     * 通过邮件主题搜索
+     * @param config
+     * @param subject
+     * @param getSearchCallback
+     */
+    static void searchSubject(EmailKit.Config config, String subject, EmailKit.GetSearchCallback getSearchCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder("INBOX", store, config);
+            SubjectTerm subjectTerm = new SubjectTerm(subject);
+            javax.mail.Message[] messages = folder.search(subjectTerm);
+            List<Message> messageList = new ArrayList<>();
+            for (javax.mail.Message msg : messages) {
+                Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
+                messageList.add(message);
+            }
+            getSearchCallback.onSuccess(messageList);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getSearchCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 通过发件人昵称搜索
+     * @param config
+     * @param nickname
+     * @param getSearchCallback
+     */
+    static void searchSender(EmailKit.Config config, String nickname, EmailKit.GetSearchCallback getSearchCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder("INBOX", store, config);
+            FromStringTerm fromStringTerm = new FromStringTerm(nickname);
+            javax.mail.Message[] messages = folder.search(fromStringTerm);
+            List<Message> messageList = new ArrayList<>();
+            for (javax.mail.Message msg : messages) {
+                Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
+                messageList.add(message);
+            }
+            getSearchCallback.onSuccess(messageList);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getSearchCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 通过收件人昵称搜索
+     * @param config
+     * @param nickname
+     * @param getSearchCallback
+     */
+    static void searchRecipient(EmailKit.Config config, String nickname, EmailKit.GetSearchCallback getSearchCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder("INBOX", store, config);
+            RecipientStringTerm stringTerm = new RecipientStringTerm(MimeMessage.RecipientType.TO, nickname);
+            javax.mail.Message[] messages = folder.search(stringTerm);
+            List<Message> messageList = new ArrayList<>();
+            for (javax.mail.Message msg : messages) {
+                Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
+                messageList.add(message);
+            }
+            getSearchCallback.onSuccess(messageList);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getSearchCallback.onFailure(e.getMessage());
+        }
     }
 
 }
