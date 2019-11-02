@@ -1,4 +1,4 @@
-package com.smailnet.eamil;
+package com.smailnet.eamilkit;
 
 interface Constant {
     String SMTP_HOST = "smtp_host";

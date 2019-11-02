@@ -1,6 +1,6 @@
-package com.smailnet.eamil.function;
+package com.smailnet.eamilkit.function;
 
-import com.smailnet.eamil.EmailKit;
+import com.smailnet.eamilkit.EmailKit;
 
 public interface BasisImpl {
     /**
