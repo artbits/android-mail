@@ -1,4 +1,4 @@
-package com.smailnet.eamilkit;
+package com.smailnet.emailkit;
 
 /**
  * SMTP服务类，主要负责发送邮件

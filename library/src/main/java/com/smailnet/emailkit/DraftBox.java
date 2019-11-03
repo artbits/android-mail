@@ -1,4 +1,4 @@
-package com.smailnet.eamilkit;
+package com.smailnet.emailkit;
 
 /**
  * DraftBox类，主要是对邮箱的草稿箱进行操作，但不保证该类

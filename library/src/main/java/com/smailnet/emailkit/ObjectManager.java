@@ -1,4 +1,4 @@
-package com.smailnet.eamilkit;
+package com.smailnet.emailkit;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

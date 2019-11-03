@@ -1,4 +1,4 @@
-package com.smailnet.eamilkit;
+package com.smailnet.emailkit;
 
 import java.io.File;
 import java.util.Set;

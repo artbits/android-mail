@@ -1,6 +1,6 @@
-package com.smailnet.eamilkit.function;
+package com.smailnet.emailkit.function;
 
-import com.smailnet.eamilkit.EmailKit;
+import com.smailnet.emailkit.EmailKit;
 
 public interface ExtraImpl {
     /**

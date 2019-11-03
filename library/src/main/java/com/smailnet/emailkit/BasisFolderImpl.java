@@ -1,6 +1,6 @@
-package com.smailnet.eamilkit;
+package com.smailnet.emailkit;
 
-import com.smailnet.eamilkit.function.BasisImpl;
+import com.smailnet.emailkit.function.BasisImpl;
 
 import java.util.List;
 

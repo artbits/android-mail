@@ -1,4 +1,4 @@
-package com.smailnet.eamilkit;
+package com.smailnet.emailkit;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;

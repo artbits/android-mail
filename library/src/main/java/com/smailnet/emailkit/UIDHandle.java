@@ -1,4 +1,4 @@
-package com.smailnet.eamilkit;
+package com.smailnet.emailkit;
 
 import com.sun.mail.imap.IMAPFolder;
 
