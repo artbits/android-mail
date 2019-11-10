@@ -52,7 +52,7 @@ EmailKit.initialize(this);
 EmailKit.Config config = new EmailKit.Config()
         .setMailType(EmailKit.MailType.FOXMAIL)     //选择邮箱类型，快速配置服务器参数
         .setAccount("from@foxmail.com")             //发件人邮箱
-        .setPassword("*********");                  //密码或授权码
+        .setPassword("password");                   //密码或授权码
 
 //设置一封草稿邮件
 Draft draft = new Draft()
