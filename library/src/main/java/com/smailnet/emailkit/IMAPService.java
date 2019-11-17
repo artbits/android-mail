@@ -11,10 +11,6 @@ public final class IMAPService {
 
     private EmailKit.Config config;
 
-    IMAPService() {
-        this.config = ObjectManager.getGlobalConfig();
-    }
-
     IMAPService(EmailKit.Config config) {
         this.config = config;
     }

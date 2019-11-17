@@ -7,10 +7,6 @@ public final class SMTPService {
 
     private EmailKit.Config config;
 
-    SMTPService() {
-        this.config = ObjectManager.getGlobalConfig();
-    }
-
     SMTPService(EmailKit.Config config) {
         this.config = config;
     }

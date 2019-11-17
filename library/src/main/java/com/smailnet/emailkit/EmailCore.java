@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.mail.FetchProfile;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.MessagingException;
@@ -35,6 +36,7 @@ class EmailCore {
         try {
             MimeMessage message = Converter.MessageUtils.toInternetMessage(config, draft);
             Transport transport = EmailUtils.getTransport(config);
+            assert message != null;
             transport.sendMessage(message, message.getRecipients(javax.mail.Message.RecipientType.TO));
             if (draft.getCc() != null && draft.getCc().length != 0) {
                 transport.sendMessage(message, message.getRecipients(javax.mail.Message.RecipientType.CC));
@@ -60,6 +62,9 @@ class EmailCore {
             IMAPStore store =  EmailUtils.getStore(config);
             IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
             javax.mail.Message[] messages = folder.getMessages();
+            FetchProfile fetchProfile = new FetchProfile();
+            fetchProfile.add(FetchProfile.Item.ENVELOPE);
+            folder.fetch(messages, fetchProfile);
             List<Message> messageList = new ArrayList<>();
             int total = messages.length, index = 0;
             for (javax.mail.Message msg: messages){
@@ -85,6 +90,9 @@ class EmailCore {
             IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
             long[] uids = UIDHandle.nextUIDArray(folder, lastUID);
             javax.mail.Message[] messages = folder.getMessagesByUID(uids);
+            FetchProfile fetchProfile = new FetchProfile();
+            fetchProfile.add(FetchProfile.Item.ENVELOPE);
+            folder.fetch(messages, fetchProfile);
             List<Message> msgList = new ArrayList<>();
             for (javax.mail.Message msg: messages){
                 Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
@@ -111,7 +119,11 @@ class EmailCore {
             HashMap<String, long[]> map = UIDHandle.syncUIDArray(folder, localUIDArray);
             long[] newArray = map.get("new");
             long[] delArray = map.get("del");
+            assert newArray != null;
             javax.mail.Message[] messages = folder.getMessagesByUID(newArray);
+            FetchProfile fetchProfile = new FetchProfile();
+            fetchProfile.add(FetchProfile.Item.ENVELOPE);
+            folder.fetch(messages, fetchProfile);
             List<Message> newMsgList = new ArrayList<>();
             for (javax.mail.Message msg : messages) {
                 Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
@@ -226,7 +238,9 @@ class EmailCore {
             IMAPStore store = EmailUtils.getStore(config);
             List<String> folderList = new ArrayList<>();
             for (Folder folder : store.getDefaultFolder().list()) {
-                folderList.add(folder.getFullName());
+                if (folder.list().length == 0) {
+                    folderList.add(folder.getFullName());
+                }
             }
             getFolderListCallback.onSuccess(folderList);
         } catch (MessagingException e) {
@@ -245,7 +259,9 @@ class EmailCore {
             IMAPStore store = EmailUtils.getStore(config);
             List<String> folderList = new ArrayList<>();
             for (Folder folder : store.getDefaultFolder().list()) {
-                folderList.add(folder.getFullName());
+                if (folder.list().length == 0) {
+                    folderList.add(folder.getFullName());
+                }
             }
             return folderList;
         } catch (MessagingException e) {
@@ -433,10 +449,10 @@ class EmailCore {
      */
     static void auth(EmailKit.Config config, EmailKit.GetAuthCallback getAuthCallback) {
         try {
-            if (!TextUtils.isEmpty(config.getSmtpHost()) && !TextUtils.isEmpty(String.valueOf(config.getSmtpPort()))) {
+            if (!TextUtils.isEmpty(config.getSMTPHost()) && !TextUtils.isEmpty(String.valueOf(config.getSMTPPort()))) {
                 EmailUtils.getTransport(config);
             }
-            if (!TextUtils.isEmpty(config.getImapHost()) && !TextUtils.isEmpty(String.valueOf(config.getImapPort()))) {
+            if (!TextUtils.isEmpty(config.getIMAPHost()) && !TextUtils.isEmpty(String.valueOf(config.getIMAPPort()))) {
                 EmailUtils.getStore(config);
             }
             getAuthCallback.onSuccess();

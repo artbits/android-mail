@@ -30,8 +30,6 @@ class ObjectManager {
     private static Transport transport;
     //IMAPStore对象
     private static IMAPStore store;
-    //全局配置对象
-    private static EmailKit.Config globalConfig;
     //保存附件的目录路径
     private static String directory;
     //多线程线程池服务
@@ -67,17 +65,6 @@ class ObjectManager {
      */
     static Context getContext(){
         return context;
-    }
-
-    /**
-     * 获取全局变量
-     * @return
-     */
-    static EmailKit.Config getGlobalConfig() {
-        if (ObjectManager.globalConfig == null) {
-            ObjectManager.globalConfig = new EmailKit.Config();
-        }
-        return ObjectManager.globalConfig;
     }
 
     /**

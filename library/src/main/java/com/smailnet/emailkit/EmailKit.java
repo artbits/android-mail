@@ -26,15 +26,15 @@ import javax.mail.MessagingException;
 /**
  * EmailKit for Android是以JavaMail类库为基础进行封装的框架，它比JavaMail
  * 更简单易用，在使用它开发电子邮件客户端时，还能避免对电子邮件协议不熟悉
- * 的烦恼。目前EmailKit支持的电子邮件协议为 SMTP 和 IMAP，它支持的功能有
+ * 的烦恼。目前EmailKit支持的电子邮件协议有 SMTP 和 IMAP，它支持的功能有
  * 发送邮件，读取邮件，加载邮件，同步邮件，对邮件消息的移动，删除，存草稿
- * 等操作。同时对部分邮箱服务提供商所提供的邮箱支持新邮件消息推送，邮件搜
- * 索等功能。把它依赖到你的Android项目中，你只需简单配置邮件服务器的参数，
- * 调用一些简易的方法，即可完成你所需的功能，所见即所得。
+ * 等操作。同时对部分邮箱支持新邮件消息推送（需要看邮件服务器是否支持），
+ * 邮件搜索等功能。把它依赖到你的Android项目中，你只需简单配置邮件服务器
+ * 的参数，再使用这些简易的接口，即可完成你所需的功能，所见即所得。
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 4.0.0
+ * @version 4.1.0
  */
 public final class EmailKit {
 
@@ -45,7 +45,6 @@ public final class EmailKit {
     public static void initialize(Context context) {
         ObjectManager.setContext(context);
         ObjectManager.setDirectory(null);
-        ObjectManager.getGlobalConfig();
     }
 
     /**
@@ -73,24 +72,8 @@ public final class EmailKit {
     }
 
     /**
-     * 获取全局配置对象，只需一次配置，参数内容可以全局使用
-     * @return  EmailKit.Config类的对象
-     */
-    public static EmailKit.Config useGlobalConfig() {
-        return ObjectManager.getGlobalConfig();
-    }
-
-    /**
-     * 当已设置了全局配置时，可通过该方法获取SMTP服务
-     * @return  SMTPService类的对象
-     */
-    public static SMTPService useSMTPService() {
-        return new SMTPService();
-    }
-
-    /**
-     * 当使用局部配置时，可通过该方法获取SMTP服务
-     * @param config
+     * 获取SMTP服务
+     * @param config    EmailKit.Config对象
      * @return  SMTPService类的对象
      */
     public static SMTPService useSMTPService(Config config) {
@@ -98,44 +81,16 @@ public final class EmailKit {
     }
 
     /**
-     * 当已设置了全局配置时，可通过该方法获取IMAP服务
-     * @return
-     */
-    public static IMAPService useIMAPService() {
-        return new IMAPService();
-    }
-
-    /**
-     * 当使用局部配置时，可通过该方法获取IMAP服务
-     * @param config
-     * @return
+     * 获取IMAP服务
+     * @param config    EmailKit.Config对象
+     * @return  IMAPService类的对象
      */
     public static IMAPService useIMAPService(Config config) {
         return new IMAPService(config);
     }
 
     /**
-     * 当已设置了全局配置时，可通过该方法来验证配置的邮件服务器参数
-     * 和邮箱账号密码是否正确
-     * @return  配置参数全部正确返回值为true，否则为false
-     */
-    public static void auth(GetAuthCallback getAuthCallback) {
-        ObjectManager.getMultiThreadService()
-                .execute(() -> EmailCore.auth(ObjectManager.getGlobalConfig(), new GetAuthCallback() {
-                    @Override
-                    public void onSuccess() {
-                        ObjectManager.getHandler().post(getAuthCallback::onSuccess);
-                    }
-
-                    @Override
-                    public void onFailure(String errMsg) {
-                        ObjectManager.getHandler().post(() -> getAuthCallback.onFailure(errMsg));
-                    }
-                }));
-    }
-
-    /**
-     * 当使用局部配置时，可通过该方法来验证配置的邮件服务器参数
+     * 当已配置完服务器参数时，可通过该方法来验证配置的邮件服务器参数
      * 和邮箱账号密码是否正确
      * @param config
      * @return  配置参数全部正确返回值为true，否则为false
@@ -370,19 +325,19 @@ public final class EmailKit {
             return password;
         }
 
-        String getSmtpHost() {
+        String getSMTPHost() {
             return smtpHost;
         }
 
-        String getImapHost() {
+        String getIMAPHost() {
             return imapHost;
         }
 
-        int getSmtpPort() {
+        int getSMTPPort() {
             return smtpPort;
         }
 
-        int getImapPort() {
+        int getIMAPPort() {
             return imapPort;
         }
 

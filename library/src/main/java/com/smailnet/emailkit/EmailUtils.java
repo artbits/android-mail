@@ -21,10 +21,10 @@ class EmailUtils {
      */
     static Session getSession(EmailKit.Config config) {
         //获取配置对象
-        String smtpHost = config.getSmtpHost();
-        String imapHost = config.getImapHost();
-        String smtpPort = String.valueOf(config.getSmtpPort());
-        String imapPort = String.valueOf(config.getImapPort());
+        String smtpHost = config.getSMTPHost();
+        String imapHost = config.getIMAPHost();
+        String smtpPort = String.valueOf(config.getSMTPPort());
+        String imapPort = String.valueOf(config.getIMAPPort());
 
         //配置
         Properties properties = new Properties();
@@ -63,7 +63,7 @@ class EmailUtils {
         if (ObjectManager.getTransport() == null || !ObjectManager.getTransport().isConnected()) {
             Session session = getSession(config);
             Transport transport = session.getTransport("smtp");
-            transport.connect(config.getSmtpHost(), config.getAccount(), config.getPassword());
+            transport.connect(config.getSMTPHost(), config.getAccount(), config.getPassword());
             ObjectManager.setTransport(transport);
             return transport;
         } else {
@@ -81,7 +81,7 @@ class EmailUtils {
         if (ObjectManager.getStore() == null || !ObjectManager.getStore().isConnected()) {
             Session session = getSession(config);
             IMAPStore store = (IMAPStore) session.getStore("imap");
-            store.connect(config.getImapHost(), config.getAccount(), config.getPassword());
+            store.connect(config.getIMAPHost(), config.getAccount(), config.getPassword());
             ObjectManager.setStore(store);
             return store;
         } else {
@@ -99,7 +99,8 @@ class EmailUtils {
      */
     static IMAPFolder getFolder(String folderName, IMAPStore store, EmailKit.Config config) throws MessagingException {
         IMAPFolder folder = (IMAPFolder) store.getFolder(folderName);
-        if (config.getType() == EmailKit.MailType.$163 || config.getType() == EmailKit.MailType.$126) {
+        String account = config.getAccount();
+        if (account.contains("@163.com") || account.contains("@126.com") || account.contains("@yeah.net")) {
             folder.doCommand(protocol -> {
                 protocol.id("FUTONG");
                 return null;

@@ -22,11 +22,13 @@ class UIDHandle {
      */
     static long[] nextUIDArray(IMAPFolder folder, long lastUID) throws MessagingException {
         Message[] msgList = folder.getMessages();
+        long[] uidArray = new long[0];
+
+        if (msgList.length == 0)
+            return uidArray;
 
         //判断排序方式
         boolean isSmallToLarge = folder.getUID(msgList[0]) < folder.getUID(msgList[msgList.length-1]);  //由小到大排列
-
-        long[] uidArray = new long[0];
 
         if (isSmallToLarge && lastUID < 0) {
             for (int i = msgList.length-1, count = 1; i >= 0 && count <= 20; --i, ++count)
