@@ -39,7 +39,7 @@ public final class Inbox extends Folder {
      * 获取邮件搜索器
      * @return  Search对象
      */
-    public Search useSearcher() {
+    public Search searcher() {
         return new Search(config);
     }
 

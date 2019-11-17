@@ -161,7 +161,7 @@ public class Folder {
      * 使用操作邮件消息功能
      * @return
      */
-    public Operate useOperator() {
+    public Operate operator() {
         return new Operate(folderName, config);
     }
 
