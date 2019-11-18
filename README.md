@@ -1,6 +1,8 @@
 # EmailKit for Android
 [![](https://img.shields.io/badge/platform-Android-green.svg)](https://developer.android.google.cn/)
 [![](https://jitpack.io/v/mailhu/email.svg)](https://jitpack.io/#mailhu/email)
+[![](https://img.shields.io/badge/Feedback-Foxmail-red)](http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=Zx0AEgYJDxInAQgfCgYOC0kECAo)
+
 
 EmailKit for Android是以JavaMail类库为基础进行封装的框架，它比JavaMail更简单易用，在使用它开发电子邮件客户端时，还能避免对电子邮件协议不熟悉的烦恼。目前EmailKit支持的电子邮件协议有 SMTP 和 IMAP，它支持的功能有发送邮件，读取邮件，加载邮件，同步邮件，对邮件消息的移动，删除，存草稿等操作，同时支持邮箱的新邮件消息推送（需要邮件服务器支持相关命令），邮件搜索等功能。把它依赖到你的Android项目中，你只需简单配置邮件服务器的参数，再使用这些简易的接口，即可完成你所需的功能，所见即所得。
 
@@ -99,9 +101,9 @@ EmailKit.useSMTPService(config)
 ```
 
 ## 联系我
-**E-mail：**<a target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=Zx0AEgYJDxInAQgfCgYOC0kECAo" style="text-decoration:none;"><img src="http://rescdn.qqmail.com/zh_CN/htmledition/images/function/qm_open/ico_mailme_01.png"/></a>
+E-mail：zguanhu@foxmail.com
 
-**微信扫一扫：**
+微信：
 
 <img src="image/WeChat.png"  height="100" width="100">
 
