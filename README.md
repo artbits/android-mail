@@ -2,9 +2,20 @@
 [![](https://img.shields.io/badge/platform-Android-green.svg)](https://developer.android.google.cn/)
 [![](https://jitpack.io/v/mailhu/email.svg)](https://jitpack.io/#mailhu/email)
 
-EmailKit for Android 是以JavaMail类库为基础进行封装的框架，它比JavaMail更简单易用，在使用它开发电子邮件客户端时，还能避免对电子邮件协议不熟悉的烦恼。目前EmailKit支持的电子邮件协议为 SMTP 和 IMAP，它支持的功能有发送邮件，读取邮件，加载邮件，同步邮件，对邮件消息的移动，删除，存草稿等操作。同时对部分邮箱服务提供商所提供的邮箱支持新邮件消息推送，邮件搜索等功能。把它依赖到你的Android项目中，你只需简单配置邮件服务器的参数，调用一些简易的方法，即可完成你所需的功能，所见即所得。
+EmailKit for Android是以JavaMail类库为基础进行封装的框架，它比JavaMail更简单易用，在使用它开发电子邮件客户端时，还能避免对电子邮件协议不熟悉的烦恼。目前EmailKit支持的电子邮件协议有 SMTP 和 IMAP，它支持的功能有发送邮件，读取邮件，加载邮件，同步邮件，对邮件消息的移动，删除，存草稿等操作，同时支持邮箱的新邮件消息推送（需要邮件服务器支持相关命令），邮件搜索等功能。把它依赖到你的Android项目中，你只需简单配置邮件服务器的参数，再使用这些简易的接口，即可完成你所需的功能，所见即所得。
 
-## 链接
+## 效果图
+效果图中的示例程序是使用EmailKit框架编写的邮箱客户端，示例程序的源码在本项目的app模块中。因为我写这个示例程序的时间比较仓促，所以只花几天时间完成了基本的邮件服务器配置、发送邮件、加载邮件、同步邮件、查看邮件这些基础功能，希望谅解。如果你想参考邮件客户端的实现和框架的使用，或想安装体验这个示例程序，请使用Git把这个项目clone到本地，然后使用Android Studio调试，在真机上运行。
+
+|                           |                          |                          |
+|:-------------------------:|:------------------------:|:------------------------:|
+| 服务器设置                 | 邮箱文件夹列表            | 写邮件                    |
+|![](image/demo_config.png) | ![](image/demo_main.png) | ![](image/demo_send.png) |
+| 收件箱列表                 | 垃圾箱列表                | 查看邮件内容              |
+|![](image/demo_inbox.png)  | ![](image/demo_junk.png) | ![](image/demo_watch.png)|
+|                           |                          |                          |
+
+## 文档链接
 + EmailKit最新文档，请到Wiki里**仔细耐心地**查阅 [最新文档](https://github.com/mailhu/emailkit/wiki)
 + 若你对该框架有什么疑问或提issue前可以先查看一下 [FAQ](https://github.com/mailhu/emailkit/blob/master/doc/FAQ.md)
 + 4.x版本代码和文档改动较大，需要查阅3.x文档请点击 [这里](https://github.com/mailhu/emailkit/blob/master/doc/3.x.md)
@@ -24,7 +35,7 @@ allprojects {
 步骤二、在项目的app模块下的build.gradle里加：
 ```gradle
 dependencies {
-    implementation 'com.github.mailhu:emailkit:4.0.0'
+    implementation 'com.github.mailhu:emailkit:4.1.0'
 }
 ```
 注：因为该库内部使用了Java 8新特性，可能你的项目依赖该框架在构建时出现如下错误：
@@ -92,7 +103,7 @@ EmailKit.useSMTPService(config)
 
 **微信扫一扫：**
 
-<img src="https://github.com/mailhu/email/blob/master/image/WeChat.png"  height="100" width="100">
+<img src="image/WeChat.png"  height="100" width="100">
 
 
 ## License
