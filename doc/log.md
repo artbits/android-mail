@@ -1,5 +1,13 @@
 ## 更新日志
 
+* EmailKit for Andorid 4.0.0（2019年11月18日）
+  + 优化加载邮件和同步邮件的速度
+  + 修复了163邮箱和126邮箱收信被阻止的问题
+  + 操作邮件的相关接口方法移到Operate类中统一管理
+  + 重构Folder类，并让Inbox类和DraftBox类继承Folder
+  + 修改获取Search对象和Operate对象的方法的名称
+  + 因使用全局配置时系统回收内存时容易出现空指针的问题，所以移除了全局配置的接口
+
 * EmailKit for Andorid 4.0.0（2019年11月4日）
   + 框架名称邮Email改为EmailKit，同时重构升级框架。
   + 取消对POP3协议的支持
