@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        tools:ignore="UselessParent">
+
+        <TextView
+            android:id="@+id/item_message_nickname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="40dp"
+            android:lines="1"
+            android:ellipsize="end"
+            android:text="阿里云"
+            android:textSize="16sp"
+            android:textColor="@color/colorAccent"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/item_message_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="20dp"
+            android:text="2018年7月10日 13:20"
+            android:textSize="12sp"
+            tools:ignore="HardcodedText" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/item_message_subject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:lines="1"
+        android:ellipsize="end"
+        android:text="域名续费通知"
+        android:textSize="14sp"
+        tools:ignore="HardcodedText" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:background="@color/colorGray"/>
+
+</LinearLayout>

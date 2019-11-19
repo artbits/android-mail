@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@color/colorPrimary"
+        android:elevation="1dp"
+        tools:ignore="UselessParent">
+
+        <TextView
+            android:id="@+id/activity_main_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:gravity="center"
+            android:text="邮箱"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"
+            tools:ignore="HardcodedText" />
+
+        <ImageView
+            android:id="@+id/activity_main_edit_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="7dp"
+            android:layout_marginEnd="70dp"
+            android:padding="8dp"
+            android:src="@drawable/edit"
+            android:background="@drawable/button_click"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/activity_main_settings_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="7dp"
+            android:layout_marginEnd="11dp"
+            android:padding="8dp"
+            android:src="@drawable/settings"
+            android:background="@drawable/button_click"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="ContentDescription" />
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/activity_main_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"/>
+
+</LinearLayout>

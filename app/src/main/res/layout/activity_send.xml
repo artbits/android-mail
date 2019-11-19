@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <include layout="@layout/title_bar"/>
+
+    <EditText
+        android:id="@+id/activity_send_address_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="18dp"
+        android:hint="收件人地址"
+        android:inputType="textEmailAddress"
+        android:singleLine="true"
+        android:textSize="16sp"
+        tools:ignore="Autofill,HardcodedText,TextFields" />
+
+    <EditText
+        android:id="@+id/activity_send_subject_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:singleLine="true"
+        android:hint="主题"
+        android:textSize="16sp"
+        tools:ignore="Autofill,HardcodedText,TextFields" />
+
+    <EditText
+        android:id="@+id/activity_send_content_et"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginEnd="21dp"
+        android:background="@null"
+        android:gravity="top"
+        android:hint="撰写邮件内容..."
+        android:minLines="3"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        tools:ignore="Autofill,HardcodedText,LabelFor,TextFields" />
+
+</LinearLayout>

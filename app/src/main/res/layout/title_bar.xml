@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:background="@color/colorPrimaryDark"
+    android:elevation="1dp">
+
+    <ImageView
+        android:id="@+id/title_bar_back_iv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginStart="10dp"
+        android:padding="11dp"
+        android:src="@drawable/back"
+        android:background="@drawable/button_click"
+        android:clickable="true"
+        android:focusable="true"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/title_bar_title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/title_bar_back_iv"
+        android:layout_marginStart="20dp"
+        android:gravity="center"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:ignore="RelativeOverlap,RtlHardcoded" />
+
+    <ImageView
+        android:id="@+id/title_bar_function_iv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="13dp"
+        android:padding="11dp"
+        android:background="@drawable/button_click"
+        android:clickable="true"
+        android:focusable="true"
+        tools:ignore="ContentDescription" />
+
+</RelativeLayout>
