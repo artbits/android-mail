@@ -29,7 +29,6 @@ import java.util.Objects;
 public class ListActivity extends BaseActivity implements IActivity {
 
     private String folderName;
-    SmartRefreshLayout smartRefreshLayout;
     private MsgAdapter adapter;
 
     private long lastUID;
@@ -51,7 +50,7 @@ public class ListActivity extends BaseActivity implements IActivity {
         folderName = getIntent().getStringExtra("folderName");
         Controls.getTitleBar().display(this, folderName);
 
-        smartRefreshLayout = findViewById(R.id.activity_list_msg_sr);
+        SmartRefreshLayout smartRefreshLayout = findViewById(R.id.activity_list_msg_sr);
         smartRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
@@ -174,7 +173,7 @@ public class ListActivity extends BaseActivity implements IActivity {
     }
 
     /**
-     * 插入id新数据
+     * 追加item新数据
      * @param msgList
      */
     public void addDataListItem(List<Message> msgList) {
