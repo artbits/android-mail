@@ -3,6 +3,7 @@ package com.smailnet.demo;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.os.StrictMode;
 
 import com.smailnet.emailkit.EmailKit;
 import com.smailnet.microkv.MicroKV;
@@ -22,6 +23,8 @@ public class EmailApplication extends Application {
         MicroKV.initialize(this);
         LitePal.initialize(this);
         context = getApplicationContext();
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
     }
 
     public static Context getContext() {

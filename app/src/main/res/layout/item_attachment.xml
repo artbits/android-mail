@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#e6e6e6">
+
+    <RelativeLayout
+        android:id="@+id/item_attachment_rl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="20dp"
+            android:src="@drawable/attachment"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/item_attachment_filename"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="70dp"
+            android:layout_marginEnd="20dp"
+            android:text="第一行代码.pdf"
+            android:textSize="14sp"
+            android:lines="1"
+            android:ellipsize="end"
+            android:textColor="@color/colorAccent"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/item_attachment_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:layout_marginStart="70dp"
+            android:layout_marginEnd="20dp"
+            android:text="大小：0.905 M"
+            android:textSize="12sp"
+            android:lines="1"
+            android:ellipsize="end"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/item_attachment_point"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="35dp"
+            android:layout_marginEnd="20dp"
+            android:text="加载中..."
+            android:textSize="12sp"
+            tools:ignore="HardcodedText" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
