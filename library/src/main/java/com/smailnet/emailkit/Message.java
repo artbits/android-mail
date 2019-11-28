@@ -9,18 +9,53 @@ import java.util.List;
 public final class Message {
 
     private long uid;
+    private boolean attachment;
     private String subject;
     private SentDate sentDate;
     private Sender sender;
     private Recipients recipients;
+    private Flags flags;
     private Content content;
 
-    Message(){
-
-    }
+    Message(){ }
 
     Message setUID(long uid) {
         this.uid = uid;
+        return this;
+    }
+
+    Message setAttachment(boolean attachment) {
+        this.attachment = attachment;
+        return this;
+    }
+
+    Message setSubject(String subject) {
+        this.subject = subject;
+        return this;
+    }
+
+    Message setSentDate(SentDate sentDate) {
+        this.sentDate = sentDate;
+        return this;
+    }
+
+    Message setSender(Sender sender) {
+        this.sender = sender;
+        return this;
+    }
+
+    Message setRecipients(Recipients recipients) {
+        this.recipients = recipients;
+        return this;
+    }
+
+    Message setFlags(Flags flags) {
+        this.flags = flags;
+        return this;
+    }
+
+    Message setContent(Content content) {
+        this.content = content;
         return this;
     }
 
@@ -32,9 +67,12 @@ public final class Message {
         return uid;
     }
 
-    Message setSubject(String subject) {
-        this.subject = subject;
-        return this;
+    /**
+     * 是否存在附件(还没开放)
+     * @return
+     */
+    private boolean existAttachment() {
+        return attachment;
     }
 
     /**
@@ -45,22 +83,12 @@ public final class Message {
         return subject;
     }
 
-    Message setSentDate(SentDate sentDate) {
-        this.sentDate = sentDate;
-        return this;
-    }
-
     /**
      * 获取SentDate对象
      * @return  SentDate对象
      */
     public SentDate getSentDate() {
         return sentDate;
-    }
-
-    Message setSender(Sender sender) {
-        this.sender = sender;
-        return this;
     }
 
     /**
@@ -71,11 +99,6 @@ public final class Message {
         return sender;
     }
 
-    Message setRecipients(Recipients recipients) {
-        this.recipients = recipients;
-        return this;
-    }
-
     /**
      * 获取Recipients对象
      * @return  Recipients对象
@@ -84,9 +107,12 @@ public final class Message {
         return recipients;
     }
 
-    Message setContent(Content content) {
-        this.content = content;
-        return this;
+    /**
+     * 获取Flags对象
+     * @return  Flags对象
+     */
+    public Flags getFlags() {
+        return flags;
     }
 
     /**
@@ -97,7 +123,6 @@ public final class Message {
         return content;
     }
 
-
     /**
      * 发送日期类
      */
@@ -106,9 +131,7 @@ public final class Message {
         private long millisecond;
         private String text;
 
-        SentDate() {
-
-        }
+        SentDate() { }
 
         SentDate setMillisecond(long millisecond) {
             this.millisecond = millisecond;
@@ -145,9 +168,7 @@ public final class Message {
         private String address;
         private String nickname;
 
-        User() {
-
-        }
+        User() { }
 
         void setAddress(String address) {
             this.address = address;
@@ -180,9 +201,7 @@ public final class Message {
      */
     public static class Sender extends User {
 
-        Sender() {
-
-        }
+        Sender() { }
 
     }
 
@@ -194,9 +213,7 @@ public final class Message {
         private List<To> toList;
         private List<Cc> ccList;
 
-        Recipients() {
-
-        }
+        Recipients() { }
 
         Recipients setToList(List<To> toList) {
             this.toList = toList;
@@ -241,6 +258,36 @@ public final class Message {
     }
 
     /**
+     * 标记类
+     */
+    public static class Flags {
+
+        private boolean read;
+        private boolean star;
+
+        Flags() { }
+
+        Flags setRead(boolean read) {
+            this.read = read;
+            return this;
+        }
+
+        Flags setStar(boolean star) {
+            this.star = star;
+            return this;
+        }
+
+        public boolean isRead() {
+            return read;
+        }
+
+        public boolean isStar() {
+            return star;
+        }
+
+    }
+
+    /**
      * 邮件内容类
      */
     public static class Content {
@@ -248,21 +295,11 @@ public final class Message {
         private GetMainBodyCallback getMainBodyCallback;
         private GetAttachmentsCallback getAttachmentsCallback;
 
-        Content() {
-
-        }
+        Content() { }
 
         Content setMainBody(GetMainBodyCallback getMainBodyCallback) {
             this.getMainBodyCallback = getMainBodyCallback;
             return this;
-        }
-
-        /**
-         * 懒加载获取邮件正文
-         * @return  邮件正文
-         */
-        public String getMainBody() {
-            return getMainBodyCallback.get();
         }
 
         Content setAttachments(GetAttachmentsCallback getAttachmentsCallback) {
@@ -271,19 +308,145 @@ public final class Message {
         }
 
         /**
+         * 懒加载获取邮件正文
+         * @return  邮件正文
+         */
+        public MainBody getMainBody() {
+            return getMainBodyCallback.get();
+        }
+
+        /**
          * 懒加载获取附件
          * @return  附件
          */
-        public List<File> getAttachments() {
+        public List<Attachment> getAttachmentList() {
             return getAttachmentsCallback.get();
         }
 
+        /**
+         * 正文类
+         */
+        public static class MainBody {
+
+            private String type;
+            private String text;
+
+            MainBody setType(String type) {
+                this.type = type;
+                return this;
+            }
+
+            MainBody setText(String text) {
+                this.text = text;
+                return this;
+            }
+
+            /**
+             * 获取正文的类型
+             * @return
+             */
+            public String getType() {
+                return type;
+            }
+
+            /**
+             * 获取正文内容
+             * @return
+             */
+            public String getText() {
+                return text;
+            }
+
+        }
+
+        /**
+         * 附件类
+         */
+        public static class Attachment {
+
+            private int size;
+            private String type;
+            private String filename;
+            private File file;
+            private LazyLoading lazyLoading;
+
+            Attachment setSize(int size) {
+                this.size = size;
+                return this;
+            }
+
+            Attachment setType(String type) {
+                this.type = type;
+                return this;
+            }
+
+            Attachment setFilename(String filename) {
+                this.filename = filename;
+                return this;
+            }
+
+            Attachment setFile(File file) {
+                this.file = file;
+                return this;
+            }
+
+            Attachment setLazyLoading(LazyLoading lazyLoading) {
+                this.lazyLoading = lazyLoading;
+                return this;
+            }
+
+            /**
+             * 获取附件大小
+             * @return
+             */
+            public int getSize() {
+                return size;
+            }
+
+            /**
+             * 附件类型
+             * @return
+             */
+            public String getType() {
+                return type;
+            }
+
+            /**
+             * 获取附件的文件名
+             * @return
+             */
+            public String getFilename() {
+                return filename;
+            }
+
+            /**
+             * 获取附件
+             * @return
+             */
+            public File getFile() {
+                return file;
+            }
+
+            /**
+             * 下载附件
+             * @param downloadCallback
+             */
+            public void download(EmailKit.GetDownloadCallback downloadCallback) {
+                lazyLoading.loading(downloadCallback);
+            }
+
+            interface LazyLoading {
+                void loading(EmailKit.GetDownloadCallback downloadCallback);
+            }
+
+        }
+
         interface GetMainBodyCallback {
-            String get();
+            MainBody get();
         }
 
         interface GetAttachmentsCallback {
-            List<File> get();
+            List<Attachment> get();
         }
 
     }

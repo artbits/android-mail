@@ -33,14 +33,14 @@ class EmailUtils {
             properties.put("mail.smtp.host", smtpHost);
             properties.put("mail.smtp.port", smtpPort);
             properties.put("mail.smtp.ssl.enable", config.isSMTPSSL());
-            if (config.getType() == EmailKit.MailType.OUTLOOK)
-                properties.put("mail.smtp.starttls.enable", true);
         }
         if (!TextUtils.isEmpty(imapHost) && !TextUtils.isEmpty(imapPort)) {
             properties.put("mail.imap.auth", true);
             properties.put("mail.imap.host", imapHost);
             properties.put("mail.imap.port", imapPort);
             properties.put("mail.imap.ssl.enable", config.isIMAPSSL());
+            properties.setProperty("mail.imap.partialfetch", "false");
+            properties.setProperty("mail.imaps.partialfetch", "false");
         }
 
         //返回值
@@ -100,7 +100,8 @@ class EmailUtils {
     static IMAPFolder getFolder(String folderName, IMAPStore store, EmailKit.Config config) throws MessagingException {
         IMAPFolder folder = (IMAPFolder) store.getFolder(folderName);
         String account = config.getAccount();
-        if (account.contains("@163.com") || account.contains("@126.com") || account.contains("@yeah.net")) {
+        if (account.contains(EmailKit.MailType.$163) || account.contains(EmailKit.MailType.$126)
+                || account.contains(EmailKit.MailType.YEAH)) {
             folder.doCommand(protocol -> {
                 protocol.id("FUTONG");
                 return null;

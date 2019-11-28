@@ -18,7 +18,7 @@ package com.smailnet.emailkit;
 
 import android.content.Context;
 
-import java.util.HashMap;
+import java.io.File;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -34,7 +34,7 @@ import javax.mail.MessagingException;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 4.1.0
+ * @version 4.2.0
  */
 public final class EmailKit {
 
@@ -216,15 +216,23 @@ public final class EmailKit {
     }
 
     /**
+     * 附件下载回调
+     */
+    public interface GetDownloadCallback {
+        void download(File file);
+    }
+
+    /**
      * 常用的邮箱的类型选择
      */
     public interface MailType {
-        int QQ = 1;
-        int FOXMAIL = 2;
-        int EXMAIL = 3;
-        int $163 = 4;
-        int $126 = 5;
-        int OUTLOOK = 6;
+        String QQ = "@qq.com";
+        String FOXMAIL = "@foxmail.com";
+        String EXMAIL = "@exmail.qq.com";
+        String OUTLOOK = "@outlook.com";
+        String YEAH = "@yeah.net";
+        String $163 = "@163.com";
+        String $126 = "@162.com";
     }
 
     /**
@@ -238,7 +246,6 @@ public final class EmailKit {
         private String imapHost;
         private int smtpPort;
         private int imapPort;
-        private int type;
         private boolean smtpSSL;
         private boolean imapSSL;
 
@@ -248,16 +255,15 @@ public final class EmailKit {
          * @param type  选择邮箱的类型
          * @return
          */
-        public Config setMailType(int type) {
-            this.type = type;
-            HashMap<String, Object> hashMap = Converter.MailTypeConversion.getParam(type);
-            if (hashMap != null) {
-                this.smtpHost = String.valueOf(hashMap.get(Constant.SMTP_HOST));
-                this.smtpPort = (int) hashMap.get(Constant.SMTP_PORT);
-                this.imapHost = String.valueOf(hashMap.get(Constant.IMAP_HOST));
-                this.imapPort = (int) hashMap.get(Constant.IMAP_PORT);
-                this.smtpSSL = (boolean) hashMap.get(Constant.SMTP_SSL);
-                this.imapSSL = (boolean) hashMap.get(Constant.IMAP_SSL);
+        public Config setMailType(String type) {
+            Config config = Converter.MailTypeUtils.getMailConfiguration(type);
+            if (config != null) {
+                this.smtpHost = config.getSMTPHost();
+                this.smtpPort = config.getSMTPPort();
+                this.imapHost = config.getIMAPHost();
+                this.imapPort = config.getIMAPPort();
+                this.smtpSSL = config.isSMTPSSL();
+                this.imapSSL = config.isIMAPSSL();
             }
             return this;
         }
@@ -311,10 +317,6 @@ public final class EmailKit {
             this.imapPort = port;
             this.imapSSL = ssl;
             return this;
-        }
-
-        int getType() {
-            return type;
         }
 
         String getAccount() {

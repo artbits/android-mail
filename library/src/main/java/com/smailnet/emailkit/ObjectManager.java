@@ -45,7 +45,14 @@ class ObjectManager {
      */
     static void setContext(Context context) {
         ObjectManager.context = context;
+    }
 
+    /**
+     * 获取Context
+     * @return 返回一个Context对象
+     */
+    static Context getContext(){
+        return context;
     }
 
     /**
@@ -57,14 +64,6 @@ class ObjectManager {
             ObjectManager.handler = new Handler(Looper.getMainLooper());
         }
         return ObjectManager.handler;
-    }
-
-    /**
-     * 获取Context
-     * @return 返回一个Context对象
-     */
-    static Context getContext(){
-        return context;
     }
 
     /**
@@ -194,4 +193,5 @@ class ObjectManager {
         }
         return ObjectManager.listenerThreadService;
     }
+
 }

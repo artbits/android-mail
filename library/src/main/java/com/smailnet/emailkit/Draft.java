@@ -105,7 +105,7 @@ public final class Draft {
      * @return
      */
     public Draft setNickname(String nickname) {
-        this.nickname = nickname;
+        this.nickname = Converter.TextUtils.encodeText(nickname);
         return this;
     }
 

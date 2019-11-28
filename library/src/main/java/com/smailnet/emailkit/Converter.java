@@ -1,12 +1,15 @@
 package com.smailnet.emailkit;
 
 import android.annotation.SuppressLint;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import android.webkit.MimeTypeMap;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +19,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
+import javax.activation.DataSource;
+import javax.activation.URLDataSource;
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Flags;
@@ -40,53 +44,40 @@ class Converter {
     /**
      * 常用邮箱类型的转换
      */
-    static class MailTypeConversion {
+    static class MailTypeUtils {
 
-        //获取该邮箱对应的服务器配置参数
-        static HashMap<String, Object> getParam(int type) {
-            HashMap<String, Object> hashMap = new HashMap<>();
+        /**
+         * 获取该邮箱对应的服务器配置参数
+         * @param type
+         * @return
+         */
+        static EmailKit.Config getMailConfiguration(String type) {
             switch (type) {
                 case EmailKit.MailType.QQ:
                 case EmailKit.MailType.FOXMAIL:
-                    hashMap.put(Constant.SMTP_HOST, "smtp.qq.com");
-                    hashMap.put(Constant.IMAP_HOST, "imap.qq.com");
-                    hashMap.put(Constant.SMTP_PORT, 465);
-                    hashMap.put(Constant.IMAP_PORT, 993);
-                    hashMap.put(Constant.SMTP_SSL, true);
-                    hashMap.put(Constant.IMAP_SSL, true);
-                    return hashMap;
+                    return new EmailKit.Config()
+                            .setSMTP("smtp.qq.com", 465, true)
+                            .setIMAP("imap.qq.com", 993, true);
                 case EmailKit.MailType.EXMAIL:
-                    hashMap.put(Constant.SMTP_HOST, "smtp.exmail.qq.com");
-                    hashMap.put(Constant.IMAP_HOST, "imap.exmail.qq.com");
-                    hashMap.put(Constant.SMTP_PORT, 465);
-                    hashMap.put(Constant.IMAP_PORT, 993);
-                    hashMap.put(Constant.SMTP_SSL, true);
-                    hashMap.put(Constant.IMAP_SSL, true);
-                    return hashMap;
-                case EmailKit.MailType.$163:
-                    hashMap.put(Constant.SMTP_HOST, "smtp.163.com");
-                    hashMap.put(Constant.IMAP_HOST, "imap.163.com");
-                    hashMap.put(Constant.SMTP_PORT, 465);
-                    hashMap.put(Constant.IMAP_PORT, 993);
-                    hashMap.put(Constant.SMTP_SSL, true);
-                    hashMap.put(Constant.IMAP_SSL, true);
-                    return hashMap;
-                case EmailKit.MailType.$126:
-                    hashMap.put(Constant.SMTP_HOST, "smtp.126.com");
-                    hashMap.put(Constant.IMAP_HOST, "imap.126.com");
-                    hashMap.put(Constant.SMTP_PORT, 465);
-                    hashMap.put(Constant.IMAP_PORT, 993);
-                    hashMap.put(Constant.SMTP_SSL, true);
-                    hashMap.put(Constant.IMAP_SSL, true);
-                    return hashMap;
+                    return new EmailKit.Config()
+                            .setSMTP("smtp.exmail.qq.com", 465, true)
+                            .setIMAP("imap.exmail.qq.com", 993, true);
                 case EmailKit.MailType.OUTLOOK:
-                    hashMap.put(Constant.SMTP_HOST, "smtp-mail.outlook.com");
-                    hashMap.put(Constant.IMAP_HOST, "imap-mail.outlook.com");
-                    hashMap.put(Constant.SMTP_PORT, 25);
-                    hashMap.put(Constant.IMAP_PORT, 993);
-                    hashMap.put(Constant.SMTP_SSL, false);
-                    hashMap.put(Constant.IMAP_SSL, true);
-                    return hashMap;
+                    return new EmailKit.Config()
+                            .setSMTP("smtp-mail.outlook.com", 25, false)
+                            .setIMAP("imap-mail.outlook.com", 993, true);
+                case EmailKit.MailType.YEAH:
+                    return new EmailKit.Config()
+                            .setSMTP("smtp.yeah.net", 465, true)
+                            .setIMAP("imap.yeah.net", 993, true);
+                case EmailKit.MailType.$163:
+                    return new EmailKit.Config()
+                            .setSMTP("smtp.163.com", 465, true)
+                            .setIMAP("imap.163.com", 993, true);
+                case EmailKit.MailType.$126:
+                    return new EmailKit.Config()
+                            .setSMTP("smtp.126.com", 465, true)
+                            .setIMAP("imap.126.com", 993, true);
                 default:
                     return null;
             }
@@ -99,7 +90,11 @@ class Converter {
      */
     static class AddressUtils {
 
-        //字符串类型地址转为数组类型
+        /**
+         * 字符串类型地址转为数组类型
+         * @param addresses
+         * @return
+         */
         static Address[] toInternetAddresses(String[] addresses) {
             try {
                 Address[] internetAddresses = new InternetAddress[addresses.length];
@@ -188,15 +183,32 @@ class Converter {
     /**
      * 文本编码转换
      */
-    private static class TextUtils {
+    static class TextUtils {
 
-        static String encodeText(String text) {
+        static String encodeText(String s) {
             try {
-                return MimeUtility.encodeText(text);
+                return MimeUtility.encodeText(s);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
-                return null;
+                return s;
             }
+        }
+
+        static String decodeText(String s) {
+            try {
+                return (s.startsWith("=?")) ? MimeUtility.decodeText(s) : s;
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                return s;
+            }
+        }
+
+        static String getMimeType(String filename) {
+            int begin = filename.lastIndexOf('.');
+            String suffix = filename.substring(begin + 1);
+            return MimeTypeMap
+                    .getSingleton()
+                    .getMimeTypeFromExtension(suffix);
         }
 
     }
@@ -211,7 +223,7 @@ class Converter {
         private final static String MULTIPART = "multipart/*";
 
         /**
-         * 获取text或惠html文本内容
+         * 获取text或html文本内容
          * @param part
          * @param map
          * @return
@@ -241,14 +253,21 @@ class Converter {
          * @throws IOException
          * @throws MessagingException
          */
-        static String getMainBody(Part part) throws IOException, MessagingException {
+        static Message.Content.MainBody getMainBody(Part part) throws IOException, MessagingException {
             HashMap<String, StringBuilder> map = ContentUtils.getTexts(part, new HashMap<>());
             if (map.get(TEXT_HTML) != null) {
-                return map.get(TEXT_HTML).toString();
+                return new Message.Content.MainBody()
+                        .setType(TEXT_HTML)
+                        .setText(map.get(TEXT_HTML).toString());
             } else if (map.get(TEXT_PLAIN) != null) {
-                return map.get(TEXT_PLAIN).toString();
+                return new Message.Content.MainBody()
+                        .setType(TEXT_PLAIN)
+                        .setText(map.get(TEXT_PLAIN).toString());
+            } else {
+                return new Message.Content.MainBody()
+                        .setType(null)
+                        .setText(null);
             }
-            return "";
         }
 
         /**
@@ -264,8 +283,6 @@ class Converter {
                     String disposition = bodyPart.getDisposition();
                     if (disposition != null && (disposition.equals(Part.ATTACHMENT) || disposition.equals(Part.INLINE))) {
                         bodyPartList.add(bodyPart);
-                    } else if (bodyPart.isMimeType(MULTIPART)) {
-                        return ContentUtils.getAttachmentPart(bodyPart, bodyPartList);
                     }
                 }
             }
@@ -276,24 +293,65 @@ class Converter {
          * 获取全部附件
          * @return
          */
-        static List<File> getAttachments(Part part) throws MessagingException, IOException {
-            List<File> fileList = new ArrayList<>();
+        static List<Message.Content.Attachment> getAttachmentList(Part part) throws IOException, MessagingException {
+            List<Message.Content.Attachment> attachmentList = new ArrayList<>();
             List<BodyPart> bodyPartList = getAttachmentPart(part, new ArrayList<>());
             for (BodyPart bodyPart : bodyPartList) {
-                String filename = bodyPart.getFileName();
-                filename = (filename != null && filename.startsWith("=?"))? MimeUtility.decodeText(filename) : "unknown";
-                File file = new File(ObjectManager.getDirectory() + filename);
-                BufferedInputStream bis = new BufferedInputStream(bodyPart.getInputStream());
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-                for (int length; (length = bis.read()) != -1; ) {
-                    bos.write(length);
-                    bos.flush();
-                }
-                bos.close();
-                bis.close();
-                fileList.add(file);
+                String filename = TextUtils.decodeText(bodyPart.getFileName());
+                Message.Content.Attachment attachment = new Message.Content.Attachment()
+                        .setFilename(filename)
+                        .setSize(bodyPart.getSize())
+                        .setType(TextUtils.getMimeType(filename))
+                        .setFile(new File(ObjectManager.getDirectory() + filename))
+                        .setLazyLoading(downloadCallback -> ObjectManager.getMultiThreadService()
+                                .execute(() -> {
+                                    InputStream is = null;
+                                    FileOutputStream fos = null;
+                                    try {
+                                        File file = new File(ObjectManager.getDirectory() + filename);
+                                        if (file.exists()) {
+                                            ObjectManager.getHandler().post(() -> downloadCallback.download(file));
+                                        } else {
+                                            is = bodyPart.getInputStream();
+                                            fos = new FileOutputStream(file.getPath());
+                                            byte[] bytes = new byte[1024];
+                                            for (int length; (length = is.read(bytes)) != -1; )
+                                                fos.write(bytes, 0, length);
+                                            ObjectManager.getHandler().post(() -> downloadCallback.download(file));
+                                        }
+                                    } catch (IOException | MessagingException e) {
+                                        try {
+                                            fos.close();
+                                            is.close();
+                                        } catch (IOException e1) {
+                                            e1.printStackTrace();
+                                        }
+                                        e.printStackTrace();
+                                        downloadCallback.download(null);
+                                    }
+                                }));
+                attachmentList.add(attachment);
+
             }
-            return fileList;
+            return attachmentList;
+        }
+
+    }
+
+    /**
+     * 标记状态转换
+     */
+    private static class FlagsUtils {
+
+        /**
+         * 获取邮件是否已读和是否被星标的状态
+         * @param internetFlags
+         * @return
+         */
+        static Message.Flags getFlags(Flags internetFlags) {
+            return new Message.Flags()
+                    .setRead(internetFlags.contains(Flags.Flag.SEEN))
+                    .setStar(internetFlags.contains(Flags.Flag.FLAGGED));
         }
 
     }
@@ -323,11 +381,13 @@ class Converter {
             List<Message.Recipients.Cc> ccList = AddressUtils.getCcInfoList(message.getRecipients(RecipientType.CC));
             //接收人
             Message.Recipients recipients = new Message.Recipients().setToList(toList).setCcList(ccList);
+            //邮件标记状态
+            Message.Flags flags = FlagsUtils.getFlags(message.getFlags());
             //邮件内容（正文与附件）
             Message.Content content = new Message.Content()
                     .setMainBody(() -> {
                         try {
-                            Future<String> future = ObjectManager.getMultiThreadService()
+                            Future<Message.Content.MainBody> future = ObjectManager.getMultiThreadService()
                                     .submit(() -> ContentUtils.getMainBody(message));
                             return future.get();
                         } catch (ExecutionException | InterruptedException e) {
@@ -337,8 +397,8 @@ class Converter {
                     })
                     .setAttachments(() -> {
                         try {
-                            Future<List<File>> future = ObjectManager.getMultiThreadService()
-                                    .submit(() -> ContentUtils.getAttachments(message));
+                            Future<List<Message.Content.Attachment>> future = ObjectManager.getMultiThreadService()
+                                    .submit(() -> ContentUtils.getAttachmentList(message));
                             return future.get();
                         } catch (ExecutionException | InterruptedException e) {
                             e.printStackTrace();
@@ -352,6 +412,7 @@ class Converter {
                     .setSentDate(sentDate)
                     .setSender(sender)
                     .setRecipients(recipients)
+                    .setFlags(flags)
                     .setContent(content);
         }
 
@@ -379,38 +440,46 @@ class Converter {
                 //发件人昵称+邮箱地址
                 message.setFrom(new InternetAddress(draft.getNickname() + "<" + config.getAccount() + ">"));
                 //邮件主题
-                message.setSubject(draft.getSubject());
+                message.setSubject(draft.getSubject(), "UTF-8");
                 //邮件发送日期
                 message.setSentDate(new Date());
-                //创建多重消息对象
-                Multipart multipart = new MimeMultipart();
-                //判断是否存在text内容
-                if (draft.getText() != null) {
-                    MimeBodyPart textBodyPart = new MimeBodyPart();
-                    textBodyPart.setText(draft.getText());
-                    multipart.addBodyPart(textBodyPart);
-                }
-                //判断是否存在html内容
-                if (draft.getHTML() != null) {
-                    MimeBodyPart htmlBodyPart = new MimeBodyPart();
-                    htmlBodyPart.setContent(draft.getHTML(), "text/html; charset=UTF-8");
-                    multipart.addBodyPart(htmlBodyPart);
-                }
-                //判断附件是否存在附件
-                if (draft.getAttachment() != null) {
+                //邮件内容
+                if (draft.getText() != null && draft.getHTML() == null && draft.getAttachment() == null) {
+                    message.setText(draft.getText(), "UTF-8");
+                } else if (draft.getHTML() != null && draft.getAttachment() == null) {
+                    message.setContent(draft.getHTML(), "text/html; charset=UTF-8");
+                } else if (draft.getAttachment() != null) {
+                    //创建多重消息对象
+                    Multipart multipart = new MimeMultipart();
+                    //文本内容
+                    if (draft.getText() != null) {
+                        MimeBodyPart textBodyPart = new MimeBodyPart();
+                        textBodyPart.setText(draft.getText(), "UTF-8");
+                        multipart.addBodyPart(textBodyPart);
+                    }
+                    //HTML内容
+                    if (draft.getHTML() != null) {
+                        MimeBodyPart htmlBodyPart = new MimeBodyPart();
+                        htmlBodyPart.setContent(draft.getHTML(), "text/html; charset=UTF-8");
+                        multipart.addBodyPart(htmlBodyPart);
+                    }
+                    //设置附件
                     MimeBodyPart attachmentBodyPart = new MimeBodyPart();
-                    attachmentBodyPart.setFileName(TextUtils.encodeText(draft.getAttachment().getName()));
-                    attachmentBodyPart.setDataHandler(new DataHandler(new FileDataSource(draft.getAttachment().getPath())));
+                    File file = draft.getAttachment();
+                    URL url = file.toURI().toURL();
+                    DataSource source = new URLDataSource(url);
+                    attachmentBodyPart.setFileName(TextUtils.encodeText(file.getName()));
+                    attachmentBodyPart.setDataHandler(new DataHandler(source));
                     multipart.addBodyPart(attachmentBodyPart);
+                    //设置消息对象
+                    message.setContent(multipart);
                 }
-                //设置消息内容
-                message.setContent(multipart);
                 //保存到已发送文件夹
                 message.setFlag(Flags.Flag.RECENT, true);
                 message.saveChanges();
                 //返回结果
                 return message;
-            } catch (MessagingException e) {
+            } catch (MessagingException | MalformedURLException e) {
                 e.printStackTrace();
                 return null;
             }

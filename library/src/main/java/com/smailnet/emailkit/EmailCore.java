@@ -64,6 +64,7 @@ class EmailCore {
             javax.mail.Message[] messages = folder.getMessages();
             FetchProfile fetchProfile = new FetchProfile();
             fetchProfile.add(FetchProfile.Item.ENVELOPE);
+            fetchProfile.add(FetchProfile.Item.FLAGS);
             folder.fetch(messages, fetchProfile);
             List<Message> messageList = new ArrayList<>();
             int total = messages.length, index = 0;
@@ -92,6 +93,7 @@ class EmailCore {
             javax.mail.Message[] messages = folder.getMessagesByUID(uids);
             FetchProfile fetchProfile = new FetchProfile();
             fetchProfile.add(FetchProfile.Item.ENVELOPE);
+            fetchProfile.add(FetchProfile.Item.FLAGS);
             folder.fetch(messages, fetchProfile);
             List<Message> msgList = new ArrayList<>();
             for (javax.mail.Message msg: messages){
@@ -123,6 +125,7 @@ class EmailCore {
             javax.mail.Message[] messages = folder.getMessagesByUID(newArray);
             FetchProfile fetchProfile = new FetchProfile();
             fetchProfile.add(FetchProfile.Item.ENVELOPE);
+            fetchProfile.add(FetchProfile.Item.FLAGS);
             folder.fetch(messages, fetchProfile);
             List<Message> newMsgList = new ArrayList<>();
             for (javax.mail.Message msg : messages) {
@@ -293,7 +296,7 @@ class EmailCore {
             } else {
                 originalFolder.close();
                 targetFolder.close();
-                getOperateCallback.onFailure(Constant.MESSAGE_EXCEPTION);
+                getOperateCallback.onFailure("Message does not exist");
             }
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -345,7 +348,7 @@ class EmailCore {
                 getOperateCallback.onSuccess();
             } else {
                 folder.close();
-                getOperateCallback.onFailure(Constant.MESSAGE_EXCEPTION);
+                getOperateCallback.onFailure("Message does not exist");
             }
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -376,6 +379,55 @@ class EmailCore {
     }
 
     /**
+     * 标记消息已读或未读
+     * @param config
+     * @param folderName
+     * @param uid
+     * @param read
+     * @param getOperateCallback
+     */
+    static void readMsg(EmailKit.Config config, String folderName, long uid, boolean read, EmailKit.GetOperateCallback getOperateCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
+            javax.mail.Message msg = folder.getMessageByUID(uid);
+            if (msg != null) {
+                folder.setFlags(new javax.mail.Message[]{msg}, new Flags(Flags.Flag.SEEN), read);
+                folder.close(true);
+                getOperateCallback.onSuccess();
+            } else {
+                folder.close();
+                getOperateCallback.onFailure("Message does not exist");
+            }
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getOperateCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
+     * 批量标记消息已读或未读
+     * @param config
+     * @param folderName
+     * @param uidList
+     * @param read
+     * @param getOperateCallback
+     */
+    static void readMsgList(EmailKit.Config config, String folderName, long[] uidList, boolean read, EmailKit.GetOperateCallback getOperateCallback) {
+        try {
+            IMAPStore store = EmailUtils.getStore(config);
+            IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
+            javax.mail.Message[] msgList = folder.getMessagesByUID(uidList);
+            folder.setFlags(msgList, new Flags(Flags.Flag.SEEN), read);
+            folder.close(true);
+            getOperateCallback.onSuccess();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            getOperateCallback.onFailure(e.getMessage());
+        }
+    }
+
+    /**
      * 删除消息
      * @param config
      * @param folderName
@@ -393,7 +445,7 @@ class EmailCore {
                 getOperateCallback.onSuccess();
             } else {
                 folder.close();
-                getOperateCallback.onFailure(Constant.MESSAGE_EXCEPTION);
+                getOperateCallback.onFailure("Message does not exist");
             }
         } catch (MessagingException e) {
             e.printStackTrace();

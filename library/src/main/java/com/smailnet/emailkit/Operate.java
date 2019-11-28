@@ -56,6 +56,27 @@ public final class Operate {
     }
 
     /**
+     * 标记消息已读或未读
+     * @param uid
+     * @param read
+     * @param getOperateCallback
+     */
+    public void readMsg(long uid, boolean read, EmailKit.GetOperateCallback getOperateCallback) {
+        ObjectManager.getMultiThreadService()
+                .execute(() -> EmailCore.readMsg(config, folderName, uid, read, new EmailKit.GetOperateCallback() {
+                    @Override
+                    public void onSuccess() {
+                        ObjectManager.getHandler().post(getOperateCallback::onSuccess);
+                    }
+
+                    @Override
+                    public void onFailure(String errMsg) {
+                        ObjectManager.getHandler().post(() -> getOperateCallback.onFailure(errMsg));
+                    }
+                }));
+    }
+
+    /**
      * 删除邮件消息
      * @param uid   该封邮件的uid
      * @param getOperateCallback 删除结果回调
@@ -105,6 +126,27 @@ public final class Operate {
     public void starMsgList(long[] uidList, boolean star, EmailKit.GetOperateCallback getOperateCallback) {
         ObjectManager.getMultiThreadService()
                 .execute(() -> EmailCore.starMsgList(config, folderName, uidList, star, new EmailKit.GetOperateCallback() {
+                    @Override
+                    public void onSuccess() {
+                        ObjectManager.getHandler().post(getOperateCallback::onSuccess);
+                    }
+
+                    @Override
+                    public void onFailure(String errMsg) {
+                        ObjectManager.getHandler().post(() -> getOperateCallback.onFailure(errMsg));
+                    }
+                }));
+    }
+
+    /**
+     * 批量标记消息已读或未读
+     * @param uidList
+     * @param read
+     * @param getOperateCallback
+     */
+    public void readMsgList(long[] uidList, boolean read, EmailKit.GetOperateCallback getOperateCallback) {
+        ObjectManager.getMultiThreadService()
+                .execute(() -> EmailCore.readMsgList(config, folderName, uidList, read, new EmailKit.GetOperateCallback() {
                     @Override
                     public void onSuccess() {
                         ObjectManager.getHandler().post(getOperateCallback::onSuccess);
