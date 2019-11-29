@@ -19,7 +19,7 @@ EmailKit for Android是以JavaMail类库为基础进行封装的框架，它比J
 
 ## 文档链接
 + EmailKit最新文档，请到Wiki里**仔细耐心地**查阅 [最新文档](https://github.com/mailhu/emailkit/wiki)
-+ 若你对该框架有什么疑问或提issue前可以先查看一下 [FAQ](https://github.com/mailhu/emailkit/blob/master/doc/FAQ.md)
++ 若你对该框架有什么疑问或提issues前可以先查看一下 [FAQ](https://github.com/mailhu/emailkit/blob/master/doc/FAQ.md)
 + 4.x版本代码和文档改动较大，需要查阅3.x文档请点击 [这里](https://github.com/mailhu/emailkit/blob/master/doc/3.x.md)
 + 2.x版本的文档已没太大意义，仅做考古使用，点击进入 [考古](https://github.com/mailhu/emailkit/blob/master/doc/2.x.md)
 + 你想了解这个框架的历史，可以查看 [更新日志](https://github.com/mailhu/emailkit/blob/master/doc/log.md)
@@ -56,7 +56,7 @@ android {
 ```
 
 ## 简单示例
-以下代码展示如何发送一封简单电子邮件，详细使用方法和想了解更多功能，请查阅Wiki文档。
+以下代码是展示如何发送一封简单的电子邮件。若想了解框架的更多功能，请查阅Wiki文档。
 ```java
 //初始化框架
 EmailKit.initialize(this);
@@ -100,13 +100,17 @@ EmailKit.useSMTPService(config)
 -keep class com.smailnet.emailkit.** { *;}
 ```
 
-## 联系我
+## 致谢
+示例程序中所用到的开源库和框架，在此致谢!
++ [LitePal](https://github.com/LitePalFramework/LitePal)
++ [MicroKV](https://github.com/mailhu/microkv)
++ [SmartRefreshLayout](https://github.com/scwang90/SmartRefreshLayout)
++ [BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
+
+## 作者留言
+目前作者是靠课余时间来开发和维护这个框架，如果有什么需求和问题可以提issues和通过邮件联系我。因学业繁忙和能力有限，大家提的需求和问题不一定很快解决和给出答复，希望大家多多谅解和包涵。
+
 E-mail：zguanhu@foxmail.com
-
-微信：
-
-<img src="image/WeChat.png"  height="100" width="100">
-
 
 ## License
 ```
