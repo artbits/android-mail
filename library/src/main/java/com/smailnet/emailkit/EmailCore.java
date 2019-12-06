@@ -6,7 +6,6 @@ import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.mail.FetchProfile;
@@ -89,7 +88,7 @@ class EmailCore {
         try {
             IMAPStore store =  EmailUtils.getStore(config);
             IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
-            long[] uids = UIDHandle.nextUIDArray(folder, lastUID);
+            long[] uids = UIDHandler.nextUIDArray(folder, lastUID);
             javax.mail.Message[] messages = folder.getMessagesByUID(uids);
             FetchProfile fetchProfile = new FetchProfile();
             fetchProfile.add(FetchProfile.Item.ENVELOPE);
@@ -118,19 +117,20 @@ class EmailCore {
         try {
             IMAPStore store = EmailUtils.getStore(config);
             IMAPFolder folder = EmailUtils.getFolder(folderName, store, config);
-            HashMap<String, long[]> map = UIDHandle.syncUIDArray(folder, localUIDArray);
-            long[] newArray = map.get("new");
-            long[] delArray = map.get("del");
-            assert newArray != null;
-            javax.mail.Message[] messages = folder.getMessagesByUID(newArray);
-            FetchProfile fetchProfile = new FetchProfile();
-            fetchProfile.add(FetchProfile.Item.ENVELOPE);
-            fetchProfile.add(FetchProfile.Item.FLAGS);
-            folder.fetch(messages, fetchProfile);
+            UIDHandler.Result result = UIDHandler.syncUIDArray(folder, localUIDArray);
+            long[] newArray = result.getNewArray();
+            long[] delArray = result.getDelArray();
             List<Message> newMsgList = new ArrayList<>();
-            for (javax.mail.Message msg : messages) {
-                Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
-                newMsgList.add(message);
+            if (newArray.length > 0) {
+                javax.mail.Message[] messages = folder.getMessagesByUID(newArray);
+                FetchProfile fetchProfile = new FetchProfile();
+                fetchProfile.add(FetchProfile.Item.ENVELOPE);
+                fetchProfile.add(FetchProfile.Item.FLAGS);
+                folder.fetch(messages, fetchProfile);
+                for (javax.mail.Message msg : messages) {
+                    Message message = Converter.MessageUtils.toLocalMessage(folder.getUID(msg), msg);
+                    newMsgList.add(message);
+                }
             }
             getSyncCallback.onSuccess(newMsgList, delArray);
         } catch (MessagingException e) {
@@ -501,6 +501,9 @@ class EmailCore {
      */
     static void auth(EmailKit.Config config, EmailKit.GetAuthCallback getAuthCallback) {
         try {
+            ObjectManager.setSession(null);
+            ObjectManager.setTransport(null);
+            ObjectManager.setStore(null);
             if (!TextUtils.isEmpty(config.getSMTPHost()) && !TextUtils.isEmpty(String.valueOf(config.getSMTPPort()))) {
                 EmailUtils.getTransport(config);
             }

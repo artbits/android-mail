@@ -34,7 +34,7 @@ import javax.mail.MessagingException;
  *
  * @author 张观湖
  * @author E-mail: zguanhu@foxmail.com
- * @version 4.2.0
+ * @version 4.2.1
  */
 public final class EmailKit {
 
@@ -58,17 +58,18 @@ public final class EmailKit {
     }
 
     /**
-     * 销毁EmailKit框架内部的全局对象。
-     * @return  销毁成功，返回true，否则返回false
+     * 销毁EmailKit内部的已和邮件服务器连接的对象
+     * 和线程池的销毁
      */
-    public static boolean destroy() {
-        try {
-            ObjectManager.destroy();
-            return true;
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public static void destroy() {
+        ObjectManager.getMultiThreadService()
+                .submit(() -> {
+                    try {
+                        ObjectManager.destroy();
+                    } catch (MessagingException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     /**
@@ -232,7 +233,7 @@ public final class EmailKit {
         String OUTLOOK = "@outlook.com";
         String YEAH = "@yeah.net";
         String $163 = "@163.com";
-        String $126 = "@162.com";
+        String $126 = "@126.com";
     }
 
     /**

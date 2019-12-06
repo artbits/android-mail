@@ -83,6 +83,17 @@ class Converter {
             }
         }
 
+        /**
+         * 判断是否为网易系的邮箱
+         * @param account
+         * @return
+         */
+        static boolean isNetEaseMail(String account) {
+            return account.contains(EmailKit.MailType.$163) ||
+                   account.contains(EmailKit.MailType.$126) ||
+                   account.contains(EmailKit.MailType.YEAH);
+        }
+
     }
 
     /**
@@ -248,13 +259,14 @@ class Converter {
 
         /**
          * 获取邮件正文
-         * @param part
+         * @param message
          * @return
          * @throws IOException
          * @throws MessagingException
          */
-        static Message.Content.MainBody getMainBody(Part part) throws IOException, MessagingException {
-            HashMap<String, StringBuilder> map = ContentUtils.getTexts(part, new HashMap<>());
+        static Message.Content.MainBody getMainBody(javax.mail.Message message) throws IOException, MessagingException {
+            HashMap<String, StringBuilder> map = ContentUtils.getTexts(message, new HashMap<>());
+            message.setFlag(Flags.Flag.SEEN, true);
             if (map.get(TEXT_HTML) != null) {
                 return new Message.Content.MainBody()
                         .setType(TEXT_HTML)

@@ -20,31 +20,28 @@ class EmailUtils {
      * @return
      */
     static Session getSession(EmailKit.Config config) {
-        //获取配置对象
-        String smtpHost = config.getSMTPHost();
-        String imapHost = config.getIMAPHost();
-        String smtpPort = String.valueOf(config.getSMTPPort());
-        String imapPort = String.valueOf(config.getIMAPPort());
-
-        //配置
-        Properties properties = new Properties();
-        if (!TextUtils.isEmpty(smtpHost) && !TextUtils.isEmpty(smtpPort)) {
-            properties.put("mail.smtp.auth", true);
-            properties.put("mail.smtp.host", smtpHost);
-            properties.put("mail.smtp.port", smtpPort);
-            properties.put("mail.smtp.ssl.enable", config.isSMTPSSL());
-        }
-        if (!TextUtils.isEmpty(imapHost) && !TextUtils.isEmpty(imapPort)) {
-            properties.put("mail.imap.auth", true);
-            properties.put("mail.imap.host", imapHost);
-            properties.put("mail.imap.port", imapPort);
-            properties.put("mail.imap.ssl.enable", config.isIMAPSSL());
-            properties.setProperty("mail.imap.partialfetch", "false");
-            properties.setProperty("mail.imaps.partialfetch", "false");
-        }
-
-        //返回值
         if (ObjectManager.getSession() == null) {
+            //获取配置参数
+            String smtpHost = config.getSMTPHost();
+            String imapHost = config.getIMAPHost();
+            String smtpPort = String.valueOf(config.getSMTPPort());
+            String imapPort = String.valueOf(config.getIMAPPort());
+            //配置
+            Properties properties = new Properties();
+            if (!TextUtils.isEmpty(smtpHost) && !TextUtils.isEmpty(smtpPort)) {
+                properties.put("mail.smtp.auth", true);
+                properties.put("mail.smtp.host", smtpHost);
+                properties.put("mail.smtp.port", smtpPort);
+                properties.put("mail.smtp.ssl.enable", config.isSMTPSSL());
+            }
+            if (!TextUtils.isEmpty(imapHost) && !TextUtils.isEmpty(imapPort)) {
+                properties.put("mail.imap.auth", true);
+                properties.put("mail.imap.host", imapHost);
+                properties.put("mail.imap.port", imapPort);
+                properties.put("mail.imap.ssl.enable", config.isIMAPSSL());
+                properties.setProperty("mail.imap.partialfetch", "false");
+                properties.setProperty("mail.imaps.partialfetch", "false");
+            }
             Session session = Session.getInstance(properties);
             ObjectManager.setSession(session);
             return session;
@@ -99,9 +96,7 @@ class EmailUtils {
      */
     static IMAPFolder getFolder(String folderName, IMAPStore store, EmailKit.Config config) throws MessagingException {
         IMAPFolder folder = (IMAPFolder) store.getFolder(folderName);
-        String account = config.getAccount();
-        if (account.contains(EmailKit.MailType.$163) || account.contains(EmailKit.MailType.$126)
-                || account.contains(EmailKit.MailType.YEAH)) {
+        if (Converter.MailTypeUtils.isNetEaseMail(config.getAccount())) {
             folder.doCommand(protocol -> {
                 protocol.id("FUTONG");
                 return null;

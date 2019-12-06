@@ -60,10 +60,10 @@ class ObjectManager {
      * @return
      */
     static Handler getHandler() {
-        if (ObjectManager.handler == null) {
-            ObjectManager.handler = new Handler(Looper.getMainLooper());
+        if (handler == null) {
+            handler = new Handler(Looper.getMainLooper());
         }
-        return ObjectManager.handler;
+        return handler;
     }
 
     /**
@@ -115,15 +115,20 @@ class ObjectManager {
     }
 
     /**
-     * 销毁对象
+     * 销毁连接对象
      * @throws MessagingException
      */
     static void destroy() throws MessagingException {
+        if (session != null) {
+            session = null;
+        }
         if (transport != null && transport.isConnected()) {
             transport.close();
+            transport = null;
         }
         if (store != null && store.isConnected()) {
             store.close();
+            store = null;
         }
         if (multiThreadService != null && !multiThreadService.isShutdown()) {
             multiThreadService.shutdownNow();
@@ -166,10 +171,10 @@ class ObjectManager {
      * @return
      */
     static ExecutorService getMultiThreadService() {
-        if (ObjectManager.multiThreadService == null) {
-            ObjectManager.multiThreadService = Executors.newFixedThreadPool(3);
+        if (multiThreadService == null || multiThreadService.isShutdown()) {
+            multiThreadService = Executors.newFixedThreadPool(3);
         }
-        return ObjectManager.multiThreadService;
+        return multiThreadService;
     }
 
     /**
@@ -177,10 +182,10 @@ class ObjectManager {
      * @return
      */
     static ExecutorService getSingleThreadService() {
-        if (ObjectManager.singleThreadService == null) {
-            ObjectManager.singleThreadService = Executors.newSingleThreadExecutor();
+        if (singleThreadService == null || singleThreadService.isShutdown()) {
+            singleThreadService = Executors.newSingleThreadExecutor();
         }
-        return ObjectManager.singleThreadService;
+        return singleThreadService;
     }
 
     /**
@@ -188,10 +193,10 @@ class ObjectManager {
      * @return
      */
     static ScheduledExecutorService getListenerThreadService() {
-        if (ObjectManager.listenerThreadService == null) {
-            ObjectManager.listenerThreadService = Executors.newScheduledThreadPool(1);
+        if (listenerThreadService == null || listenerThreadService.isShutdown()) {
+            listenerThreadService = Executors.newScheduledThreadPool(1);
         }
-        return ObjectManager.listenerThreadService;
+        return listenerThreadService;
     }
 
 }
