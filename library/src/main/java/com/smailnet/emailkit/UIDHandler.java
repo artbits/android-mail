@@ -201,11 +201,11 @@ class UIDHandler {
             this.delArray = delArray;
         }
 
-        public long[] getNewArray() {
+        long[] getNewArray() {
             return newArray;
         }
 
-        public long[] getDelArray() {
+        long[] getDelArray() {
             return delArray;
         }
 
