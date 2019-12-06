@@ -150,7 +150,7 @@ public class ListActivity extends BaseActivity implements IActivity {
                     @Override
                     public void onFailure(String errMsg) {
                         Controls.toast(errMsg);
-                        refreshLayout.finishRefresh();
+                        refreshLayout.finishLoadMore();
                     }
                 });
     }
