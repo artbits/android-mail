@@ -132,10 +132,16 @@
             <WebView
                 android:id="@+id/activity_watch_content_wv"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 tools:ignore="WebViewLayout" />
+
+            <ProgressBar
+                android:id="@+id/activity_watch_progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginTop="20dp"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/activity_watch_attachment_rv"

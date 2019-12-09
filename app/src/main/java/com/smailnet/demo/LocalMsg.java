@@ -13,6 +13,8 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
     private String subject;
     private String senderAddress;
     private String senderNickname;
+    private String recipientAddress;
+    private String recipientNickname;
     private String date;
     private String folderName;
 
@@ -52,6 +54,24 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
         return this;
     }
 
+    public String getRecipientAddress() {
+        return recipientAddress;
+    }
+
+    LocalMsg setRecipientAddress(String recipientAddress) {
+        this.recipientAddress = recipientAddress;
+        return this;
+    }
+
+    public String getRecipientNickname() {
+        return recipientNickname;
+    }
+
+    LocalMsg setRecipientNickname(String recipientNickname) {
+        this.recipientNickname = recipientNickname;
+        return this;
+    }
+
     public String getDate() {
         return date;
     }
@@ -74,4 +94,5 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
     public int compareTo(@NonNull LocalMsg localMsg) {
         return (int) (localMsg.getUID() - this.uid);
     }
+
 }

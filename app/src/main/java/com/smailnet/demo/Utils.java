@@ -1,5 +1,5 @@
 package com.smailnet.demo;
-;
+
 import com.smailnet.emailkit.Message;
 
 import org.litepal.LitePal;
@@ -21,11 +21,19 @@ public class Utils {
     public static void saveLocalMsgList(String folderName, List<Message> msgList) {
         List<LocalMsg> localMsgList = new ArrayList<>();
         for (Message msg : msgList) {
+            String recipientAddress = "", recipientNickname = "";
+            List<Message.Recipients.To> toList = msg.getRecipients().getToList();
+            if (toList != null && toList.size() > 0) {
+                recipientAddress = toList.get(0).getAddress();
+                recipientNickname = toList.get(0).getNickname();
+            }
             LocalMsg localMsg = new LocalMsg()
                     .setUID(msg.getUID())
                     .setSubject(msg.getSubject())
                     .setSenderNickname(msg.getSender().getNickname())
                     .setSenderAddress(msg.getSender().getAddress())
+                    .setRecipientAddress(recipientAddress)
+                    .setRecipientNickname(recipientNickname)
                     .setDate(msg.getSentDate().getText())
                     .setFolderName(folderName);
             localMsgList.add(localMsg);

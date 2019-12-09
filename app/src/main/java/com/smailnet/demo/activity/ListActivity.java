@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -164,7 +165,7 @@ public class ListActivity extends BaseActivity implements IActivity {
         for (LocalMsg msg : localMsgList) {
             MsgItem item = new MsgItem()
                     .setUID(msg.getUID())
-                    .setSubject(msg.getSubject())
+                    .setSubject(TextUtils.isEmpty(msg.getSubject())? "（无主题）" : msg.getSubject())
                     .setSenderNickname(msg.getSenderNickname())
                     .setDate(msg.getDate());
             items.add(item);
@@ -181,7 +182,7 @@ public class ListActivity extends BaseActivity implements IActivity {
         for (Message msg : msgList) {
             MsgItem item = new MsgItem()
                     .setUID(msg.getUID())
-                    .setSubject(msg.getSubject())
+                    .setSubject(TextUtils.isEmpty(msg.getSubject())? "（无主题）" : msg.getSubject())
                     .setSenderNickname(msg.getSender().getNickname())
                     .setDate(msg.getSentDate().getText());
             items.add(item);
