@@ -6,7 +6,6 @@ import android.widget.EditText;
 
 import com.smailnet.demo.BaseActivity;
 import com.smailnet.demo.EmailApplication;
-import com.smailnet.demo.IActivity;
 import com.smailnet.demo.R;
 import com.smailnet.demo.controls.Controls;
 import com.smailnet.demo.controls.TitleBar;
@@ -14,18 +13,16 @@ import com.smailnet.emailkit.Draft;
 import com.smailnet.emailkit.EmailKit;
 import com.smailnet.microkv.MicroKV;
 
-public class SendActivity extends BaseActivity implements IActivity {
+public class SendActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send);
-        initView();
-        initData();
     }
 
     @Override
-    public void initView() {
+    protected void initView() {
         Controls.getTitleBar()
                 .display(this, "写邮件", R.drawable.send, new TitleBar.OnMultipleClickListener() {
                     @Override
@@ -38,11 +35,6 @@ public class SendActivity extends BaseActivity implements IActivity {
                         sendMsg();
                     }
                 });
-    }
-
-    @Override
-    public void initData() {
-
     }
 
     /**

@@ -2,7 +2,6 @@ package com.smailnet.demo.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,13 +12,12 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 import com.smailnet.demo.BaseActivity;
 import com.smailnet.demo.EmailApplication;
-import com.smailnet.demo.IActivity;
+import com.smailnet.demo.LocalMsg;
 import com.smailnet.demo.R;
+import com.smailnet.demo.Utils;
 import com.smailnet.demo.adapter.MsgAdapter;
 import com.smailnet.demo.adapter.item.MsgItem;
 import com.smailnet.demo.controls.Controls;
-import com.smailnet.demo.LocalMsg;
-import com.smailnet.demo.Utils;
 import com.smailnet.emailkit.EmailKit;
 import com.smailnet.emailkit.Message;
 
@@ -27,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ListActivity extends BaseActivity implements IActivity {
+public class ListActivity extends BaseActivity {
 
     private String folderName;
     private MsgAdapter adapter;
@@ -39,15 +37,10 @@ public class ListActivity extends BaseActivity implements IActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        initView();
-        Looper.myQueue().addIdleHandler(() -> {
-            initData();
-            return false;
-        });
     }
 
     @Override
-    public void initView() {
+    protected void initView() {
         folderName = getIntent().getStringExtra("folderName");
         Controls.getTitleBar().display(this, folderName);
 
@@ -79,7 +72,7 @@ public class ListActivity extends BaseActivity implements IActivity {
     }
 
     @Override
-    public void initData() {
+    protected void initData() {
         List<LocalMsg> localMsgList = Utils.getLocalMsgList(folderName);
         setNewDataListItem(localMsgList);
         isEmpty = (localMsgList.size() == 0);

@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.smailnet.demo.BaseActivity;
 import com.smailnet.demo.EmailApplication;
-import com.smailnet.demo.IActivity;
 import com.smailnet.demo.LocalMsg;
 import com.smailnet.demo.R;
 import com.smailnet.demo.Utils;
@@ -30,7 +29,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WatchActivity extends BaseActivity implements IActivity {
+public class WatchActivity extends BaseActivity {
 
     private long uid;
     private String folderName;
@@ -40,13 +39,20 @@ public class WatchActivity extends BaseActivity implements IActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_watch);
-        initView();
-        initData();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (webView != null) {
+            webView.destroy();
+            webView = null;
+        }
+        super.onDestroy();
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
-    public void initView() {
+    protected void initView() {
         Controls.getTitleBar().display(this, "");
 
         folderName = getIntent().getStringExtra("folderName");
@@ -87,7 +93,7 @@ public class WatchActivity extends BaseActivity implements IActivity {
     }
 
     @Override
-    public void initData() {
+    protected void initData() {
         EmailKit.useIMAPService(EmailApplication.getConfig())
                 .getFolder(folderName)
                 .getMsg(uid, new EmailKit.GetMsgCallback() {
@@ -126,7 +132,7 @@ public class WatchActivity extends BaseActivity implements IActivity {
                     "    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n" +
                     "</head>\n" +
                     "<body>\n" +
-                    "<font size=\"4\">" + s + "</font>\n" +
+                    "<font size=\"3\">" + s + "</font>\n" +
                     "</body>\n" +
                     "</html>";
         }

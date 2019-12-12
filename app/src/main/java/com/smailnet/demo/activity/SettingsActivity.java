@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.smailnet.demo.BaseActivity;
-import com.smailnet.demo.IActivity;
 import com.smailnet.demo.LocalMsg;
 import com.smailnet.demo.R;
 import com.smailnet.demo.controls.Controls;
@@ -13,17 +12,16 @@ import com.smailnet.microkv.MicroKV;
 
 import org.litepal.LitePal;
 
-public class SettingsActivity extends BaseActivity implements IActivity {
+public class SettingsActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        initView();
     }
 
     @Override
-    public void initView() {
+    protected void initView() {
         Controls.getTitleBar().display(this, "调试");
 
         findViewById(R.id.activity_settings_db_btn)
@@ -47,11 +45,6 @@ public class SettingsActivity extends BaseActivity implements IActivity {
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 });
-    }
-
-    @Override
-    public void initData() {
-
     }
 
 }

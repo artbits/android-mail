@@ -7,7 +7,6 @@ import android.widget.ListView;
 
 import com.smailnet.demo.BaseActivity;
 import com.smailnet.demo.EmailApplication;
-import com.smailnet.demo.IActivity;
 import com.smailnet.demo.R;
 import com.smailnet.demo.controls.Controls;
 import com.smailnet.emailkit.EmailKit;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements IActivity {
+public class MainActivity extends BaseActivity {
 
     private ListView listView;
 
@@ -25,12 +24,10 @@ public class MainActivity extends BaseActivity implements IActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
-        initData();
     }
 
     @Override
-    public void initView() {
+    protected void initView() {
         findViewById(R.id.activity_main_edit_btn)
                 .setOnClickListener(v -> startActivity(new Intent(this, SendActivity.class)));
 
@@ -47,7 +44,7 @@ public class MainActivity extends BaseActivity implements IActivity {
     }
 
     @Override
-    public void initData() {
+    protected void initData() {
         MicroKV kv = MicroKV.defaultMicroKV();
         if (kv.containsKV("folder_list")) {
             List<String> list = new ArrayList<>(kv.getStringSet("folder_list"));
