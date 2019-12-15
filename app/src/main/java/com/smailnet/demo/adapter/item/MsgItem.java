@@ -3,6 +3,7 @@ package com.smailnet.demo.adapter.item;
 public class MsgItem {
 
     private long uid;
+    private boolean read;
     private String senderNickname;
     private String subject;
     private String date;
@@ -13,6 +14,15 @@ public class MsgItem {
 
     public MsgItem setUID(long uid) {
         this.uid = uid;
+        return this;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public MsgItem setRead(boolean read) {
+        this.read = read;
         return this;
     }
 
@@ -42,5 +52,4 @@ public class MsgItem {
         this.date = date;
         return this;
     }
-
 }

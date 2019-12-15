@@ -1,5 +1,6 @@
 package com.smailnet.demo.adapter.item;
 
+import com.smailnet.demo.table.LocalFile;
 import com.smailnet.emailkit.Message;
 
 public class AttachmentItem {
@@ -8,6 +9,7 @@ public class AttachmentItem {
     private String size;
     private String point;
     private Message.Content.Attachment attachment;
+    private LocalFile localFile;
 
     public String getFilename() {
         return filename;
@@ -42,6 +44,15 @@ public class AttachmentItem {
 
     public AttachmentItem setAttachment(Message.Content.Attachment attachment) {
         this.attachment = attachment;
+        return this;
+    }
+
+    public LocalFile getLocalFile() {
+        return localFile;
+    }
+
+    public AttachmentItem setLocalFile(LocalFile localFile) {
+        this.localFile = localFile;
         return this;
     }
 }

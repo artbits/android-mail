@@ -82,7 +82,7 @@ public class ConfigActivity extends BaseActivity {
      * 保存服务器配置参数到本地
      */
     private void saveData() {
-        MicroKV.defaultMicroKV()
+        MicroKV.customize("config", true)
                 .setKV("account", account)
                 .setKV("password", password)
                 .setKV("nickname", nickname)

@@ -45,7 +45,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-        MicroKV kv = MicroKV.defaultMicroKV();
+        MicroKV kv = MicroKV.customize("config", true);
         if (kv.containsKV("folder_list")) {
             List<String> list = new ArrayList<>(kv.getStringSet("folder_list"));
             ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this,

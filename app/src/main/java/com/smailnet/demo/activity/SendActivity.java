@@ -50,7 +50,7 @@ public class SendActivity extends BaseActivity {
             return;
         }
 
-        MicroKV kv = MicroKV.defaultMicroKV();
+        MicroKV kv = MicroKV.customize("config", true);
 
         Draft draft = new Draft()
                 .setNickname(kv.getString("nickname"))

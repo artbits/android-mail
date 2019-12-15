@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.smailnet.demo.BaseActivity;
-import com.smailnet.demo.LocalMsg;
+import com.smailnet.demo.table.LocalMsg;
 import com.smailnet.demo.R;
 import com.smailnet.demo.controls.Controls;
 import com.smailnet.emailkit.EmailKit;
@@ -32,14 +32,14 @@ public class SettingsActivity extends BaseActivity {
 
         findViewById(R.id.activity_settings_sp_btn)
                 .setOnClickListener(v -> {
-                    MicroKV.defaultMicroKV().removeKV("folder_name");
+                    MicroKV.customize("config", true).removeKV("folder_name");
                     Controls.toast("已清除");
                 });
 
         findViewById(R.id.activity_settings_logout_btn)
                 .setOnClickListener(v -> {
                     LitePal.deleteAll(LocalMsg.class);
-                    MicroKV.defaultMicroKV().clear();
+                    MicroKV.customize("config").clear();
                     EmailKit.destroy();
                     Intent intent = new Intent(this, ConfigActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);

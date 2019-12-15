@@ -1,5 +1,6 @@
 package com.smailnet.demo;
 
+import com.smailnet.demo.table.LocalMsg;
 import com.smailnet.emailkit.Message;
 
 import org.litepal.LitePal;
@@ -29,6 +30,7 @@ public class Utils {
             }
             LocalMsg localMsg = new LocalMsg()
                     .setUID(msg.getUID())
+                    .setRead(msg.getFlags().isRead())
                     .setSubject(msg.getSubject())
                     .setSenderNickname(msg.getSender().getNickname())
                     .setSenderAddress(msg.getSender().getAddress())
@@ -80,7 +82,7 @@ public class Utils {
     public static LocalMsg getLocalMsg(String folderName, long uid) {
         List<LocalMsg> localMsgList = LitePal
                 .where("folderName = ? and uid = ?", folderName, String.valueOf(uid))
-                .find(LocalMsg.class);
+                .find(LocalMsg.class, true);
         return localMsgList.get(0);
     }
 

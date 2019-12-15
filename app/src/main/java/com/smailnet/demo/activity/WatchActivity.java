@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -16,14 +17,18 @@ import android.widget.TextView;
 
 import com.smailnet.demo.BaseActivity;
 import com.smailnet.demo.EmailApplication;
-import com.smailnet.demo.LocalMsg;
 import com.smailnet.demo.R;
 import com.smailnet.demo.Utils;
 import com.smailnet.demo.adapter.AttachmentAdapter;
 import com.smailnet.demo.adapter.item.AttachmentItem;
 import com.smailnet.demo.controls.Controls;
+import com.smailnet.demo.table.LocalFile;
+import com.smailnet.demo.table.LocalMsg;
 import com.smailnet.emailkit.EmailKit;
+import com.smailnet.emailkit.Folder;
 import com.smailnet.emailkit.Message;
+
+import org.litepal.LitePal;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,8 +37,9 @@ import java.util.List;
 public class WatchActivity extends BaseActivity {
 
     private long uid;
-    private String folderName;
     private WebView webView;
+    private LocalMsg localMsg;
+    private Folder folder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +61,11 @@ public class WatchActivity extends BaseActivity {
     protected void initView() {
         Controls.getTitleBar().display(this, "");
 
-        folderName = getIntent().getStringExtra("folderName");
+        String folderName = getIntent().getStringExtra("folderName");
         uid = getIntent().getLongExtra("uid", -1);
 
-        LocalMsg localMsg = Utils.getLocalMsg(folderName, uid);
+        localMsg = Utils.getLocalMsg(folderName, uid);
+        folder = EmailKit.useIMAPService(EmailApplication.getConfig()).getFolder(folderName);
 
         ((TextView) findViewById(R.id.activity_watch_subject_tv))
                 .setText(TextUtils.isEmpty(localMsg.getSubject()) ? "（无主题）" : localMsg.getSubject());
@@ -85,7 +92,7 @@ public class WatchActivity extends BaseActivity {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                if (newProgress == 100) {
+                if (newProgress == 100 || localMsg.isCached()) {
                     progressBar.setVisibility(View.GONE);
                 }
             }
@@ -94,22 +101,31 @@ public class WatchActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-        EmailKit.useIMAPService(EmailApplication.getConfig())
-                .getFolder(folderName)
-                .getMsg(uid, new EmailKit.GetMsgCallback() {
-                    @Override
-                    public void onSuccess(Message msg) {
-                        String text = msg.getContent().getMainBody().getText();
-                        String type = msg.getContent().getMainBody().getType();
-                        webView.loadDataWithBaseURL(null, adaptScreen(text, type), "text/html", "utf-8", null);
-                        setAttachmentList(msg.getContent().getAttachmentList());
-                    }
+        if (localMsg.isCached()) {
+            String text = localMsg.getText();
+            String type = localMsg.getType();
+            webView.loadDataWithBaseURL(null, adaptScreen(text, type), "text/html", "utf-8", null);
+            setAttachmentList();
+        } else {
+            folder.getMsg(uid, new EmailKit.GetMsgCallback() {
+                @Override
+                public void onSuccess(Message msg) {
+                    String text = msg.getContent().getMainBody().getText();
+                    String type = msg.getContent().getMainBody().getType();
+                    localMsg.setText(text)
+                            .setType(type)
+                            .setCached(true)
+                            .save();
+                    webView.loadDataWithBaseURL(null, adaptScreen(text, type), "text/html", "utf-8", null);
+                    setAttachmentList(msg.getContent().getAttachmentList());
+                }
 
-                    @Override
-                    public void onFailure(String errMsg) {
-                        Controls.toast(errMsg);
-                    }
-                });
+                @Override
+                public void onFailure(String errMsg) {
+                    Controls.toast(errMsg);
+                }
+            });
+        }
     }
 
     /**
@@ -166,8 +182,9 @@ public class WatchActivity extends BaseActivity {
             }
         });
 
-        //加载附件内容
+        //加载和缓存附件内容
         List<AttachmentItem> itemList = new ArrayList<>();
+        List<LocalFile> localFileList = new ArrayList<>();
         for (Message.Content.Attachment attachment : attachmentList) {
             double size = ((double) attachment.getSize()) / (1024.0 * 1024.0);
             size = ((double)Math.round(size*1000))/1000;
@@ -176,7 +193,75 @@ public class WatchActivity extends BaseActivity {
                     .setSize(size + " M")
                     .setAttachment(attachment);
             itemList.add(item);
+            LocalFile localFile = new LocalFile()
+                    .setLocalMsg(localMsg)
+                    .setName(attachment.getFilename())
+                    .setType(attachment.getType())
+                    .setSize(attachment.getSize())
+                    .setPath(getExternalFilesDir("").getAbsolutePath() + "/attachments/" + attachment.getFilename());
+            localFileList.add(localFile);
         }
+        LitePal.saveAll(localFileList);
+        localMsg.setLocalFileList(localFileList).save();
+        adapter.setNewData(itemList);
+    }
+
+    /**
+     * 设置附件
+     */
+    private void setAttachmentList() {
+        //初始化附件列表
+        AttachmentAdapter adapter = new AttachmentAdapter(new ArrayList<>());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        RecyclerView recyclerView = findViewById(R.id.activity_watch_attachment_rv);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(adapter);
+
+        //附件列表的item点击事件
+        adapter.setOnItemChildClickListener((adapter1, view, position) -> {
+            AttachmentItem item = (AttachmentItem)adapter1.getItem(position);
+            LocalFile localFile = item.getLocalFile();
+            File file = new File(localFile.getPath());
+            if (file.exists()) {
+                openFile(file, localFile.getType());
+            } else {
+                adapter.setData(position, item.setPoint("加载中..."));
+                folder.getMsg(uid, new EmailKit.GetMsgCallback() {
+                    @Override
+                    public void onSuccess(Message msg) {
+                        List<Message.Content.Attachment> attachmentList = msg.getContent().getAttachmentList();
+                        for (Message.Content.Attachment attachment : attachmentList) {
+                            if (attachment.getFilename().equals(localFile.getName())) {
+                                attachment.download(file12 -> {
+                                    adapter.setData(position, item.setPoint(""));
+                                    openFile(file12, attachment.getType());
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String errMsg) {
+                        Controls.toast(errMsg);
+                    }
+                });
+            }
+        });
+
+        //加载附件内容
+        List<LocalFile> localFileList = localMsg.getLocalFileList();
+        Log.i("oversee", String.valueOf(localFileList.size()));
+        List<AttachmentItem> itemList = new ArrayList<>();
+        for (LocalFile localFile : localFileList) {
+            double size = ((double) localFile.getSize()) / (1024.0 * 1024.0);
+            size = ((double)Math.round(size*1000))/1000;
+            AttachmentItem item = new AttachmentItem()
+                    .setFilename(localFile.getName())
+                    .setSize(size + " M")
+                    .setLocalFile(localFile);
+            itemList.add(item);
+        }
+
         adapter.setNewData(itemList);
     }
 

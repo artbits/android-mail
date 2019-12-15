@@ -1,8 +1,11 @@
-package com.smailnet.demo;
+package com.smailnet.demo.table;
 
 import android.support.annotation.NonNull;
 
 import org.litepal.crud.LitePalSupport;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SQLite数据库的数据表字段
@@ -10,6 +13,8 @@ import org.litepal.crud.LitePalSupport;
 public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
 
     private long uid;
+    private boolean read;
+    private boolean cached;
     private String subject;
     private String senderAddress;
     private String senderNickname;
@@ -17,13 +22,34 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
     private String recipientNickname;
     private String date;
     private String folderName;
+    private String text;
+    private String type;
+    private List<LocalFile> localFileList = new ArrayList<>();
 
     public long getUID() {
         return uid;
     }
 
-    LocalMsg setUID(long uid) {
+    public LocalMsg setUID(long uid) {
         this.uid = uid;
+        return this;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public LocalMsg setRead(boolean read) {
+        this.read = read;
+        return this;
+    }
+
+    public boolean isCached() {
+        return cached;
+    }
+
+    public LocalMsg setCached(boolean cached) {
+        this.cached = cached;
         return this;
     }
 
@@ -31,7 +57,7 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
         return subject;
     }
 
-    LocalMsg setSubject(String subject) {
+    public LocalMsg setSubject(String subject) {
         this.subject = subject;
         return this;
     }
@@ -40,7 +66,7 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
         return senderAddress;
     }
 
-    LocalMsg setSenderAddress(String senderAddress) {
+    public LocalMsg setSenderAddress(String senderAddress) {
         this.senderAddress = senderAddress;
         return this;
     }
@@ -49,7 +75,7 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
         return senderNickname;
     }
 
-    LocalMsg setSenderNickname(String senderNickname) {
+    public LocalMsg setSenderNickname(String senderNickname) {
         this.senderNickname = senderNickname;
         return this;
     }
@@ -58,7 +84,7 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
         return recipientAddress;
     }
 
-    LocalMsg setRecipientAddress(String recipientAddress) {
+    public LocalMsg setRecipientAddress(String recipientAddress) {
         this.recipientAddress = recipientAddress;
         return this;
     }
@@ -67,7 +93,7 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
         return recipientNickname;
     }
 
-    LocalMsg setRecipientNickname(String recipientNickname) {
+    public LocalMsg setRecipientNickname(String recipientNickname) {
         this.recipientNickname = recipientNickname;
         return this;
     }
@@ -76,7 +102,7 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
         return date;
     }
 
-    LocalMsg setDate(String date) {
+    public LocalMsg setDate(String date) {
         this.date = date;
         return this;
     }
@@ -85,8 +111,35 @@ public class LocalMsg extends LitePalSupport implements Comparable<LocalMsg> {
         return folderName;
     }
 
-    LocalMsg setFolderName(String folderName) {
+    public LocalMsg setFolderName(String folderName) {
         this.folderName = folderName;
+        return this;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public LocalMsg setText(String text) {
+        this.text = text;
+        return this;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public LocalMsg setType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    public List<LocalFile> getLocalFileList() {
+        return localFileList;
+    }
+
+    public LocalMsg setLocalFileList(List<LocalFile> localFileList) {
+        this.localFileList = localFileList;
         return this;
     }
 

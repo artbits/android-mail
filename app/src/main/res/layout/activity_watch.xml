@@ -31,7 +31,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
-                    android:text="QQ邮箱管理：好友生日提醒服务"
+                    android:text=""
                     android:textColor="@color/colorAccent"
                     android:textSize="18sp"
                     tools:ignore="HardcodedText" />
@@ -55,7 +55,7 @@
                     android:layout_marginStart="75dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="20dp"
-                    android:text="QQ邮箱管理员"
+                    android:text=""
                     android:textSize="14sp"
                     tools:ignore="HardcodedText" />
 
@@ -66,7 +66,7 @@
                     android:layout_below="@+id/activity_watch_sender_nickname_tv"
                     android:layout_marginStart="75dp"
                     android:layout_marginEnd="20dp"
-                    android:text="10000@qq.com"
+                    android:text=""
                     android:textSize="14sp"
                     tools:ignore="HardcodedText" />
 
@@ -89,7 +89,7 @@
                     android:layout_marginStart="75dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="20dp"
-                    android:text="我"
+                    android:text=""
                     android:textSize="14sp"
                     tools:ignore="HardcodedText" />
 
@@ -100,7 +100,7 @@
                     android:layout_below="@+id/activity_watch_recipient_nickname_tv"
                     android:layout_marginStart="75dp"
                     android:layout_marginEnd="20dp"
-                    android:text="zguanhu@foxmail.com"
+                    android:text=""
                     android:textSize="14sp"
                     tools:ignore="HardcodedText" />
 
@@ -123,7 +123,7 @@
                     android:layout_marginStart="75dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="10dp"
-                    android:text="2019年7月28日 21:39"
+                    android:text=""
                     android:textSize="14sp"
                     tools:ignore="HardcodedText" />
 
@@ -147,6 +147,8 @@
                 android:id="@+id/activity_watch_attachment_rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp" />
 

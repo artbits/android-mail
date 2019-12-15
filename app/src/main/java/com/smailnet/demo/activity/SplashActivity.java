@@ -22,7 +22,7 @@ public class SplashActivity extends AppCompatActivity {
         window.setFlags(flag, flag);
 
         new Handler().postDelayed(() -> {
-            MicroKV kv = MicroKV.defaultMicroKV();
+            MicroKV kv = MicroKV.customize("config", true);
             if (kv.containsKV("account")) {
                 EmailKit.Config config = new EmailKit.Config()
                         .setAccount(kv.getString("account"))

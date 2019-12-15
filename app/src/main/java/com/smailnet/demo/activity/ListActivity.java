@@ -12,7 +12,7 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 import com.smailnet.demo.BaseActivity;
 import com.smailnet.demo.EmailApplication;
-import com.smailnet.demo.LocalMsg;
+import com.smailnet.demo.table.LocalMsg;
 import com.smailnet.demo.R;
 import com.smailnet.demo.Utils;
 import com.smailnet.demo.adapter.MsgAdapter;
@@ -23,7 +23,6 @@ import com.smailnet.emailkit.Message;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ListActivity extends BaseActivity {
 
@@ -63,11 +62,13 @@ public class ListActivity extends BaseActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener((adapter, view, position) -> {
-            long uid = ((MsgItem) Objects.requireNonNull(adapter.getItem(position))).getUID();
+            MsgItem item = (MsgItem) adapter.getItem(position);
+            long uid = item.getUID();
             Intent intent = new Intent(this, WatchActivity.class)
                     .putExtra("folderName", folderName)
                     .putExtra("uid", uid);
             startActivity(intent);
+            upadataItem(item, position, uid);
         });
     }
 
@@ -158,6 +159,7 @@ public class ListActivity extends BaseActivity {
         for (LocalMsg msg : localMsgList) {
             MsgItem item = new MsgItem()
                     .setUID(msg.getUID())
+                    .setRead(msg.isRead())
                     .setSubject(TextUtils.isEmpty(msg.getSubject())? "（无主题）" : msg.getSubject())
                     .setSenderNickname(msg.getSenderNickname())
                     .setDate(msg.getDate());
@@ -170,17 +172,31 @@ public class ListActivity extends BaseActivity {
      * 追加item新数据
      * @param msgList
      */
-    public void addDataListItem(List<Message> msgList) {
+    private void addDataListItem(List<Message> msgList) {
         List<MsgItem> items = new ArrayList<>();
         for (Message msg : msgList) {
             MsgItem item = new MsgItem()
                     .setUID(msg.getUID())
+                    .setRead(msg.getFlags().isRead())
                     .setSubject(TextUtils.isEmpty(msg.getSubject())? "（无主题）" : msg.getSubject())
                     .setSenderNickname(msg.getSender().getNickname())
                     .setDate(msg.getSentDate().getText());
             items.add(item);
         }
         adapter.addData(items);
+    }
+
+    /**
+     * 更新item
+     * @param item
+     * @param position
+     * @param uid
+     */
+    private void upadataItem(MsgItem item, int position, long uid) {
+        item.setRead(true);
+        adapter.setData(position, item);
+        LocalMsg msg = Utils.getLocalMsg(folderName, uid);
+        msg.setRead(true);
     }
 
 }
