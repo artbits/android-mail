@@ -7,7 +7,7 @@
 EmailKit for Android是以JavaMail类库为基础进行封装的框架，它比JavaMail更简单易用，在使用它开发电子邮件客户端时，还能避免对电子邮件协议不熟悉的烦恼。目前EmailKit支持的电子邮件协议有SMTP和IMAP，它支持的功能有发送邮件，下载附件、获取文件夹列表、读取邮件、加载邮件、同步邮件，对邮件消息的移动，删除，保存到草稿箱等操作，同时支持邮箱的新邮件消息推送（需要邮件服务器支持相关命令），邮件搜索等功能。把它依赖到你的Android项目中，你只需简单配置邮件服务器的参数，再使用这些简易的接口，即可完成你所需的功能，所见即所得。
 
 ## 效果图
-效果图中的示例程序是使用EmailKit框架编写的邮箱客户端，示例程序的源码在本项目的app模块中。因时间原因，所以我只完成示例程序中的邮件服务器配置、发送邮件、加载邮件、同步邮件、查看邮件、下载附件这些基础功能，希望谅解。
+效果图中的示例程序是使用EmailKit框架编写的邮箱客户端，示例程序的源码在本项目的app模块中。因时间原因，所以我只完成示例程序中的邮件服务器配置、发送邮件、加载邮件、同步邮件、查看邮件、下载附件这些基础功能，希望体谅。
 
 |                           |                          |                          |
 |:-------------------------:|:------------------------:|:------------------------:|
@@ -101,14 +101,15 @@ EmailKit.useSMTPService(config)
 ```
 
 ## 致谢
-示例程序中所用到的开源库和框架，在此致谢!
+示例程序中所用到的开源库、框架和图像资源，在此致谢!
 + [LitePal](https://github.com/LitePalFramework/LitePal)
 + [MicroKV](https://github.com/mailhu/microkv)
 + [SmartRefreshLayout](https://github.com/scwang90/SmartRefreshLayout)
 + [BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
++ [Iconfont](https://www.iconfont.cn/)
 
 ## 作者留言
-目前作者是靠课余时间来开发和维护这个框架，如果有什么需求和问题可以提issues或通过邮件联系我。因学业繁忙和能力有限，大家提的需求和问题不一定很快解决和给出答复，希望大家谅解和包涵。
+目前作者是靠课余时间来开发和维护这个框架，如果有什么需求和问题可以提issues或通过邮件联系我。因学业繁忙和能力有限，大家提的需求和问题不一定很快解决和给出答复，希望大家体谅和包涵。
 
 E-mail：zguanhu@foxmail.com
 
