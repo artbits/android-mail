@@ -19,6 +19,7 @@ import com.smailnet.demo.adapter.MsgAdapter;
 import com.smailnet.demo.adapter.item.MsgItem;
 import com.smailnet.demo.controls.Controls;
 import com.smailnet.emailkit.EmailKit;
+import com.smailnet.emailkit.Folder;
 import com.smailnet.emailkit.Message;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class ListActivity extends BaseActivity {
 
     private String folderName;
     private MsgAdapter adapter;
+    private Folder folder;
 
     private long lastUID;
     private boolean isEmpty;
@@ -68,12 +70,13 @@ public class ListActivity extends BaseActivity {
                     .putExtra("folderName", folderName)
                     .putExtra("uid", uid);
             startActivity(intent);
-            upadataItem(item, position, uid);
+            updateItem(item, position, uid);
         });
     }
 
     @Override
     protected void initData() {
+        folder = EmailKit.useIMAPService(EmailApplication.getConfig()).getFolder(folderName);
         List<LocalMsg> localMsgList = Utils.getLocalMsgList(folderName);
         setNewDataListItem(localMsgList);
         isEmpty = (localMsgList.size() == 0);
@@ -86,43 +89,39 @@ public class ListActivity extends BaseActivity {
      */
     private void refreshData(RefreshLayout refreshLayout) {
         if (isEmpty) {
-            EmailKit.useIMAPService(EmailApplication.getConfig())
-                    .getFolder(folderName)
-                    .load(lastUID, new EmailKit.GetLoadCallback() {
-                        @Override
-                        public void onSuccess(List<Message> msgList) {
-                            Utils.saveLocalMsgList(folderName, msgList);
-                            List<LocalMsg> localMsgList = Utils.getLocalMsgList(folderName);
-                            setNewDataListItem(localMsgList);
-                            isEmpty = false;
-                            lastUID = (msgList.size()!= 0)? msgList.get(msgList.size()-1).getUID() : lastUID;
-                            refreshLayout.finishRefresh();
-                        }
+            folder.load(lastUID, new EmailKit.GetLoadCallback() {
+                @Override
+                public void onSuccess(List<Message> msgList) {
+                    Utils.saveLocalMsgList(folderName, msgList);
+                    List<LocalMsg> localMsgList = Utils.getLocalMsgList(folderName);
+                    setNewDataListItem(localMsgList);
+                    isEmpty = false;
+                    lastUID = (msgList.size()!= 0)? msgList.get(msgList.size()-1).getUID() : lastUID;
+                    refreshLayout.finishRefresh();
+                }
 
-                        @Override
-                        public void onFailure(String errMsg) {
-                            Controls.toast(errMsg);
-                            refreshLayout.finishRefresh();
-                        }
-                    });
+                @Override
+                public void onFailure(String errMsg) {
+                    Controls.toast(errMsg);
+                    refreshLayout.finishRefresh();
+                }
+            });
         } else {
-            EmailKit.useIMAPService(EmailApplication.getConfig())
-                    .getFolder(folderName)
-                    .sync(Utils.getLocalUIDArray(folderName), new EmailKit.GetSyncCallback() {
-                        @Override
-                        public void onSuccess(List<Message> newMsgList, long[] deletedUID) {
-                            Utils.saveOrDelete(folderName, newMsgList, deletedUID);
-                            List<LocalMsg> localMsgList = Utils.getLocalMsgList(folderName);
-                            setNewDataListItem(localMsgList);
-                            refreshLayout.finishRefresh();
-                        }
+            folder.sync(Utils.getLocalUIDArray(folderName), new EmailKit.GetSyncCallback() {
+                @Override
+                public void onSuccess(List<Message> newMsgList, long[] deletedUID) {
+                    Utils.saveOrDelete(folderName, newMsgList, deletedUID);
+                    List<LocalMsg> localMsgList = Utils.getLocalMsgList(folderName);
+                    setNewDataListItem(localMsgList);
+                    refreshLayout.finishRefresh();
+                }
 
-                        @Override
-                        public void onFailure(String errMsg) {
-                            Controls.toast(errMsg);
-                            refreshLayout.finishRefresh();
-                        }
-                    });
+                @Override
+                public void onFailure(String errMsg) {
+                    Controls.toast(errMsg);
+                    refreshLayout.finishRefresh();
+                }
+            });
         }
     }
 
@@ -131,23 +130,21 @@ public class ListActivity extends BaseActivity {
      * @param refreshLayout
      */
     private void loadData(RefreshLayout refreshLayout) {
-        EmailKit.useIMAPService(EmailApplication.getConfig())
-                .getFolder(folderName)
-                .load(lastUID, new EmailKit.GetLoadCallback() {
-                    @Override
-                    public void onSuccess(List<Message> msgList) {
-                        Utils.saveLocalMsgList(folderName, msgList);
-                        addDataListItem(msgList);
-                        lastUID = (msgList.size()!= 0)? msgList.get(msgList.size()-1).getUID() : lastUID;
-                        refreshLayout.finishLoadMore();
-                    }
+        folder.load(lastUID, new EmailKit.GetLoadCallback() {
+            @Override
+            public void onSuccess(List<Message> msgList) {
+                Utils.saveLocalMsgList(folderName, msgList);
+                addDataListItem(msgList);
+                lastUID = (msgList.size()!= 0)? msgList.get(msgList.size()-1).getUID() : lastUID;
+                refreshLayout.finishLoadMore();
+            }
 
-                    @Override
-                    public void onFailure(String errMsg) {
-                        Controls.toast(errMsg);
-                        refreshLayout.finishLoadMore();
-                    }
-                });
+            @Override
+            public void onFailure(String errMsg) {
+                Controls.toast(errMsg);
+                refreshLayout.finishLoadMore();
+            }
+        });
     }
 
     /**
@@ -192,7 +189,7 @@ public class ListActivity extends BaseActivity {
      * @param position
      * @param uid
      */
-    private void upadataItem(MsgItem item, int position, long uid) {
+    private void updateItem(MsgItem item, int position, long uid) {
         item.setRead(true);
         adapter.setData(position, item);
         LocalMsg msg = Utils.getLocalMsg(folderName, uid);
