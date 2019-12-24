@@ -193,7 +193,7 @@ public class ListActivity extends BaseActivity {
         item.setRead(true);
         adapter.setData(position, item);
         LocalMsg msg = Utils.getLocalMsg(folderName, uid);
-        msg.setRead(true);
+        msg.setRead(true).save();
     }
 
 }
