@@ -1,5 +1,8 @@
 ## 更新日志
 
+* EmailKit for Andorid 4.2.2（2020年1月31日）
+  + 支持对gmail和office 365邮箱的快速配置
+
 * EmailKit for Andorid 4.2.1（2019年12月7日）
   + 重构加载和同步功能的相关算法
   + 修复126邮箱无法读取邮件的问题
