@@ -5,6 +5,8 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
+        maven { url 'https://maven.google.com' }
     }
     dependencies {
         //noinspection GradleDependency
@@ -20,7 +22,10 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
+        maven { url 'https://maven.google.com' }
         maven { url 'https://jitpack.io' }
+        maven { url "https://maven.java.net/content/groups/public/" }
     }
 }
 

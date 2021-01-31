@@ -66,6 +66,14 @@ class Converter {
                     return new EmailKit.Config()
                             .setSMTP("smtp-mail.outlook.com", 25, false)
                             .setIMAP("imap-mail.outlook.com", 993, true);
+                case EmailKit.MailType.OFFICE365:
+                    return new EmailKit.Config()
+                            .setSMTP("smtp.office365.com", 587, false)
+                            .setIMAP("outlook.office365.com", 993, true);
+                case EmailKit.MailType.GMAIL:
+                    return new EmailKit.Config()
+                            .setSMTP("smtp.gmail.com", 587, false)
+                            .setIMAP("imap.gmail.com", 993, true);
                 case EmailKit.MailType.YEAH:
                     return new EmailKit.Config()
                             .setSMTP("smtp.yeah.net", 465, true)

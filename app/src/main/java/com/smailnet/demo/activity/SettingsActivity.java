@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.smailnet.demo.BaseActivity;
-import com.smailnet.demo.table.LocalMsg;
 import com.smailnet.demo.R;
 import com.smailnet.demo.controls.Controls;
+import com.smailnet.demo.table.LocalMsg;
 import com.smailnet.emailkit.EmailKit;
 import com.smailnet.microkv.MicroKV;
 

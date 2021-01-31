@@ -231,6 +231,8 @@ public final class EmailKit {
         String FOXMAIL = "@foxmail.com";
         String EXMAIL = "@exmail.qq.com";
         String OUTLOOK = "@outlook.com";
+        String OFFICE365 = "@office365.com";
+        String GMAIL = "@gmail.com";
         String YEAH = "@yeah.net";
         String $163 = "@163.com";
         String $126 = "@126.com";
