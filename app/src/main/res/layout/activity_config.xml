@@ -1,294 +1,295 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <include layout="@layout/title_bar"/>
-
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:ignore="UselessLeaf">
+            android:layout_height="?attr/actionBarSize" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="20dp"
-                android:text="帐户管理"
-                android:textSize="14sp"
-                tools:ignore="HardcodedText" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="5dp">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
-                    android:text="邮箱"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorAccent"
+                    android:text="帐户管理"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
                     tools:ignore="HardcodedText" />
 
-                <EditText
-                    android:id="@+id/activity_config_account_et"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:hint="example@domain.com"
-                    android:inputType="textEmailAddress"
-                    android:singleLine="true"
-                    android:textSize="16sp"
-                    tools:ignore="Autofill,HardcodedText" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="邮箱"
+                        android:textSize="16sp"
+                        tools:ignore="HardcodedText" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/account_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:hint="example@domain.com"
+                        android:inputType="textEmailAddress"
+                        android:singleLine="true"
+                        android:textSize="16sp"
+                        tools:ignore="Autofill,HardcodedText" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="密码"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorAccent"
-                    tools:ignore="HardcodedText" />
+                </LinearLayout>
 
-                <EditText
-                    android:id="@+id/activity_config_password_et"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:hint="密码/授权码"
-                    android:inputType="textWebPassword"
-                    android:singleLine="true"
-                    android:textSize="16sp"
-                    tools:ignore="Autofill,HardcodedText" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="密码"
+                        android:textSize="16sp"
+                        tools:ignore="HardcodedText" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/password_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:hint="密码/授权码"
+                        android:inputType="textWebPassword"
+                        android:singleLine="true"
+                        android:textSize="16sp"
+                        tools:ignore="Autofill,HardcodedText" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="昵称"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorAccent"
-                    tools:ignore="HardcodedText" />
+                </LinearLayout>
 
-                <EditText
-                    android:id="@+id/activity_config_nickname_et"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:singleLine="true"
-                    android:hint="发信显示的昵称"
-                    android:textSize="16sp"
-                    tools:ignore="Autofill,HardcodedText,TextFields" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="昵称"
+                        android:textSize="16sp"
+                        tools:ignore="HardcodedText" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="20dp"
-                android:text="SMTP服务器"
-                android:textSize="14sp"
-                tools:ignore="HardcodedText" />
+                    <EditText
+                        android:id="@+id/nickname_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:singleLine="true"
+                        android:hint="发信显示的昵称"
+                        android:textSize="16sp"
+                        tools:ignore="Autofill,HardcodedText,TextFields" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="5dp">
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
-                    android:text="地址"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorAccent"
+                    android:text="SMTP服务器"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
                     tools:ignore="HardcodedText" />
 
-                <EditText
-                    android:id="@+id/activity_config_smtp_host_et"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:singleLine="true"
-                    android:hint="请填写主机地址"
-                    android:textSize="16sp"
-                    tools:ignore="Autofill,HardcodedText,TextFields" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="地址"
+                        android:textSize="16sp"
+                        tools:ignore="HardcodedText" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/smtp_host_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:singleLine="true"
+                        android:hint="请填写主机地址"
+                        android:textSize="16sp"
+                        tools:ignore="Autofill,HardcodedText,TextFields" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="端口"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorAccent"
-                    tools:ignore="HardcodedText" />
+                </LinearLayout>
 
-                <EditText
-                    android:id="@+id/activity_config_smtp_port_et"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:hint="请填写端口号"
-                    android:inputType="number"
-                    android:singleLine="true"
-                    android:textSize="16sp"
-                    tools:ignore="Autofill,HardcodedText" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="端口"
+                        android:textSize="16sp"
+                        tools:ignore="HardcodedText" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/smtp_port_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:hint="请填写端口号"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:textSize="16sp"
+                        tools:ignore="Autofill,HardcodedText" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="是否开启加密"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorAccent"
-                    tools:ignore="HardcodedText" />
+                </LinearLayout>
 
-                <Switch
-                    android:id="@+id/activity_config_smtp_ssl_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:checked="true"/>
-
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="20dp"
-                android:text="IMAP服务器"
-                android:textSize="14sp"
-                tools:ignore="HardcodedText" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="5dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="地址"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorAccent"
-                    tools:ignore="HardcodedText" />
-
-                <EditText
-                    android:id="@+id/activity_config_imap_host_et"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:singleLine="true"
-                    android:hint="请填写主机地址"
-                    android:textSize="16sp"
-                    tools:ignore="Autofill,HardcodedText,TextFields" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="是否开启加密"
+                        android:textSize="16sp"
+                        tools:ignore="HardcodedText" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                    <Switch
+                        android:id="@+id/smtp_encryption_swt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:checked="true"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
-                    android:text="端口"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="16sp"
+                    android:text="IMAP服务器"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
                     tools:ignore="HardcodedText" />
 
-                <EditText
-                    android:id="@+id/activity_config_imap_port_et"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:hint="请填写端口号"
-                    android:inputType="number"
-                    android:singleLine="true"
-                    android:textSize="16sp"
-                    tools:ignore="Autofill,HardcodedText" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="地址"
+                        android:textSize="16sp"
+                        tools:ignore="HardcodedText" />
+
+                    <EditText
+                        android:id="@+id/imap_host_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:singleLine="true"
+                        android:hint="请填写主机地址"
+                        android:textSize="16sp"
+                        tools:ignore="Autofill,HardcodedText,TextFields" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="端口"
+                        android:textSize="16sp"
+                        tools:ignore="HardcodedText" />
+
+                    <EditText
+                        android:id="@+id/imap_port_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:hint="请填写端口号"
+                        android:inputType="number"
+                        android:singleLine="true"
+                        android:textSize="16sp"
+                        tools:ignore="Autofill,HardcodedText" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="是否开启加密"
+                        android:textSize="16sp"
+                        tools:ignore="HardcodedText" />
+
+                    <Switch
+                        android:id="@+id/imap_encryption_swt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:checked="true"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+        </ScrollView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="是否开启加密"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorAccent"
-                    tools:ignore="HardcodedText" />
+    </LinearLayout>
 
-                <Switch
-                    android:id="@+id/activity_config_imap_ssl_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:checked="true"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-</LinearLayout>
+</layout>

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
-    <dbname value = "MsgDB"/>
-    <version value = "8"/>
+    <dbname value = "store"/>
+    <version value = "4"/>
     <list>
-        <mapping class = "com.smailnet.demo.table.LocalMsg"/>
-        <mapping class = "com.smailnet.demo.table.LocalFile"/>
+        <mapping class = "com.github.artbit.androidmail.store.UserInfo"/>
+        <mapping class = "com.github.artbit.androidmail.store.Folder"/>
+        <mapping class = "com.github.artbit.androidmail.store.Message"/>
     </list>
 </litepal>
