@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.github.artbit.androidmail'
+    namespace 'com.github.artbits.androidmail'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.github.artbit.androidmail"
+        applicationId "com.github.artbits.androidmail"
         minSdk 26
         targetSdk 33
         versionCode 1

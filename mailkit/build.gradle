@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.github.artbit.mailkit'
+    namespace 'com.github.artbits.mailkit'
     compileSdk 33
 
     defaultConfig {
