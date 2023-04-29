@@ -1,10 +1,12 @@
 # Android-Mail
 
-Android-Mail是基于JavaMail库设计与开发的邮箱App。2022年12月完成本项目的代码重构后，不再独立提供封装JavaMail的库，而是以整个App项目的形式来开源代码。
-本项目工程包含两部分，分别是``app``模块和``mailkit``模块。app模块含有邮箱客户端的界面和操作逻辑等代码；mailkit模块主要封装了JavaMail，以API的形式
-提供给app模块调用。Android-Mail客户端目前支持的功能有：配置邮件服务器、发送简单邮件、获取文件夹列表、同步邮件、加载邮件、读取邮件。
-README会列出mailkit API供大家查阅和参考，带有“ * ”的标题表示该API未被app模块使用。
-因JavaMail内容博大精深，作者的水平和时间有限，所以计划本项目不长期维护，请大家见谅。
+Android-Mail 是基于 JavaMail 库设计与开发的邮箱 App 。2022年12月完成本项目的代码重构后，不再独立提供封装 JavaMail 的库，而是以整个 App 项目的形式来开源代码。
+本项目工程包含两部分，分别是``app``模块和``mailkit``模块。app 模块含有邮箱客户端的界面和操作逻辑等代码；mailkit 模块主要封装了 JavaMail ，以 API 的形式
+提供给 app 模块调用。Android-Mail 客户端目前支持的功能有：配置邮件服务器、发送简单邮件、获取文件夹列表、同步邮件、加载邮件、读取邮件。
+README 会列出 mailkit API 供大家查阅和参考，带有“ * ”的标题表示该 API 未被 app 模块使用。
+因 JavaMail 内容博大精深，作者的水平和时间有限，所以计划本项目不长期维护，请大家见谅。
+
+2023年4月，Android-Mail 原先使用的 SQLite 数据库（LitePal ORM）被替换为 QuickIO 数据库。[QuickIO](https://github.com/artbits/quickio) 是作者自研的高性能嵌入式 NoSQL 数据库，现以作为试验，引入到 Android-Mail 项目中使用。
 
 ## 效果图
 
@@ -19,7 +21,7 @@ README会列出mailkit API供大家查阅和参考，带有“ * ”的标题表
 ## MailKit API
 
 **配置邮件服务器**
-```java
+```java 
 MailKit.Config config = new MailKit.Config(c -> {
     c.account = "user@foxmail.com";
     c.password = "password";
@@ -345,7 +347,7 @@ inbox.searchByTo(nickname, msgList -> {
 ```
 
 ## App中用到的开源项目
-+ [LitePal](https://github.com/LitePalFramework/LitePal)
++ [QuickIO](https://github.com/artbits/quickio)
 + [SmartRefreshLayout](https://github.com/scwang90/SmartRefreshLayout)
 + [BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
 
