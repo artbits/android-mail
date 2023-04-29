@@ -11,22 +11,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
+import com.github.artbits.androidmail.App;
 import com.github.artbits.androidmail.R;
+import com.github.artbits.androidmail.Utils;
 import com.github.artbits.androidmail.databinding.ActivityFolderBinding;
 import com.github.artbits.androidmail.store.Message;
 import com.github.artbits.androidmail.store.UserInfo;
-import com.github.artbits.androidmail.Utils;
 import com.github.artbits.mailkit.MailKit;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
 
-import org.litepal.LitePal;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class FolderActivity extends BaseActivity {
 
@@ -90,7 +89,7 @@ public class FolderActivity extends BaseActivity {
         isEmpty = (messages.size() == 0);
         minUID = (isEmpty) ? -1 : messages.get(messages.size()-1).uid;
 
-        UserInfo userInfo = LitePal.findFirst(UserInfo.class);
+        UserInfo userInfo = App.db.collection(UserInfo.class).findFirst();
         if (userInfo != null) {
             MailKit.Config config = userInfo.toConfig();
             MailKit.IMAP imap = new MailKit.IMAP(config);
@@ -148,15 +147,12 @@ public class FolderActivity extends BaseActivity {
 
 
     private List<Message> getMessage(String folderName) {
-        List<Message> messages = LitePal.where("folderName = ?", folderName).find(Message.class);
-        Collections.sort(messages);
-        return messages;
+        return App.db.collection(Message.class).find(m -> Objects.equals(folderName, m.folderName), opt -> opt.sort("uid", -1));
     }
 
 
     private long[] getLocalUIDArray(String folderName) {
-        List<Message> messages = LitePal.where("folderName = ?", folderName).find(Message.class);
-        Collections.sort(messages);
+        List<Message> messages = App.db.collection(Message.class).find(m -> Objects.equals(folderName, m.folderName));
         long[] longs = new long[messages.size()];
         for (int i = 0, size = messages.size(); i < size; i++) {
             longs[i] = messages.get(i).uid;
@@ -166,21 +162,17 @@ public class FolderActivity extends BaseActivity {
 
 
     private void delMessages(String folderName, List<Long> uidList) {
-        Map<Long, Message> messageMap = new HashMap<>();
-        List<Message> messages = LitePal.where("folderName = ?", folderName).find(Message.class);
-        messages.forEach(message -> messageMap.put(message.uid, message));
-        uidList.forEach(uid -> {
-            Message message = messageMap.get(uid);
-            if (message != null) {
-                message.delete();
-            }
+        Map<Long, Boolean> map = uidList.stream().collect(Collectors.toMap(uid -> uid, uid -> true));
+        App.db.collection(Message.class).delete(m -> {
+            boolean b1 = Objects.equals(folderName, m.folderName);
+            boolean b2 = Boolean.TRUE.equals(map.getOrDefault(m.uid, false));
+            return b1 && b2;
         });
     }
 
 
     private List<Message> saveMessages(String folderName, List<MailKit.Msg> msgList) {
-        List<Message> messages = new ArrayList<>();
-        msgList.forEach(msg -> messages.add(new Message(m -> {
+        List<Message> messages = msgList.stream().map(msg -> Message.of(m -> {
             m.folderName = folderName;
             m.uid = msg.uid;
             m.sentDate = msg.sentDate;
@@ -189,8 +181,8 @@ public class FolderActivity extends BaseActivity {
             m.fromNickname = msg.from.nickname;
             m.toAddress = msg.toList.get(0).address;
             m.toNickname = msg.toList.get(0).nickname;
-        })));
-        LitePal.saveAll(messages);
+        })).collect(Collectors.toList());
+        App.db.collection(Message.class).save(messages);
         return messages;
     }
 

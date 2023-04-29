@@ -9,14 +9,15 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import com.github.artbits.androidmail.App;
 import com.github.artbits.androidmail.R;
 import com.github.artbits.androidmail.databinding.ActivityDetailsBinding;
+import com.github.artbits.androidmail.Utils;
 import com.github.artbits.androidmail.store.Message;
 import com.github.artbits.androidmail.store.UserInfo;
-import com.github.artbits.androidmail.Utils;
 import com.github.artbits.mailkit.MailKit;
 
-import org.litepal.LitePal;
+import java.util.Objects;
 
 public class DetailsActivity extends BaseActivity {
 
@@ -51,7 +52,11 @@ public class DetailsActivity extends BaseActivity {
     private void init() {
         long uid = getIntent().getLongExtra("uid", -1);
         String folderName = getIntent().getStringExtra("folderName");
-        Message message = LitePal.where("folderName = ? and uid = ?", folderName, String.valueOf(uid)).findFirst(Message.class);
+        Message message = App.db.collection(Message.class).findOne(m -> {
+           boolean b1 = Objects.equals(folderName, m.folderName);
+           boolean b2 = Objects.equals(uid, m.uid);
+           return b1 && b2;
+        });
 
         setToolbar(binding.toolbar, "", true);
         binding.subjectText.setText(TextUtils.isEmpty(message.subject) ? "（无主题）" : message.subject);
@@ -87,7 +92,7 @@ public class DetailsActivity extends BaseActivity {
             String type = message.type;
             binding.webView.loadDataWithBaseURL(null, adaptScreen(content, type), "text/html", "utf-8", null);
         } else {
-            UserInfo userInfo = LitePal.findFirst(UserInfo.class);
+            UserInfo userInfo = App.db.collection(UserInfo.class).findFirst();
             if (userInfo == null) {
                 return;
             }
@@ -97,7 +102,7 @@ public class DetailsActivity extends BaseActivity {
                 if (msg.mainBody != null) {
                     message.content = msg.mainBody.content;
                     message.type = msg.mainBody.type;
-                    message.save();
+                    App.db.collection(Message.class).save(message);
                     binding.webView.loadDataWithBaseURL(null, adaptScreen(message.content, message.type), "text/html", "utf-8", null);
                 }
             }, e -> Utils.toast(this, e.getMessage()));

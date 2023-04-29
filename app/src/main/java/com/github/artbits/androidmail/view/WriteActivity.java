@@ -4,13 +4,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.github.artbits.androidmail.App;
 import com.github.artbits.androidmail.R;
+import com.github.artbits.androidmail.Utils;
 import com.github.artbits.androidmail.databinding.ActivityWriteBinding;
 import com.github.artbits.androidmail.store.UserInfo;
-import com.github.artbits.androidmail.Utils;
 import com.github.artbits.mailkit.MailKit;
-
-import org.litepal.LitePal;
 
 public class WriteActivity extends BaseActivity {
 
@@ -53,7 +52,7 @@ public class WriteActivity extends BaseActivity {
             return;
         }
 
-        UserInfo userInfo = LitePal.findFirst(UserInfo.class);
+        UserInfo userInfo = App.db.collection(UserInfo.class).findFirst();
         if (userInfo == null) {
             Utils.toast(this, "服务器配置异常，请重试");
             return;

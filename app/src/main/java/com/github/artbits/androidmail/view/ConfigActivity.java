@@ -5,13 +5,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.github.artbits.androidmail.App;
 import com.github.artbits.androidmail.R;
+import com.github.artbits.androidmail.Utils;
 import com.github.artbits.androidmail.databinding.ActivityConfigBinding;
 import com.github.artbits.androidmail.store.UserInfo;
-import com.github.artbits.androidmail.Utils;
 import com.github.artbits.mailkit.MailKit;
-
-import org.litepal.LitePal;
 
 public class ConfigActivity extends BaseActivity {
 
@@ -24,7 +23,7 @@ public class ConfigActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         binding = setContentView(this, R.layout.activity_config);
 
-        userInfo = LitePal.findFirst(UserInfo.class);
+        userInfo = App.db.collection(UserInfo.class).findFirst();
         boolean isLogin = (userInfo != null);
         setToolbar(binding.toolbar, "服务器配置", isLogin);
         if (isLogin) {
@@ -96,7 +95,7 @@ public class ConfigActivity extends BaseActivity {
 
         MailKit.auth(config, () -> {
             if (userInfo == null) {
-                new UserInfo(u -> {
+                App.db.collection(UserInfo.class).save(UserInfo.of(u -> {
                     u.account = config.account;
                     u.password = config.password;
                     u.nickname = config.nickname;
@@ -106,7 +105,7 @@ public class ConfigActivity extends BaseActivity {
                     u.IMAPPort = config.IMAPPort;
                     u.SMTPSSLEnable = config.SMTPSSLEnable;
                     u.IMAPSSLEnable = config.IMAPSSLEnable;
-                }).save();
+                }));
                 dialog.dismiss();
                 startActivity(new Intent(this, MainActivity.class));
                 finish();
@@ -120,7 +119,7 @@ public class ConfigActivity extends BaseActivity {
                 userInfo.IMAPPort = config.IMAPPort;
                 userInfo.SMTPSSLEnable = config.SMTPSSLEnable;
                 userInfo.IMAPSSLEnable = config.IMAPSSLEnable;
-                userInfo.save();
+                App.db.collection(UserInfo.class).save(userInfo);
                 finish();
             }
         }, e -> {

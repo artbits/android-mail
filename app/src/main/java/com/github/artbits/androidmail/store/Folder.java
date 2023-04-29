@@ -1,17 +1,13 @@
 package com.github.artbits.androidmail.store;
 
-import org.litepal.crud.LitePalSupport;
+import com.github.artbits.quickio.core.IOEntity;
 
-public class Folder extends LitePalSupport {
-
+public final class Folder extends IOEntity {
     public String name;
 
-
     public Folder() { }
-
 
     public Folder(String name) {
         this.name = name;
     }
-
 }

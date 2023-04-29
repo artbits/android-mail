@@ -6,14 +6,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 
+import com.github.artbits.androidmail.App;
 import com.github.artbits.androidmail.R;
+import com.github.artbits.androidmail.Utils;
 import com.github.artbits.androidmail.databinding.ActivityMainBinding;
 import com.github.artbits.androidmail.store.Folder;
+import com.github.artbits.androidmail.store.Message;
 import com.github.artbits.androidmail.store.UserInfo;
-import com.github.artbits.androidmail.Utils;
 import com.github.artbits.mailkit.MailKit;
-
-import org.litepal.LitePal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,19 +60,19 @@ public class MainActivity extends BaseActivity {
 
 
     private void init() {
-        UserInfo userInfo = LitePal.findFirst(UserInfo.class);
+        UserInfo userInfo = App.db.collection(UserInfo.class).findFirst();
         if (userInfo == null) {
             setToolbar(binding.toolbar, "Android-Mail", false);
             return;
         }
         setToolbar(binding.toolbar, userInfo.nickname, userInfo.account, false);
 
-        List<Folder> folders = LitePal.findAll(Folder.class);
+        List<Folder> folders = App.db.collection(Folder.class).findAll();
         if (folders == null || folders.size() == 0) {
             MailKit.Config config = userInfo.toConfig();
             MailKit.IMAP imap = new MailKit.IMAP(config);
             imap.getDefaultFolders(strings -> {
-                strings.forEach(s -> new Folder(s).save());
+                strings.forEach(s -> App.db.collection(Folder.class).save(new Folder(s)));
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, strings);
                 binding.foldersListView.setAdapter(adapter);
             }, e -> Utils.toast(this, e.getMessage()));
@@ -98,7 +98,9 @@ public class MainActivity extends BaseActivity {
                 .setMessage("退出帐户将会清除本地的帐户数据")
                 .setNegativeButton("取消", (dialogInterface, integer) -> {})
                 .setPositiveButton("退出", (dialogInterface, integer) -> {
-                    LitePal.deleteDatabase("store");
+                    App.db.collection(UserInfo.class).deleteAll();
+                    App.db.collection(Folder.class).deleteAll();
+                    App.db.collection(Message.class).deleteAll();
                     startActivity(new Intent(this, ConfigActivity.class));
                     finish();
                 }).show();
